@@ -79,7 +79,7 @@ class BaseErrorLogHandler:
             float: &#34;REAL&#34;,
             str: &#34;TEXT&#34;,
             bytes: &#34;BLOB&#34;,  # Assuming bytes should be stored as BLOB
-            type(None): &#34;NULL&#34;,
+            type(None): &#34;TEXT&#34;,  # Why would we have a column of just None?
         }
 
         # Build the columns schema based on LogRecord attributes
@@ -109,6 +109,10 @@ class BaseErrorLogHandler:
         # Add traceback column
         columns.append(&#34;traceback TEXT&#34;)
 
+        # message is when `msg % args` gets evaluated by some part of the `logging` module?
+        if &#34;message TEXT&#34; not in columns:
+            columns.append(&#34;message TEXT&#34;)
+
         columns_text = &#34;, &#34;.join(columns)
         create_table_sql = f&#34;CREATE TABLE IF NOT EXISTS logs ({columns_text})&#34;
         self.conn.execute(create_table_sql)
@@ -128,8 +132,9 @@ class BaseErrorLogHandler:
             # Format the traceback
             traceback_str = &#34;&#34;.join(traceback.format_exception(*record.exc_info))
             record.traceback = traceback_str
-            exception_type, exception, traceback_object = record.exc_info
-            print(exception_type, exception, traceback_object)
+            # TODO: do something with the traceback
+            # exception_type, exception, traceback_object = record.exc_info
+            # print(exception_type, exception, traceback_object)
         else:
             record.traceback = None
 
@@ -220,8 +225,10 @@ class BugTrailHandler(logging.Handler):
         self.base_handler.close()
         super().close()
 
+
 # mypyc didn&#39;t like this
 # if pico_available:
+
 
 class PicoBugTrailHandler(picologging.Handler):
     &#34;&#34;&#34;
@@ -313,7 +320,7 @@ class PicoBugTrailHandler(picologging.Handler):
             float: &#34;REAL&#34;,
             str: &#34;TEXT&#34;,
             bytes: &#34;BLOB&#34;,  # Assuming bytes should be stored as BLOB
-            type(None): &#34;NULL&#34;,
+            type(None): &#34;TEXT&#34;,  # Why would we have a column of just None?
         }
 
         # Build the columns schema based on LogRecord attributes
@@ -343,6 +350,10 @@ class PicoBugTrailHandler(picologging.Handler):
         # Add traceback column
         columns.append(&#34;traceback TEXT&#34;)
 
+        # message is when `msg % args` gets evaluated by some part of the `logging` module?
+        if &#34;message TEXT&#34; not in columns:
+            columns.append(&#34;message TEXT&#34;)
+
         columns_text = &#34;, &#34;.join(columns)
         create_table_sql = f&#34;CREATE TABLE IF NOT EXISTS logs ({columns_text})&#34;
         self.conn.execute(create_table_sql)
@@ -362,8 +373,9 @@ class PicoBugTrailHandler(picologging.Handler):
             # Format the traceback
             traceback_str = &#34;&#34;.join(traceback.format_exception(*record.exc_info))
             record.traceback = traceback_str
-            exception_type, exception, traceback_object = record.exc_info
-            print(exception_type, exception, traceback_object)
+            # TODO: do something with the traceback
+            # exception_type, exception, traceback_object = record.exc_info
+            # print(exception_type, exception, traceback_object)
         else:
             record.traceback = None
 
@@ -469,7 +481,7 @@ class PicoBugTrailHandler(picologging.Handler):
         float: &#34;REAL&#34;,
         str: &#34;TEXT&#34;,
         bytes: &#34;BLOB&#34;,  # Assuming bytes should be stored as BLOB
-        type(None): &#34;NULL&#34;,
+        type(None): &#34;TEXT&#34;,  # Why would we have a column of just None?
     }
 
     # Build the columns schema based on LogRecord attributes
@@ -498,6 +510,10 @@ class PicoBugTrailHandler(picologging.Handler):
 
     # Add traceback column
     columns.append(&#34;traceback TEXT&#34;)
+
+    # message is when `msg % args` gets evaluated by some part of the `logging` module?
+    if &#34;message TEXT&#34; not in columns:
+        columns.append(&#34;message TEXT&#34;)
 
     columns_text = &#34;, &#34;.join(columns)
     create_table_sql = f&#34;CREATE TABLE IF NOT EXISTS logs ({columns_text})&#34;
@@ -533,8 +549,9 @@ class PicoBugTrailHandler(picologging.Handler):
         # Format the traceback
         traceback_str = &#34;&#34;.join(traceback.format_exception(*record.exc_info))
         record.traceback = traceback_str
-        exception_type, exception, traceback_object = record.exc_info
-        print(exception_type, exception, traceback_object)
+        # TODO: do something with the traceback
+        # exception_type, exception, traceback_object = record.exc_info
+        # print(exception_type, exception, traceback_object)
     else:
         record.traceback = None
 

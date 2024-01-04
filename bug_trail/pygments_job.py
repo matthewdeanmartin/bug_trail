@@ -39,9 +39,6 @@ def highlight_python_files(root_directory: str, output_directory: str, ctags_fil
         #  url = self.tagurlformat % {'path': base, 'fname': filename,
         #                                                'fext': extension}
         args["tagurlformat"] = "%(path)s%(fname)s%(fext)s"
-
-    else:
-        print("no tags file")
     formatter = HtmlFormatter(**args)
 
     # Search for all .py files in the given directory and its subdirectories

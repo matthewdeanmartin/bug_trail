@@ -50,7 +50,7 @@ class BaseErrorLogHandler:
             float: "REAL",
             str: "TEXT",
             bytes: "BLOB",  # Assuming bytes should be stored as BLOB
-            type(None): "NULL",
+            type(None): "TEXT",  # Why would we have a column of just None?
         }
 
         # Build the columns schema based on LogRecord attributes
@@ -80,6 +80,10 @@ class BaseErrorLogHandler:
         # Add traceback column
         columns.append("traceback TEXT")
 
+        # message is when `msg % args` gets evaluated by some part of the `logging` module?
+        if "message TEXT" not in columns:
+            columns.append("message TEXT")
+
         columns_text = ", ".join(columns)
         create_table_sql = f"CREATE TABLE IF NOT EXISTS logs ({columns_text})"
         self.conn.execute(create_table_sql)
@@ -100,8 +104,8 @@ class BaseErrorLogHandler:
             traceback_str = "".join(traceback.format_exception(*record.exc_info))
             record.traceback = traceback_str
             # TODO: do something with the traceback
-            exception_type, exception, traceback_object = record.exc_info
-            print(exception_type, exception, traceback_object)
+            # exception_type, exception, traceback_object = record.exc_info
+            # print(exception_type, exception, traceback_object)
         else:
             record.traceback = None
 

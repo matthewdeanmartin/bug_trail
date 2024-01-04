@@ -40,6 +40,7 @@ from jinja2 import Environment, FileSystemLoader
 
 from bug_trail.data_code import fetch_log_data, fetch_log_data_grouped
 from bug_trail.fs_utils import empty_folder, get_containing_folder_path
+from bug_trail.pygments_job import highlight_python_files
 
 
 def humanize_time(created: float, msecs: float = 0.0) -&gt; str:
@@ -206,13 +207,14 @@ def detail_file_name_grouped(selected_log: dict[str, dict[str, str]]) -&gt; str:
     return f&#34;detail_{key}.html&#34;
 
 
-def render_main(db_path: str, log_folder: str) -&gt; None:
+def render_main(db_path: str, log_folder: str, source_folder: str) -&gt; None:
     &#34;&#34;&#34;
     Render the main page of the log viewer
 
     Args:
         db_path (str): Path to the SQLite database
         log_folder (str): Path to the folder containing the log files
+        source_folder (str): Path to the folder containing the source code
     &#34;&#34;&#34;
     env = initialize_jinja()
     template = env.get_template(&#34;log_overview.html&#34;)
@@ -221,6 +223,10 @@ def render_main(db_path: str, log_folder: str) -&gt; None:
 
     for log_entry in log_data:
         log_entry[&#34;detailed_filename&#34;] = detail_file_name(log_entry)
+
+        log_entry[&#34;filename&#34;] = f&#34;{log_entry[&#39;filename&#39;]} ({log_entry[&#39;lineno&#39;]})&#34;
+        path_to_file_url(log_entry, log_folder, source_folder)
+        add_url_to_source_context(log_entry)
 
         log_entry[&#34;created&#34;] = humanize_time(log_entry[&#34;created&#34;], log_entry[&#34;msecs&#34;])
 
@@ -236,13 +242,25 @@ def render_main(db_path: str, log_folder: str) -&gt; None:
         f.write(html_output)
 
 
-def render_detail(db_path: str, log_folder: str) -&gt; str:
+def add_url_to_source_context(source_context: dict[str, Any]):
+    &#34;&#34;&#34;
+    Add a url to the source context with line number.
+
+    Args:
+        source_context (dict[str, Any]): The source context
+    &#34;&#34;&#34;
+    source_context[&#34;pathname&#34;] = f&#34;{source_context[&#39;pathname&#39;]}.html#line-{source_context[&#39;lineno&#39;]}&#34;
+    return source_context
+
+
+def render_detail(db_path: str, log_folder: str, source_folder: str) -&gt; str:
     &#34;&#34;&#34;
     Render the detail page of a log entry
 
     Args:
         db_path (str): Path to the SQLite database
         log_folder (str): Path to the folder containing the log files
+        source_folder (str): Path to the folder containing the source code
 
     Returns:
         str: The location of the detail page
@@ -279,9 +297,11 @@ def render_detail(db_path: str, log_folder: str) -&gt; str:
 
         # Convert pathname to url
         source_context = selected_log[&#34;SourceContext&#34;]
-        source_context[&#34;pathname&#34;] = source_context[&#34;pathname&#34;].replace(&#34;\\&#34;, &#34;/&#34;)
-        source_context[&#34;pathname&#34;] = f&#34;file://{source_context[&#39;pathname&#39;]}&#34;
 
+        # TODO: make this pretty
+
+        path_to_file_url(source_context, log_folder, source_folder)
+        add_url_to_source_context(source_context)
         # Remove empty fields
         for section in selected_log:
             to_delete = []
@@ -306,8 +326,50 @@ def render_detail(db_path: str, log_folder: str) -&gt; str:
     return location
 
 
+def find_and_return_after(text: str, search_string: str) -&gt; str:
+    &#34;&#34;&#34;
+    Find the first occurrence of a string and return everything after it.
+
+    Args:
+        text (str): The text to search in.
+        search_string (str): The string to search for.
+
+    Returns:
+        str: Everything after the first occurrence of the search string.
+             Returns an empty string if the search string is not found.
+    &#34;&#34;&#34;
+    # Find the index of the first occurrence of the search string
+    index = text.find(search_string)
+
+    # If the string is found, return everything after it
+    if index != -1:
+        return text[index + len(search_string) :]
+
+    # If the string is not found, return an empty string
+    return &#34;&#34;
+
+
+def path_to_file_url(source_context: dict[str, Any], logs_folder, source_folder: str) -&gt; None:
+    &#34;&#34;&#34;
+    Convert a path to a file url
+    Args:
+        source_context (dict[str, Any]): The source context
+        logs_folder (str): The folder containing the logs
+        source_folder (str): The folder containing the source code
+    &#34;&#34;&#34;
+    logs_folder = logs_folder.replace(&#34;\\&#34;, &#34;/&#34;)
+    relative_path = find_and_return_after(
+        source_context[&#34;pathname&#34;].replace(&#34;\\&#34;, &#34;/&#34;), source_folder.replace(&#34;\\&#34;, &#34;/&#34;)
+    )
+    source_context[&#34;pathname&#34;] = f&#34;file://{logs_folder}/src/{relative_path}&#34;
+
+
 def replace_msg_args(message_details: dict[str, Any]) -&gt; None:
-    &#34;&#34;&#34;Handle % format strings&#34;&#34;&#34;
+    &#34;&#34;&#34;Handle % format strings
+
+    Args:
+        message_details (dict[str, Any]): The message details
+    &#34;&#34;&#34;
     if message_details[&#34;args&#34;] and message_details[&#34;args&#34;] != &#34;()&#34;:
         args_dict = ast.literal_eval(message_details[&#34;args&#34;])
         message_details[&#34;msg&#34;] = message_details[&#34;msg&#34;] % args_dict
@@ -322,21 +384,24 @@ def initialize_jinja() -&gt; Environment:
     return env
 
 
-def render_all(db_path: str, logs_folder: str) -&gt; None:
+def render_all(db_path: str, logs_folder: str, source_folder: str, ctags_file: str) -&gt; None:
     &#34;&#34;&#34;
     Render all the pages
 
     Args:
         db_path (str): Path to the SQLite database
         logs_folder (str): Path to the folder containing the log files
+        source_folder (str): Path to the folder containing the source code
+        ctags_file (str): Path to the ctags file
     &#34;&#34;&#34;
     empty_folder(logs_folder)
-    render_main(db_path, logs_folder)
-    render_detail(db_path, logs_folder)
+    render_main(db_path, logs_folder, source_folder)
+    render_detail(db_path, logs_folder, source_folder)
+    highlight_python_files(source_folder, logs_folder, ctags_file)
 
 
 if __name__ == &#34;__main__&#34;:
-    render_all(db_path=&#34;error_log.db&#34;, logs_folder=&#34;logs&#34;)</code></pre>
+    render_all(db_path=&#34;error_log.db&#34;, logs_folder=&#34;logs&#34;, source_folder=&#34;../bug_trail&#34;, ctags_file=&#34;&#34;)</code></pre>
 </details>
 </section>
 <section>
@@ -346,6 +411,31 @@ if __name__ == &#34;__main__&#34;:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="bug_trail.views.add_url_to_source_context"><code class="name flex">
+<span>def <span class="ident">add_url_to_source_context</span></span>(<span>source_context: dict[str, typing.Any])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Add a url to the source context with line number.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>source_context</code></strong> :&ensp;<code>dict[str, Any]</code></dt>
+<dd>The source context</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_url_to_source_context(source_context: dict[str, Any]):
+    &#34;&#34;&#34;
+    Add a url to the source context with line number.
+
+    Args:
+        source_context (dict[str, Any]): The source context
+    &#34;&#34;&#34;
+    source_context[&#34;pathname&#34;] = f&#34;{source_context[&#39;pathname&#39;]}.html#line-{source_context[&#39;lineno&#39;]}&#34;
+    return source_context</code></pre>
+</details>
+</dd>
 <dt id="bug_trail.views.detail_file_name"><code class="name flex">
 <span>def <span class="ident">detail_file_name</span></span>(<span>selected_log: dict[str, str]) ‑> str</span>
 </code></dt>
@@ -428,6 +518,51 @@ if __name__ == &#34;__main__&#34;:
         f&#34;{selected_log[&#39;SourceContext&#39;][&#39;lineno&#39;]}&#34;
     )
     return f&#34;detail_{key}.html&#34;</code></pre>
+</details>
+</dd>
+<dt id="bug_trail.views.find_and_return_after"><code class="name flex">
+<span>def <span class="ident">find_and_return_after</span></span>(<span>text: str, search_string: str) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Find the first occurrence of a string and return everything after it.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
+<dd>The text to search in.</dd>
+<dt><strong><code>search_string</code></strong> :&ensp;<code>str</code></dt>
+<dd>The string to search for.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Everything after the first occurrence of the search string.
+Returns an empty string if the search string is not found.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def find_and_return_after(text: str, search_string: str) -&gt; str:
+    &#34;&#34;&#34;
+    Find the first occurrence of a string and return everything after it.
+
+    Args:
+        text (str): The text to search in.
+        search_string (str): The string to search for.
+
+    Returns:
+        str: Everything after the first occurrence of the search string.
+             Returns an empty string if the search string is not found.
+    &#34;&#34;&#34;
+    # Find the index of the first occurrence of the search string
+    index = text.find(search_string)
+
+    # If the string is found, return everything after it
+    if index != -1:
+        return text[index + len(search_string) :]
+
+    # If the string is not found, return an empty string
+    return &#34;&#34;</code></pre>
 </details>
 </dd>
 <dt id="bug_trail.views.humanize_time"><code class="name flex">
@@ -567,6 +702,39 @@ if __name__ == &#34;__main__&#34;:
     return env</code></pre>
 </details>
 </dd>
+<dt id="bug_trail.views.path_to_file_url"><code class="name flex">
+<span>def <span class="ident">path_to_file_url</span></span>(<span>source_context: dict[str, typing.Any], logs_folder, source_folder: str) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Convert a path to a file url</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>source_context</code></strong> :&ensp;<code>dict[str, Any]</code></dt>
+<dd>The source context</dd>
+<dt><strong><code>logs_folder</code></strong> :&ensp;<code>str</code></dt>
+<dd>The folder containing the logs</dd>
+<dt><strong><code>source_folder</code></strong> :&ensp;<code>str</code></dt>
+<dd>The folder containing the source code</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def path_to_file_url(source_context: dict[str, Any], logs_folder, source_folder: str) -&gt; None:
+    &#34;&#34;&#34;
+    Convert a path to a file url
+    Args:
+        source_context (dict[str, Any]): The source context
+        logs_folder (str): The folder containing the logs
+        source_folder (str): The folder containing the source code
+    &#34;&#34;&#34;
+    logs_folder = logs_folder.replace(&#34;\\&#34;, &#34;/&#34;)
+    relative_path = find_and_return_after(
+        source_context[&#34;pathname&#34;].replace(&#34;\\&#34;, &#34;/&#34;), source_folder.replace(&#34;\\&#34;, &#34;/&#34;)
+    )
+    source_context[&#34;pathname&#34;] = f&#34;file://{logs_folder}/src/{relative_path}&#34;</code></pre>
+</details>
+</dd>
 <dt id="bug_trail.views.pretty_column_name"><code class="name flex">
 <span>def <span class="ident">pretty_column_name</span></span>(<span>column_name: str) ‑> str</span>
 </code></dt>
@@ -628,7 +796,7 @@ if __name__ == &#34;__main__&#34;:
 </details>
 </dd>
 <dt id="bug_trail.views.render_all"><code class="name flex">
-<span>def <span class="ident">render_all</span></span>(<span>db_path: str, logs_folder: str) ‑> None</span>
+<span>def <span class="ident">render_all</span></span>(<span>db_path: str, logs_folder: str, source_folder: str, ctags_file: str) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Render all the pages</p>
@@ -638,26 +806,33 @@ if __name__ == &#34;__main__&#34;:
 <dd>Path to the SQLite database</dd>
 <dt><strong><code>logs_folder</code></strong> :&ensp;<code>str</code></dt>
 <dd>Path to the folder containing the log files</dd>
+<dt><strong><code>source_folder</code></strong> :&ensp;<code>str</code></dt>
+<dd>Path to the folder containing the source code</dd>
+<dt><strong><code>ctags_file</code></strong> :&ensp;<code>str</code></dt>
+<dd>Path to the ctags file</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def render_all(db_path: str, logs_folder: str) -&gt; None:
+<pre><code class="python">def render_all(db_path: str, logs_folder: str, source_folder: str, ctags_file: str) -&gt; None:
     &#34;&#34;&#34;
     Render all the pages
 
     Args:
         db_path (str): Path to the SQLite database
         logs_folder (str): Path to the folder containing the log files
+        source_folder (str): Path to the folder containing the source code
+        ctags_file (str): Path to the ctags file
     &#34;&#34;&#34;
     empty_folder(logs_folder)
-    render_main(db_path, logs_folder)
-    render_detail(db_path, logs_folder)</code></pre>
+    render_main(db_path, logs_folder, source_folder)
+    render_detail(db_path, logs_folder, source_folder)
+    highlight_python_files(source_folder, logs_folder, ctags_file)</code></pre>
 </details>
 </dd>
 <dt id="bug_trail.views.render_detail"><code class="name flex">
-<span>def <span class="ident">render_detail</span></span>(<span>db_path: str, log_folder: str) ‑> str</span>
+<span>def <span class="ident">render_detail</span></span>(<span>db_path: str, log_folder: str, source_folder: str) ‑> str</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Render the detail page of a log entry</p>
@@ -667,6 +842,8 @@ if __name__ == &#34;__main__&#34;:
 <dd>Path to the SQLite database</dd>
 <dt><strong><code>log_folder</code></strong> :&ensp;<code>str</code></dt>
 <dd>Path to the folder containing the log files</dd>
+<dt><strong><code>source_folder</code></strong> :&ensp;<code>str</code></dt>
+<dd>Path to the folder containing the source code</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -677,13 +854,14 @@ if __name__ == &#34;__main__&#34;:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def render_detail(db_path: str, log_folder: str) -&gt; str:
+<pre><code class="python">def render_detail(db_path: str, log_folder: str, source_folder: str) -&gt; str:
     &#34;&#34;&#34;
     Render the detail page of a log entry
 
     Args:
         db_path (str): Path to the SQLite database
         log_folder (str): Path to the folder containing the log files
+        source_folder (str): Path to the folder containing the source code
 
     Returns:
         str: The location of the detail page
@@ -720,9 +898,11 @@ if __name__ == &#34;__main__&#34;:
 
         # Convert pathname to url
         source_context = selected_log[&#34;SourceContext&#34;]
-        source_context[&#34;pathname&#34;] = source_context[&#34;pathname&#34;].replace(&#34;\\&#34;, &#34;/&#34;)
-        source_context[&#34;pathname&#34;] = f&#34;file://{source_context[&#39;pathname&#39;]}&#34;
 
+        # TODO: make this pretty
+
+        path_to_file_url(source_context, log_folder, source_folder)
+        add_url_to_source_context(source_context)
         # Remove empty fields
         for section in selected_log:
             to_delete = []
@@ -748,7 +928,7 @@ if __name__ == &#34;__main__&#34;:
 </details>
 </dd>
 <dt id="bug_trail.views.render_main"><code class="name flex">
-<span>def <span class="ident">render_main</span></span>(<span>db_path: str, log_folder: str) ‑> None</span>
+<span>def <span class="ident">render_main</span></span>(<span>db_path: str, log_folder: str, source_folder: str) ‑> None</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Render the main page of the log viewer</p>
@@ -758,18 +938,21 @@ if __name__ == &#34;__main__&#34;:
 <dd>Path to the SQLite database</dd>
 <dt><strong><code>log_folder</code></strong> :&ensp;<code>str</code></dt>
 <dd>Path to the folder containing the log files</dd>
+<dt><strong><code>source_folder</code></strong> :&ensp;<code>str</code></dt>
+<dd>Path to the folder containing the source code</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def render_main(db_path: str, log_folder: str) -&gt; None:
+<pre><code class="python">def render_main(db_path: str, log_folder: str, source_folder: str) -&gt; None:
     &#34;&#34;&#34;
     Render the main page of the log viewer
 
     Args:
         db_path (str): Path to the SQLite database
         log_folder (str): Path to the folder containing the log files
+        source_folder (str): Path to the folder containing the source code
     &#34;&#34;&#34;
     env = initialize_jinja()
     template = env.get_template(&#34;log_overview.html&#34;)
@@ -778,6 +961,10 @@ if __name__ == &#34;__main__&#34;:
 
     for log_entry in log_data:
         log_entry[&#34;detailed_filename&#34;] = detail_file_name(log_entry)
+
+        log_entry[&#34;filename&#34;] = f&#34;{log_entry[&#39;filename&#39;]} ({log_entry[&#39;lineno&#39;]})&#34;
+        path_to_file_url(log_entry, log_folder, source_folder)
+        add_url_to_source_context(log_entry)
 
         log_entry[&#34;created&#34;] = humanize_time(log_entry[&#34;created&#34;], log_entry[&#34;msecs&#34;])
 
@@ -797,13 +984,22 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">replace_msg_args</span></span>(<span>message_details: dict[str, typing.Any]) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Handle % format strings</p></div>
+<div class="desc"><p>Handle % format strings</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>message_details</code></strong> :&ensp;<code>dict[str, Any]</code></dt>
+<dd>The message details</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def replace_msg_args(message_details: dict[str, Any]) -&gt; None:
-    &#34;&#34;&#34;Handle % format strings&#34;&#34;&#34;
+    &#34;&#34;&#34;Handle % format strings
+
+    Args:
+        message_details (dict[str, Any]): The message details
+    &#34;&#34;&#34;
     if message_details[&#34;args&#34;] and message_details[&#34;args&#34;] != &#34;()&#34;:
         args_dict = ast.literal_eval(message_details[&#34;args&#34;])
         message_details[&#34;msg&#34;] = message_details[&#34;msg&#34;] % args_dict
@@ -828,11 +1024,14 @@ if __name__ == &#34;__main__&#34;:
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="bug_trail.views.add_url_to_source_context" href="#bug_trail.views.add_url_to_source_context">add_url_to_source_context</a></code></li>
 <li><code><a title="bug_trail.views.detail_file_name" href="#bug_trail.views.detail_file_name">detail_file_name</a></code></li>
 <li><code><a title="bug_trail.views.detail_file_name_grouped" href="#bug_trail.views.detail_file_name_grouped">detail_file_name_grouped</a></code></li>
+<li><code><a title="bug_trail.views.find_and_return_after" href="#bug_trail.views.find_and_return_after">find_and_return_after</a></code></li>
 <li><code><a title="bug_trail.views.humanize_time" href="#bug_trail.views.humanize_time">humanize_time</a></code></li>
 <li><code><a title="bug_trail.views.humanize_time_span" href="#bug_trail.views.humanize_time_span">humanize_time_span</a></code></li>
 <li><code><a title="bug_trail.views.initialize_jinja" href="#bug_trail.views.initialize_jinja">initialize_jinja</a></code></li>
+<li><code><a title="bug_trail.views.path_to_file_url" href="#bug_trail.views.path_to_file_url">path_to_file_url</a></code></li>
 <li><code><a title="bug_trail.views.pretty_column_name" href="#bug_trail.views.pretty_column_name">pretty_column_name</a></code></li>
 <li><code><a title="bug_trail.views.render_all" href="#bug_trail.views.render_all">render_all</a></code></li>
 <li><code><a title="bug_trail.views.render_detail" href="#bug_trail.views.render_detail">render_detail</a></code></li>

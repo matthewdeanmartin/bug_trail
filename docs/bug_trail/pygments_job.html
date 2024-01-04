@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>bug_trail.sqlite3_utils API documentation</title>
-<meta name="description" content="Another module to avoid Circular Import" />
+<title>bug_trail.pygments_job API documentation</title>
+<meta name="description" content="pygmentize -g -O full,style=monokai,linenos=1 **/*.py" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -19,40 +19,80 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>bug_trail.sqlite3_utils</code></h1>
+<h1 class="title">Module <code>bug_trail.pygments_job</code></h1>
 </header>
 <section id="section-intro">
-<p>Another module to avoid Circular Import</p>
+<p>pygmentize -g -O full,style=monokai,linenos=1 *<em>/</em>.py</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-Another module to avoid Circular Import
+pygmentize -g -O full,style=monokai,linenos=1 **/*.py
 &#34;&#34;&#34;
-import datetime
-from types import NoneType
-from typing import Any, Optional, Union
+import glob
+import os
 
-SqliteTypes = Union[None, int, float, str, bytes, datetime.date, datetime.datetime]
+from pygments import highlight
+from pygments.formatters import HtmlFormatter
+from pygments.lexers import PythonLexer
 
 
-def serialize_to_sqlite_supported(value: Optional[Any]) -&gt; SqliteTypes:
+def highlight_python_files(root_directory: str, output_directory: str, ctags_file: str) -&gt; int:
     &#34;&#34;&#34;
-    sqlite supports None, int, float, str, bytes by default, and also knows how to adapt datetime.date and datetime.datetime
-    everything else is str(value)
-    &gt;&gt;&gt; serialize_to_sqlite_supported(1)
-    1
-    &gt;&gt;&gt; serialize_to_sqlite_supported(1.0)
-    1.0
+    Highlight all python files in a directory and its subdirectories and save them as HTML files
+    Args:
+        root_directory (str): The root directory to search for python files
+        output_directory (str): The directory to save the HTML files
+    Returns:
+        int: The number of files highlighted
     &#34;&#34;&#34;
-    if isinstance(value, NoneType):
-        return None
-    if isinstance(value, (int, float, str, bytes)):
-        return value
-    if isinstance(value, (datetime.date, datetime.datetime)):
-        return value
-    return str(value)</code></pre>
+    if not output_directory:
+        return 0
+    if not root_directory:
+        return 0
+    output_directory += &#34;/src/&#34;
+    # Create the output directory if it doesn&#39;t exist
+    os.makedirs(output_directory, exist_ok=True)
+
+    # Define the formatter with the desired options
+    args = {
+        &#34;full&#34;: True,
+        &#34;style&#34;: &#34;monokai&#34;,
+        &#34;linenos&#34;: True,
+        &#34;lineanchors&#34;: &#34;line&#34;,
+        &#34;anchorlinenos&#34;: True,
+    }
+    if ctags_file:
+        args[&#34;tagsfile&#34;] = ctags_file
+        #  url = self.tagurlformat % {&#39;path&#39;: base, &#39;fname&#39;: filename,
+        #                                                &#39;fext&#39;: extension}
+        args[&#34;tagurlformat&#34;] = &#34;%(path)s%(fname)s%(fext)s&#34;
+    formatter = HtmlFormatter(**args)
+
+    # Search for all .py files in the given directory and its subdirectories
+    count = 0
+    search_string = os.path.join(root_directory, &#34;**&#34;, &#34;*.py&#34;)
+    for file_path in glob.glob(search_string, recursive=True):
+        count += 1
+        with open(file_path, encoding=&#34;utf-8&#34;) as file:
+            code = file.read()
+            # Highlight the code
+            highlighted_code = highlight(code, PythonLexer(), formatter)
+
+            # Define the output file path
+            relative_path = os.path.relpath(file_path, root_directory)
+            output_file_path = os.path.join(output_directory, relative_path + &#34;.html&#34;)
+
+            # Ensure the subdirectories in the output path exist
+            os.makedirs(os.path.dirname(output_file_path), exist_ok=True)
+
+            # Save the highlighted code to the output file
+            with open(output_file_path, &#34;w&#34;, encoding=&#34;utf-8&#34;) as output_file:
+                output_file.write(highlighted_code)
+    if count == 0:
+        print(f&#34;No source files found, searched at {search_string}&#34;)
+    return count</code></pre>
 </details>
 </section>
 <section>
@@ -62,37 +102,82 @@ def serialize_to_sqlite_supported(value: Optional[Any]) -&gt; SqliteTypes:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="bug_trail.sqlite3_utils.serialize_to_sqlite_supported"><code class="name flex">
-<span>def <span class="ident">serialize_to_sqlite_supported</span></span>(<span>value: Optional[Any]) ‑> Union[ForwardRef(None), int, float, str, bytes, datetime.date, datetime.datetime]</span>
+<dt id="bug_trail.pygments_job.highlight_python_files"><code class="name flex">
+<span>def <span class="ident">highlight_python_files</span></span>(<span>root_directory: str, output_directory: str, ctags_file: str) ‑> int</span>
 </code></dt>
 <dd>
-<div class="desc"><p>sqlite supports None, int, float, str, bytes by default, and also knows how to adapt datetime.date and datetime.datetime
-everything else is str(value)</p>
-<pre><code class="language-python-repl">&gt;&gt;&gt; serialize_to_sqlite_supported(1)
-1
-&gt;&gt;&gt; serialize_to_sqlite_supported(1.0)
-1.0
-</code></pre></div>
+<div class="desc"><p>Highlight all python files in a directory and its subdirectories and save them as HTML files</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>root_directory</code></strong> :&ensp;<code>str</code></dt>
+<dd>The root directory to search for python files</dd>
+<dt><strong><code>output_directory</code></strong> :&ensp;<code>str</code></dt>
+<dd>The directory to save the HTML files</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>The number of files highlighted</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def serialize_to_sqlite_supported(value: Optional[Any]) -&gt; SqliteTypes:
+<pre><code class="python">def highlight_python_files(root_directory: str, output_directory: str, ctags_file: str) -&gt; int:
     &#34;&#34;&#34;
-    sqlite supports None, int, float, str, bytes by default, and also knows how to adapt datetime.date and datetime.datetime
-    everything else is str(value)
-    &gt;&gt;&gt; serialize_to_sqlite_supported(1)
-    1
-    &gt;&gt;&gt; serialize_to_sqlite_supported(1.0)
-    1.0
+    Highlight all python files in a directory and its subdirectories and save them as HTML files
+    Args:
+        root_directory (str): The root directory to search for python files
+        output_directory (str): The directory to save the HTML files
+    Returns:
+        int: The number of files highlighted
     &#34;&#34;&#34;
-    if isinstance(value, NoneType):
-        return None
-    if isinstance(value, (int, float, str, bytes)):
-        return value
-    if isinstance(value, (datetime.date, datetime.datetime)):
-        return value
-    return str(value)</code></pre>
+    if not output_directory:
+        return 0
+    if not root_directory:
+        return 0
+    output_directory += &#34;/src/&#34;
+    # Create the output directory if it doesn&#39;t exist
+    os.makedirs(output_directory, exist_ok=True)
+
+    # Define the formatter with the desired options
+    args = {
+        &#34;full&#34;: True,
+        &#34;style&#34;: &#34;monokai&#34;,
+        &#34;linenos&#34;: True,
+        &#34;lineanchors&#34;: &#34;line&#34;,
+        &#34;anchorlinenos&#34;: True,
+    }
+    if ctags_file:
+        args[&#34;tagsfile&#34;] = ctags_file
+        #  url = self.tagurlformat % {&#39;path&#39;: base, &#39;fname&#39;: filename,
+        #                                                &#39;fext&#39;: extension}
+        args[&#34;tagurlformat&#34;] = &#34;%(path)s%(fname)s%(fext)s&#34;
+    formatter = HtmlFormatter(**args)
+
+    # Search for all .py files in the given directory and its subdirectories
+    count = 0
+    search_string = os.path.join(root_directory, &#34;**&#34;, &#34;*.py&#34;)
+    for file_path in glob.glob(search_string, recursive=True):
+        count += 1
+        with open(file_path, encoding=&#34;utf-8&#34;) as file:
+            code = file.read()
+            # Highlight the code
+            highlighted_code = highlight(code, PythonLexer(), formatter)
+
+            # Define the output file path
+            relative_path = os.path.relpath(file_path, root_directory)
+            output_file_path = os.path.join(output_directory, relative_path + &#34;.html&#34;)
+
+            # Ensure the subdirectories in the output path exist
+            os.makedirs(os.path.dirname(output_file_path), exist_ok=True)
+
+            # Save the highlighted code to the output file
+            with open(output_file_path, &#34;w&#34;, encoding=&#34;utf-8&#34;) as output_file:
+                output_file.write(highlighted_code)
+    if count == 0:
+        print(f&#34;No source files found, searched at {search_string}&#34;)
+    return count</code></pre>
 </details>
 </dd>
 </dl>
@@ -113,7 +198,7 @@ everything else is str(value)</p>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="bug_trail.sqlite3_utils.serialize_to_sqlite_supported" href="#bug_trail.sqlite3_utils.serialize_to_sqlite_supported">serialize_to_sqlite_supported</a></code></li>
+<li><code><a title="bug_trail.pygments_job.highlight_python_files" href="#bug_trail.pygments_job.highlight_python_files">highlight_python_files</a></code></li>
 </ul>
 </li>
 </ul>

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bug_trail"
-version = "1.0.0"
+version = "1.0.1"
 description = "Local static html error logger to use while developing python code."
 authors = ["Matthew Martin <matthewdeanmartin@gmail.com>"]
 keywords = ["error logging", "html log report", ]
@@ -47,10 +47,13 @@ python-ctags3="*"
 toml ="*"
 platformdirs="*"
 
+# Logging frameworks
+# Required until I figure out how to make it optional
+picologging = "*"
 
 
 [tool.poetry.dev-dependencies]
-picologging = ">=0.9.3"
+
 # build tools
 black = ">=23.11.0"
 pytest = ">=7.4.3"

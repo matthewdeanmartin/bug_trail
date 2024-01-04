@@ -12,7 +12,8 @@ pip install bug-trail
 
 ## Usage
 
-Configuration is optional via a `pyproject.toml` file.
+Configuration is optional via a `pyproject.toml` file and the logging modules ordinary configuration options. See 
+[example code-as-config](example_code_as_config.py)
 
 This is the schema with the default values.
 ```toml

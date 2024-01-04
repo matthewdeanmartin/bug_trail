@@ -36,7 +36,6 @@ from typing import Any
 from bug_trail.handlers import BaseErrorLogHandler
 
 
-
 def fetch_log_data(db_path: str) -&gt; list[dict[str, Any]]:
     &#34;&#34;&#34;
     Fetch all log records from the database.
@@ -53,7 +52,7 @@ def fetch_log_data(db_path: str) -&gt; list[dict[str, Any]]:
 
     # Query to fetch all rows from the logs table
     query = &#34;SELECT * FROM logs ORDER BY created DESC&#34;
-    execute_safely(cursor, query,db_path)
+    execute_safely(cursor, query, db_path)
 
     # Fetching column names from the cursor
     columns = [description[0] for description in cursor.description]
@@ -86,7 +85,7 @@ def fetch_log_data_grouped(db_path: str) -&gt; Any:
 
     # Query to fetch all rows from the logs table
     query = &#34;SELECT * FROM logs ORDER BY created DESC&#34;
-    execute_safely(cursor, query,db_path)
+    execute_safely(cursor, query, db_path)
 
     # Fetching column names from the cursor
     columns = [description[0] for description in cursor.description]
@@ -143,7 +142,7 @@ def fetch_log_data_grouped(db_path: str) -&gt; Any:
     return log_data
 
 
-def execute_safely(cursor:sqlite3.Cursor, query:str,db_path:str)-&gt;None:
+def execute_safely(cursor: sqlite3.Cursor, query: str, db_path: str) -&gt; None:
     &#34;&#34;&#34;
     Execute a query safely, creating the table if it doesn&#39;t exist
 
@@ -189,7 +188,7 @@ def execute_safely(cursor:sqlite3.Cursor, query:str,db_path:str)-&gt;None:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def execute_safely(cursor:sqlite3.Cursor, query:str,db_path:str)-&gt;None:
+<pre><code class="python">def execute_safely(cursor: sqlite3.Cursor, query: str, db_path: str) -&gt; None:
     &#34;&#34;&#34;
     Execute a query safely, creating the table if it doesn&#39;t exist
 
@@ -245,7 +244,7 @@ def execute_safely(cursor:sqlite3.Cursor, query:str,db_path:str)-&gt;None:
 
     # Query to fetch all rows from the logs table
     query = &#34;SELECT * FROM logs ORDER BY created DESC&#34;
-    execute_safely(cursor, query,db_path)
+    execute_safely(cursor, query, db_path)
 
     # Fetching column names from the cursor
     columns = [description[0] for description in cursor.description]
@@ -297,7 +296,7 @@ def execute_safely(cursor:sqlite3.Cursor, query:str,db_path:str)-&gt;None:
 
     # Query to fetch all rows from the logs table
     query = &#34;SELECT * FROM logs ORDER BY created DESC&#34;
-    execute_safely(cursor, query,db_path)
+    execute_safely(cursor, query, db_path)
 
     # Fetching column names from the cursor
     columns = [description[0] for description in cursor.description]
