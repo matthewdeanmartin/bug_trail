@@ -14,6 +14,7 @@ def test_error_log_sqlite_handler(tmp_path):
     # Create a logger and add the handler
     logger = logging.getLogger("test_logger")
     logger.setLevel(logging.ERROR)
+    logger.handlers.clear()
     logger.addHandler(handler)
 
     # Log a test message
@@ -30,6 +31,8 @@ def test_error_log_sqlite_handler(tmp_path):
     assert log_record is not None
     assert test_message in log_record
 
+    for leftover in logger.handlers:
+        logger.removeHandler(leftover)
     # # Clean up
     # handler.close()
 
@@ -43,6 +46,7 @@ def test_error_log_sqlite_handler_with_exception(tmp_path):
     # Create a logger and add the handler
     logger = logging.getLogger("test_logger_exception")
     logger.setLevel(logging.ERROR)
+    logger.handlers.clear()
     logger.addHandler(handler)
 
     logger.info("this will be ignored")
@@ -63,6 +67,8 @@ def test_error_log_sqlite_handler_with_exception(tmp_path):
     assert log_record is not None
     assert "This is a test exception" in log_record[0]
 
+    for leftover in logger.handlers:
+        logger.removeHandler(leftover)
     # # Clean up
     # handler.close()
 

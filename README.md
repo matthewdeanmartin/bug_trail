@@ -86,6 +86,7 @@ If you want logger for a website, hosted in your Flak or Django website:
 These are the closest "write logs to HTML" projects I could find:
 - [PyLog2html](https://pypi.org/project/PyLog2html/)
 - Gist - https://gist.github.com/ColinDuquesnoy/8296508
+- [dblogging](https://gitlab.com/tspens/dblogging) - Uses sqlite, but does not use standard library logging framework
 
 If you want someone else to do it all for you
 - [Sentry](https://sentry.io/)

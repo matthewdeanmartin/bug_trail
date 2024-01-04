@@ -22,6 +22,7 @@ def test_render_main(tmp_path):
     handler = BugTrailHandler(str(db_path))
     logger = logging.getLogger("test_logger")
     logger.setLevel(logging.ERROR)
+    logger.handlers.clear()
     logger.addHandler(handler)
 
     # Insert test log records
@@ -40,6 +41,8 @@ def test_render_main(tmp_path):
         content = f.read()
         assert test_message in content
 
+    for leftover in logger.handlers:
+        logger.removeHandler(leftover)
     # # Clean up
     # handler.close()
 
@@ -78,6 +81,7 @@ def test_render_detail(tmp_path):
     handler = BugTrailHandler(str(db_path))
     logger = logging.getLogger("test_logger")
     logger.setLevel(logging.ERROR)
+    logger.handlers.clear()
     logger.addHandler(handler)
 
     # Insert test log records
@@ -91,6 +95,9 @@ def test_render_detail(tmp_path):
     with open(location, encoding="utf-8") as f:
         content = f.read()
         assert "Test error log" in content  # Check for specific content based on log_entry
+
+    for leftover in logger.handlers:
+        logger.removeHandler(leftover)
 
 
 @patch("bug_trail.views.empty_folder")

@@ -31,6 +31,8 @@ def test_pico_sqlite_handler(tmp_path):
     assert log_record is not None
     assert test_message in log_record
 
+    for leftover in logger.handlers:
+        logger.removeHandler(leftover)
     # # Clean up
     # handler.close()
 
@@ -63,6 +65,9 @@ def test_pico_handler_with_exception(tmp_path):
 
     assert log_record is not None
     assert "This is a test exception" in log_record[3]
+
+    for leftover in logger.handlers:
+        logger.removeHandler(leftover)
 
 
 class MockBaseErrorLogHandler:

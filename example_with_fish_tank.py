@@ -15,14 +15,7 @@ logging.basicConfig(handlers=[handler], level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 logger.error("If you can see this, error logging works")
-#
-# import threading
-#
-# def target():
-#     logger.info("This is", threading.current_thread().name)
-#
-# for i in range(4):
-#     threading.Thread(target=target).start()
+
 
 if __name__ == "__main__":
     print("Running fish_tank.__main__")

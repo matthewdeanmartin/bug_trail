@@ -1,4 +1,7 @@
-"""Example usage"""
+"""Example usage
+
+This is completely contrived.
+"""
 
 # Set up logging
 import logging

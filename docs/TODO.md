@@ -6,7 +6,18 @@
 - p.oneshot() to add info about the process
 
 ## Data enrichment
-- 
+- ???
+
+## BUG
+- Calculating path to pygmentized /src/ folder is messed up
+- picologging should be an optional install
+
+## Filewatcher + incremental update
+- detail can be updated incrementally
+- if we track hashes, we can update source incrementally
+
+## integrate with pydoc_fork?
+- link to symbol docs (not guaranteed to work, symbol data incomplete in log table)
 
 ## Goto Source code Line feature
 - Copy source to folder as pretty html

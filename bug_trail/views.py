@@ -299,7 +299,7 @@ def render_detail(db_path: str, log_folder: str, source_folder: str) -> str:
 
 def find_and_return_after(text: str, search_string: str) -> str:
     """
-    Find the first occurrence of a string and return everything after it.
+    Find the last occurrence of a string and return everything after it.
 
     Args:
         text (str): The text to search in.
@@ -309,8 +309,8 @@ def find_and_return_after(text: str, search_string: str) -> str:
         str: Everything after the first occurrence of the search string.
              Returns an empty string if the search string is not found.
     """
-    # Find the index of the first occurrence of the search string
-    index = text.find(search_string)
+    # Find the index of the last occurrence of the search string
+    index = text.rfind(search_string)
 
     # If the string is found, return everything after it
     if index != -1:
@@ -343,7 +343,11 @@ def replace_msg_args(message_details: dict[str, Any]) -> None:
     """
     if message_details["args"] and message_details["args"] != "()":
         args_dict = ast.literal_eval(message_details["args"])
-        message_details["msg"] = message_details["msg"] % args_dict
+        try:
+            message_details["msg"] = message_details["msg"] % args_dict
+        except TypeError:
+            # can't evaluate
+            message_details["msg"] = f'{message_details["msg"]} % {args_dict}'
     del message_details["args"]
 
 
