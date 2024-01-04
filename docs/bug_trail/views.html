@@ -1,0 +1,850 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>bug_trail.views API documentation</title>
+<meta name="description" content="This module contains the functions for rendering the HTML templates" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>bug_trail.views</code></h1>
+</header>
+<section id="section-intro">
+<p>This module contains the functions for rendering the HTML templates</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+This module contains the functions for rendering the HTML templates
+&#34;&#34;&#34;
+import ast
+import datetime
+import os
+from typing import Any
+
+import humanize
+from jinja2 import Environment, FileSystemLoader
+
+from bug_trail.data_code import fetch_log_data, fetch_log_data_grouped
+from bug_trail.fs_utils import empty_folder, get_containing_folder_path
+
+
+def humanize_time(created: float, msecs: float = 0.0) -&gt; str:
+    &#34;&#34;&#34;
+    Convert epoch time to a human-readable format and calculate the relative time passed.
+
+    Args:
+        created (float): Time in seconds since the epoch.
+        msecs (float): Millisecond portion of &#39;created&#39;.
+
+    Returns:
+        str: Human-readable time format.
+    &#34;&#34;&#34;
+    if not isinstance(created, float):
+        created = float(created)
+    if not isinstance(msecs, float):
+        msecs = float(msecs)
+    # Combine created and msecs and convert to a datetime object
+    full_datetime = datetime.datetime.fromtimestamp(created + msecs / 1000.0)
+
+    # Format the date
+    formatted_date = full_datetime.strftime(&#34;%B %d, %Y&#34;)
+
+    # Calculate and format the relative time passed
+    relative_time = humanize.naturaltime(datetime.datetime.now() - full_datetime)
+
+    return f&#34;{formatted_date}, {relative_time}&#34;
+
+
+def humanize_time_span(milliseconds: float):
+    &#34;&#34;&#34;
+    Convert a time span in seconds to a human-readable format.
+
+    Args:
+        milliseconds (float): Time span in milliseconds.
+
+    Returns:
+        tuple: A tuple containing a precise human-readable format and a general description.
+    &#34;&#34;&#34;
+    if not isinstance(milliseconds, float):
+        milliseconds = float(milliseconds)
+    # Define thresholds (in seconds) for different time units
+
+    thresholds = {
+        &#34;millisecond&#34;: 1,  # Below 1 second
+        &#34;second&#34;: 60,  # Below 1 minute
+        &#34;minute&#34;: 60 * 60,  # Below 1 hour
+        &#34;hour&#34;: 60 * 60 * 24,  # Below 1 day
+        &#34;day&#34;: 60 * 60 * 24 * 30,  # Below 1 month
+        &#34;month&#34;: 60 * 60 * 24 * 30 * 12,  # Below 1 year
+    }
+    seconds = milliseconds / 1000.0
+
+    unit = &#34;N/A&#34;
+
+    # Find the largest unit of time to use
+    for unit, limit in thresholds.items():  # noqa: B007
+        # we use the fact that python holds on the the value
+        # of a variable from the last iteration of a loop
+        if seconds &lt; limit:
+            break
+
+    # Convert to the appropriate unit and format the output
+    if unit == &#34;millisecond&#34;:
+        precise_format = f&#34;{seconds * 1000:.0f} milliseconds&#34;
+    elif unit == &#34;second&#34;:
+        precise_format = f&#34;{seconds:.0f} seconds&#34;
+    elif unit == &#34;minute&#34;:
+        precise_format = f&#34;{seconds / 60:.0f} minutes&#34;
+    elif unit == &#34;hour&#34;:
+        precise_format = f&#34;{seconds / 3600:.0f} hours&#34;
+    elif unit == &#34;day&#34;:
+        precise_format = f&#34;{seconds / (3600 * 24):.0f} days&#34;
+    else:  # &#39;month&#39; or larger
+        precise_format = f&#34;{seconds / (3600 * 24 * 30):.0f} months&#34;
+
+    # Use humanize for a general description
+    general_description = humanize.naturaldelta(seconds)
+
+    return precise_format, general_description
+
+
+# Example usage
+# Assume relative_time_seconds = 116.669178009033
+# humanized_time = humanize_time_span(relative_time_seconds)
+# print(humanized_time)
+
+
+def pretty_column_name(column_name: str) -&gt; str:
+    &#34;&#34;&#34;
+    Transform a column name into a pretty name for display
+    Args:
+        column_name (str): The column name to be transformed
+    Returns:
+        str: The transformed column name
+    &gt;&gt;&gt; pretty_column_name(&#34;lineno&#34;)
+    &#39;Line Number&#39;
+    &#34;&#34;&#34;
+    # Dictionary for special cases
+    special_cases = {
+        &#34;lineno&#34;: &#34;Line Number&#34;,
+        &#34;funcName&#34;: &#34;Function Name&#34;,
+        &#34;exc_info&#34;: &#34;Exception Info&#34;,
+        &#34;msg&#34;: &#34;Message&#34;,
+        &#34;args&#34;: &#34;Arguments&#34;,
+        &#34;levelname&#34;: &#34;Level Name&#34;,
+        &#34;levelno&#34;: &#34;Level Number&#34;,
+        &#34;pathname&#34;: &#34;Path Name&#34;,
+        &#34;filename&#34;: &#34;File Name&#34;,
+        &#34;msecs&#34;: &#34;Milliseconds&#34;,
+        &#34;relativeCreated&#34;: &#34;Relative Created&#34;,
+        &#34;processName&#34;: &#34;Process Name&#34;,
+        &#34;threadName&#34;: &#34;Thread Name&#34;,
+        &#34;exc_text&#34;: &#34;Exception Text&#34;,
+        &#34;stack_info&#34;: &#34;Stack Info&#34;,
+    }
+
+    # Check if the column name is a special case
+    if column_name in special_cases:
+        return special_cases[column_name]
+
+    # Rule-based transformation: snake_case to Title Case
+    pretty_name = column_name.replace(&#34;_&#34;, &#34; &#34;).title()
+    return pretty_name
+
+
+def detail_file_name(selected_log: dict[str, str]) -&gt; str:
+    &#34;&#34;&#34;
+    Generate a filename for the detail page of a log entry
+
+    Args:
+        selected_log (dict[str, str]): The selected log entry
+    Returns:
+        str: The filename for the detail page
+
+    &gt;&gt;&gt; detail_file_name({&#39;created&#39;: &#39;2021-08-31 12:00:00.000000&#39;, &#39;filename&#39;: &#39;bug_trail/data_code.py&#39;, &#39;lineno&#39;: 1})
+    &#39;detail_2021-08-31 12:00:00_000000_bug_trail/data_code_py_1.html&#39;
+    &#34;&#34;&#34;
+    key = (
+        f&#34;{str(selected_log[&#39;created&#39;]).replace(&#39;.&#39;,&#39;_&#39;)}_&#34;
+        f&#34;{selected_log[&#39;filename&#39;].replace(&#39;.&#39;,&#39;_&#39;)}_&#34;
+        f&#34;{selected_log[&#39;lineno&#39;]}&#34;
+    )
+    return f&#34;detail_{key}.html&#34;
+
+
+def detail_file_name_grouped(selected_log: dict[str, dict[str, str]]) -&gt; str:
+    &#34;&#34;&#34;
+    Generate a filename for the detail page of a log entry with grouped data
+
+    Args:
+        selected_log (dict[str, str]): The selected log entry
+    Returns:
+        str: The filename for the detail page
+
+    &gt;&gt;&gt; detail_file_name_grouped({&#39;TemporalDetails&#39;: {&#39;created&#39;: &#39;2021-08-31 12:00:00.000000&#39;}, &#39;SourceContext&#39;: {&#39;filename&#39;: &#39;bug_trail/data_code.py&#39;, &#39;lineno&#39;: 1}})
+    &#39;detail_2021-08-31 12:00:00_000000_bug_trail/data_code_py_1.html&#39;
+    &#34;&#34;&#34;
+    key = (
+        f&#34;{str(selected_log[&#39;TemporalDetails&#39;][&#39;created&#39;]).replace(&#39;.&#39;,&#39;_&#39;)}_&#34;
+        f&#34;{selected_log[&#39;SourceContext&#39;][&#39;filename&#39;].replace(&#39;.&#39;,&#39;_&#39;)}_&#34;
+        f&#34;{selected_log[&#39;SourceContext&#39;][&#39;lineno&#39;]}&#34;
+    )
+    return f&#34;detail_{key}.html&#34;
+
+
+def render_main(db_path: str, log_folder: str) -&gt; None:
+    &#34;&#34;&#34;
+    Render the main page of the log viewer
+
+    Args:
+        db_path (str): Path to the SQLite database
+        log_folder (str): Path to the folder containing the log files
+    &#34;&#34;&#34;
+    env = initialize_jinja()
+    template = env.get_template(&#34;log_overview.html&#34;)
+
+    log_data = fetch_log_data(db_path)
+
+    for log_entry in log_data:
+        log_entry[&#34;detailed_filename&#34;] = detail_file_name(log_entry)
+
+        log_entry[&#34;created&#34;] = humanize_time(log_entry[&#34;created&#34;], log_entry[&#34;msecs&#34;])
+
+        # Consolidate msg and args
+        replace_msg_args(log_entry)
+
+    # Render the template with log data
+    html_output = template.render(logs=log_data)
+
+    index = f&#34;{log_folder}/index.html&#34;
+    os.makedirs(index.rsplit(&#34;/&#34;, 1)[0], exist_ok=True)
+    with open(index, &#34;w&#34;, encoding=&#34;utf-8&#34;) as f:
+        f.write(html_output)
+
+
+def render_detail(db_path: str, log_folder: str) -&gt; str:
+    &#34;&#34;&#34;
+    Render the detail page of a log entry
+
+    Args:
+        db_path (str): Path to the SQLite database
+        log_folder (str): Path to the folder containing the log files
+
+    Returns:
+        str: The location of the detail page
+    &#34;&#34;&#34;
+    env = initialize_jinja()
+    log_data = fetch_log_data_grouped(db_path)  # Your log records here
+
+    # Render the template with the selected log data
+    template = env.get_template(&#34;log_detail.html&#34;)
+
+    location = &#34;&#34;
+    for log_entry in log_data:
+        # Selected log record for display
+        selected_log = log_entry
+        # Using a unique key for each log entry, like a timestamp or a combination of fields
+        key = detail_file_name_grouped(selected_log)
+
+        location = f&#34;{log_folder}/{key}&#34;
+
+        # Clean up time
+        temporal_details = selected_log[&#34;TemporalDetails&#34;]
+        temporal_details[&#34;created&#34;] = humanize_time(temporal_details[&#34;created&#34;], temporal_details[&#34;msecs&#34;])
+        del temporal_details[&#34;msecs&#34;]
+        formatted_time, apx_time = humanize_time_span(temporal_details[&#34;relativeCreated&#34;])
+        temporal_details[&#34;relativeCreated&#34;] = f&#34;{formatted_time} ({apx_time})&#34;
+
+        # Consolidate level
+        message_details = selected_log[&#34;MessageDetails&#34;]
+        message_details[&#34;levelname&#34;] = str(message_details[&#34;levelname&#34;]) + f&#34; ({str(message_details[&#39;levelno&#39;])})&#34;
+        del message_details[&#34;levelno&#34;]
+
+        # Consolidate msg and args
+        replace_msg_args(message_details)
+
+        # Convert pathname to url
+        source_context = selected_log[&#34;SourceContext&#34;]
+        source_context[&#34;pathname&#34;] = source_context[&#34;pathname&#34;].replace(&#34;\\&#34;, &#34;/&#34;)
+        source_context[&#34;pathname&#34;] = f&#34;file://{source_context[&#39;pathname&#39;]}&#34;
+
+        # Remove empty fields
+        for section in selected_log:
+            to_delete = []
+            for section_name, value in selected_log[section].items():
+                if value is None or value == &#34;&#34;:
+                    to_delete.append(section_name)
+            for section_name in to_delete:
+                del selected_log[section][section_name]
+        to_delete = []
+        for section_name in selected_log:
+            if len(selected_log[section_name]) == 0:
+                to_delete.append(section_name)
+        for section_name in to_delete:
+            del selected_log[section_name]
+
+        html_output = template.render(log=selected_log)
+
+        # Write `html_output` to a file
+        os.makedirs(location.rsplit(&#34;/&#34;, 1)[0], exist_ok=True)
+        with open(location, &#34;w&#34;, encoding=&#34;utf-8&#34;) as f:
+            f.write(html_output)
+    return location
+
+
+def replace_msg_args(message_details: dict[str, Any]) -&gt; None:
+    &#34;&#34;&#34;Handle % format strings&#34;&#34;&#34;
+    if message_details[&#34;args&#34;] and message_details[&#34;args&#34;] != &#34;()&#34;:
+        args_dict = ast.literal_eval(message_details[&#34;args&#34;])
+        message_details[&#34;msg&#34;] = message_details[&#34;msg&#34;] % args_dict
+    del message_details[&#34;args&#34;]
+
+
+def initialize_jinja() -&gt; Environment:
+    &#34;&#34;&#34;Set up Jinja2 environment&#34;&#34;&#34;
+    current = get_containing_folder_path(__file__)
+    env = Environment(loader=FileSystemLoader(current), autoescape=True)
+    env.filters[&#34;pretty&#34;] = pretty_column_name
+    return env
+
+
+def render_all(db_path: str, logs_folder: str) -&gt; None:
+    &#34;&#34;&#34;
+    Render all the pages
+
+    Args:
+        db_path (str): Path to the SQLite database
+        logs_folder (str): Path to the folder containing the log files
+    &#34;&#34;&#34;
+    empty_folder(logs_folder)
+    render_main(db_path, logs_folder)
+    render_detail(db_path, logs_folder)
+
+
+if __name__ == &#34;__main__&#34;:
+    render_all(db_path=&#34;error_log.db&#34;, logs_folder=&#34;logs&#34;)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="bug_trail.views.detail_file_name"><code class="name flex">
+<span>def <span class="ident">detail_file_name</span></span>(<span>selected_log: dict[str, str]) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate a filename for the detail page of a log entry</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>selected_log</code></strong> :&ensp;<code>dict[str, str]</code></dt>
+<dd>The selected log entry</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The filename for the detail page</dd>
+</dl>
+<pre><code class="language-python-repl">&gt;&gt;&gt; detail_file_name({'created': '2021-08-31 12:00:00.000000', 'filename': 'bug_trail/data_code.py', 'lineno': 1})
+'detail_2021-08-31 12:00:00_000000_bug_trail/data_code_py_1.html'
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def detail_file_name(selected_log: dict[str, str]) -&gt; str:
+    &#34;&#34;&#34;
+    Generate a filename for the detail page of a log entry
+
+    Args:
+        selected_log (dict[str, str]): The selected log entry
+    Returns:
+        str: The filename for the detail page
+
+    &gt;&gt;&gt; detail_file_name({&#39;created&#39;: &#39;2021-08-31 12:00:00.000000&#39;, &#39;filename&#39;: &#39;bug_trail/data_code.py&#39;, &#39;lineno&#39;: 1})
+    &#39;detail_2021-08-31 12:00:00_000000_bug_trail/data_code_py_1.html&#39;
+    &#34;&#34;&#34;
+    key = (
+        f&#34;{str(selected_log[&#39;created&#39;]).replace(&#39;.&#39;,&#39;_&#39;)}_&#34;
+        f&#34;{selected_log[&#39;filename&#39;].replace(&#39;.&#39;,&#39;_&#39;)}_&#34;
+        f&#34;{selected_log[&#39;lineno&#39;]}&#34;
+    )
+    return f&#34;detail_{key}.html&#34;</code></pre>
+</details>
+</dd>
+<dt id="bug_trail.views.detail_file_name_grouped"><code class="name flex">
+<span>def <span class="ident">detail_file_name_grouped</span></span>(<span>selected_log: dict[str, dict[str, str]]) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate a filename for the detail page of a log entry with grouped data</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>selected_log</code></strong> :&ensp;<code>dict[str, str]</code></dt>
+<dd>The selected log entry</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The filename for the detail page</dd>
+</dl>
+<pre><code class="language-python-repl">&gt;&gt;&gt; detail_file_name_grouped({'TemporalDetails': {'created': '2021-08-31 12:00:00.000000'}, 'SourceContext': {'filename': 'bug_trail/data_code.py', 'lineno': 1}})
+'detail_2021-08-31 12:00:00_000000_bug_trail/data_code_py_1.html'
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def detail_file_name_grouped(selected_log: dict[str, dict[str, str]]) -&gt; str:
+    &#34;&#34;&#34;
+    Generate a filename for the detail page of a log entry with grouped data
+
+    Args:
+        selected_log (dict[str, str]): The selected log entry
+    Returns:
+        str: The filename for the detail page
+
+    &gt;&gt;&gt; detail_file_name_grouped({&#39;TemporalDetails&#39;: {&#39;created&#39;: &#39;2021-08-31 12:00:00.000000&#39;}, &#39;SourceContext&#39;: {&#39;filename&#39;: &#39;bug_trail/data_code.py&#39;, &#39;lineno&#39;: 1}})
+    &#39;detail_2021-08-31 12:00:00_000000_bug_trail/data_code_py_1.html&#39;
+    &#34;&#34;&#34;
+    key = (
+        f&#34;{str(selected_log[&#39;TemporalDetails&#39;][&#39;created&#39;]).replace(&#39;.&#39;,&#39;_&#39;)}_&#34;
+        f&#34;{selected_log[&#39;SourceContext&#39;][&#39;filename&#39;].replace(&#39;.&#39;,&#39;_&#39;)}_&#34;
+        f&#34;{selected_log[&#39;SourceContext&#39;][&#39;lineno&#39;]}&#34;
+    )
+    return f&#34;detail_{key}.html&#34;</code></pre>
+</details>
+</dd>
+<dt id="bug_trail.views.humanize_time"><code class="name flex">
+<span>def <span class="ident">humanize_time</span></span>(<span>created: float, msecs: float = 0.0) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Convert epoch time to a human-readable format and calculate the relative time passed.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>created</code></strong> :&ensp;<code>float</code></dt>
+<dd>Time in seconds since the epoch.</dd>
+<dt><strong><code>msecs</code></strong> :&ensp;<code>float</code></dt>
+<dd>Millisecond portion of 'created'.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>Human-readable time format.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def humanize_time(created: float, msecs: float = 0.0) -&gt; str:
+    &#34;&#34;&#34;
+    Convert epoch time to a human-readable format and calculate the relative time passed.
+
+    Args:
+        created (float): Time in seconds since the epoch.
+        msecs (float): Millisecond portion of &#39;created&#39;.
+
+    Returns:
+        str: Human-readable time format.
+    &#34;&#34;&#34;
+    if not isinstance(created, float):
+        created = float(created)
+    if not isinstance(msecs, float):
+        msecs = float(msecs)
+    # Combine created and msecs and convert to a datetime object
+    full_datetime = datetime.datetime.fromtimestamp(created + msecs / 1000.0)
+
+    # Format the date
+    formatted_date = full_datetime.strftime(&#34;%B %d, %Y&#34;)
+
+    # Calculate and format the relative time passed
+    relative_time = humanize.naturaltime(datetime.datetime.now() - full_datetime)
+
+    return f&#34;{formatted_date}, {relative_time}&#34;</code></pre>
+</details>
+</dd>
+<dt id="bug_trail.views.humanize_time_span"><code class="name flex">
+<span>def <span class="ident">humanize_time_span</span></span>(<span>milliseconds: float)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Convert a time span in seconds to a human-readable format.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>milliseconds</code></strong> :&ensp;<code>float</code></dt>
+<dd>Time span in milliseconds.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code></dt>
+<dd>A tuple containing a precise human-readable format and a general description.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def humanize_time_span(milliseconds: float):
+    &#34;&#34;&#34;
+    Convert a time span in seconds to a human-readable format.
+
+    Args:
+        milliseconds (float): Time span in milliseconds.
+
+    Returns:
+        tuple: A tuple containing a precise human-readable format and a general description.
+    &#34;&#34;&#34;
+    if not isinstance(milliseconds, float):
+        milliseconds = float(milliseconds)
+    # Define thresholds (in seconds) for different time units
+
+    thresholds = {
+        &#34;millisecond&#34;: 1,  # Below 1 second
+        &#34;second&#34;: 60,  # Below 1 minute
+        &#34;minute&#34;: 60 * 60,  # Below 1 hour
+        &#34;hour&#34;: 60 * 60 * 24,  # Below 1 day
+        &#34;day&#34;: 60 * 60 * 24 * 30,  # Below 1 month
+        &#34;month&#34;: 60 * 60 * 24 * 30 * 12,  # Below 1 year
+    }
+    seconds = milliseconds / 1000.0
+
+    unit = &#34;N/A&#34;
+
+    # Find the largest unit of time to use
+    for unit, limit in thresholds.items():  # noqa: B007
+        # we use the fact that python holds on the the value
+        # of a variable from the last iteration of a loop
+        if seconds &lt; limit:
+            break
+
+    # Convert to the appropriate unit and format the output
+    if unit == &#34;millisecond&#34;:
+        precise_format = f&#34;{seconds * 1000:.0f} milliseconds&#34;
+    elif unit == &#34;second&#34;:
+        precise_format = f&#34;{seconds:.0f} seconds&#34;
+    elif unit == &#34;minute&#34;:
+        precise_format = f&#34;{seconds / 60:.0f} minutes&#34;
+    elif unit == &#34;hour&#34;:
+        precise_format = f&#34;{seconds / 3600:.0f} hours&#34;
+    elif unit == &#34;day&#34;:
+        precise_format = f&#34;{seconds / (3600 * 24):.0f} days&#34;
+    else:  # &#39;month&#39; or larger
+        precise_format = f&#34;{seconds / (3600 * 24 * 30):.0f} months&#34;
+
+    # Use humanize for a general description
+    general_description = humanize.naturaldelta(seconds)
+
+    return precise_format, general_description</code></pre>
+</details>
+</dd>
+<dt id="bug_trail.views.initialize_jinja"><code class="name flex">
+<span>def <span class="ident">initialize_jinja</span></span>(<span>) ‑> jinja2.environment.Environment</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set up Jinja2 environment</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def initialize_jinja() -&gt; Environment:
+    &#34;&#34;&#34;Set up Jinja2 environment&#34;&#34;&#34;
+    current = get_containing_folder_path(__file__)
+    env = Environment(loader=FileSystemLoader(current), autoescape=True)
+    env.filters[&#34;pretty&#34;] = pretty_column_name
+    return env</code></pre>
+</details>
+</dd>
+<dt id="bug_trail.views.pretty_column_name"><code class="name flex">
+<span>def <span class="ident">pretty_column_name</span></span>(<span>column_name: str) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Transform a column name into a pretty name for display</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>column_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The column name to be transformed</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The transformed column name</dd>
+</dl>
+<pre><code class="language-python-repl">&gt;&gt;&gt; pretty_column_name(&quot;lineno&quot;)
+'Line Number'
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def pretty_column_name(column_name: str) -&gt; str:
+    &#34;&#34;&#34;
+    Transform a column name into a pretty name for display
+    Args:
+        column_name (str): The column name to be transformed
+    Returns:
+        str: The transformed column name
+    &gt;&gt;&gt; pretty_column_name(&#34;lineno&#34;)
+    &#39;Line Number&#39;
+    &#34;&#34;&#34;
+    # Dictionary for special cases
+    special_cases = {
+        &#34;lineno&#34;: &#34;Line Number&#34;,
+        &#34;funcName&#34;: &#34;Function Name&#34;,
+        &#34;exc_info&#34;: &#34;Exception Info&#34;,
+        &#34;msg&#34;: &#34;Message&#34;,
+        &#34;args&#34;: &#34;Arguments&#34;,
+        &#34;levelname&#34;: &#34;Level Name&#34;,
+        &#34;levelno&#34;: &#34;Level Number&#34;,
+        &#34;pathname&#34;: &#34;Path Name&#34;,
+        &#34;filename&#34;: &#34;File Name&#34;,
+        &#34;msecs&#34;: &#34;Milliseconds&#34;,
+        &#34;relativeCreated&#34;: &#34;Relative Created&#34;,
+        &#34;processName&#34;: &#34;Process Name&#34;,
+        &#34;threadName&#34;: &#34;Thread Name&#34;,
+        &#34;exc_text&#34;: &#34;Exception Text&#34;,
+        &#34;stack_info&#34;: &#34;Stack Info&#34;,
+    }
+
+    # Check if the column name is a special case
+    if column_name in special_cases:
+        return special_cases[column_name]
+
+    # Rule-based transformation: snake_case to Title Case
+    pretty_name = column_name.replace(&#34;_&#34;, &#34; &#34;).title()
+    return pretty_name</code></pre>
+</details>
+</dd>
+<dt id="bug_trail.views.render_all"><code class="name flex">
+<span>def <span class="ident">render_all</span></span>(<span>db_path: str, logs_folder: str) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Render all the pages</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>db_path</code></strong> :&ensp;<code>str</code></dt>
+<dd>Path to the SQLite database</dd>
+<dt><strong><code>logs_folder</code></strong> :&ensp;<code>str</code></dt>
+<dd>Path to the folder containing the log files</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def render_all(db_path: str, logs_folder: str) -&gt; None:
+    &#34;&#34;&#34;
+    Render all the pages
+
+    Args:
+        db_path (str): Path to the SQLite database
+        logs_folder (str): Path to the folder containing the log files
+    &#34;&#34;&#34;
+    empty_folder(logs_folder)
+    render_main(db_path, logs_folder)
+    render_detail(db_path, logs_folder)</code></pre>
+</details>
+</dd>
+<dt id="bug_trail.views.render_detail"><code class="name flex">
+<span>def <span class="ident">render_detail</span></span>(<span>db_path: str, log_folder: str) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Render the detail page of a log entry</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>db_path</code></strong> :&ensp;<code>str</code></dt>
+<dd>Path to the SQLite database</dd>
+<dt><strong><code>log_folder</code></strong> :&ensp;<code>str</code></dt>
+<dd>Path to the folder containing the log files</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>str</code></dt>
+<dd>The location of the detail page</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def render_detail(db_path: str, log_folder: str) -&gt; str:
+    &#34;&#34;&#34;
+    Render the detail page of a log entry
+
+    Args:
+        db_path (str): Path to the SQLite database
+        log_folder (str): Path to the folder containing the log files
+
+    Returns:
+        str: The location of the detail page
+    &#34;&#34;&#34;
+    env = initialize_jinja()
+    log_data = fetch_log_data_grouped(db_path)  # Your log records here
+
+    # Render the template with the selected log data
+    template = env.get_template(&#34;log_detail.html&#34;)
+
+    location = &#34;&#34;
+    for log_entry in log_data:
+        # Selected log record for display
+        selected_log = log_entry
+        # Using a unique key for each log entry, like a timestamp or a combination of fields
+        key = detail_file_name_grouped(selected_log)
+
+        location = f&#34;{log_folder}/{key}&#34;
+
+        # Clean up time
+        temporal_details = selected_log[&#34;TemporalDetails&#34;]
+        temporal_details[&#34;created&#34;] = humanize_time(temporal_details[&#34;created&#34;], temporal_details[&#34;msecs&#34;])
+        del temporal_details[&#34;msecs&#34;]
+        formatted_time, apx_time = humanize_time_span(temporal_details[&#34;relativeCreated&#34;])
+        temporal_details[&#34;relativeCreated&#34;] = f&#34;{formatted_time} ({apx_time})&#34;
+
+        # Consolidate level
+        message_details = selected_log[&#34;MessageDetails&#34;]
+        message_details[&#34;levelname&#34;] = str(message_details[&#34;levelname&#34;]) + f&#34; ({str(message_details[&#39;levelno&#39;])})&#34;
+        del message_details[&#34;levelno&#34;]
+
+        # Consolidate msg and args
+        replace_msg_args(message_details)
+
+        # Convert pathname to url
+        source_context = selected_log[&#34;SourceContext&#34;]
+        source_context[&#34;pathname&#34;] = source_context[&#34;pathname&#34;].replace(&#34;\\&#34;, &#34;/&#34;)
+        source_context[&#34;pathname&#34;] = f&#34;file://{source_context[&#39;pathname&#39;]}&#34;
+
+        # Remove empty fields
+        for section in selected_log:
+            to_delete = []
+            for section_name, value in selected_log[section].items():
+                if value is None or value == &#34;&#34;:
+                    to_delete.append(section_name)
+            for section_name in to_delete:
+                del selected_log[section][section_name]
+        to_delete = []
+        for section_name in selected_log:
+            if len(selected_log[section_name]) == 0:
+                to_delete.append(section_name)
+        for section_name in to_delete:
+            del selected_log[section_name]
+
+        html_output = template.render(log=selected_log)
+
+        # Write `html_output` to a file
+        os.makedirs(location.rsplit(&#34;/&#34;, 1)[0], exist_ok=True)
+        with open(location, &#34;w&#34;, encoding=&#34;utf-8&#34;) as f:
+            f.write(html_output)
+    return location</code></pre>
+</details>
+</dd>
+<dt id="bug_trail.views.render_main"><code class="name flex">
+<span>def <span class="ident">render_main</span></span>(<span>db_path: str, log_folder: str) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Render the main page of the log viewer</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>db_path</code></strong> :&ensp;<code>str</code></dt>
+<dd>Path to the SQLite database</dd>
+<dt><strong><code>log_folder</code></strong> :&ensp;<code>str</code></dt>
+<dd>Path to the folder containing the log files</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def render_main(db_path: str, log_folder: str) -&gt; None:
+    &#34;&#34;&#34;
+    Render the main page of the log viewer
+
+    Args:
+        db_path (str): Path to the SQLite database
+        log_folder (str): Path to the folder containing the log files
+    &#34;&#34;&#34;
+    env = initialize_jinja()
+    template = env.get_template(&#34;log_overview.html&#34;)
+
+    log_data = fetch_log_data(db_path)
+
+    for log_entry in log_data:
+        log_entry[&#34;detailed_filename&#34;] = detail_file_name(log_entry)
+
+        log_entry[&#34;created&#34;] = humanize_time(log_entry[&#34;created&#34;], log_entry[&#34;msecs&#34;])
+
+        # Consolidate msg and args
+        replace_msg_args(log_entry)
+
+    # Render the template with log data
+    html_output = template.render(logs=log_data)
+
+    index = f&#34;{log_folder}/index.html&#34;
+    os.makedirs(index.rsplit(&#34;/&#34;, 1)[0], exist_ok=True)
+    with open(index, &#34;w&#34;, encoding=&#34;utf-8&#34;) as f:
+        f.write(html_output)</code></pre>
+</details>
+</dd>
+<dt id="bug_trail.views.replace_msg_args"><code class="name flex">
+<span>def <span class="ident">replace_msg_args</span></span>(<span>message_details: dict[str, typing.Any]) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Handle % format strings</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def replace_msg_args(message_details: dict[str, Any]) -&gt; None:
+    &#34;&#34;&#34;Handle % format strings&#34;&#34;&#34;
+    if message_details[&#34;args&#34;] and message_details[&#34;args&#34;] != &#34;()&#34;:
+        args_dict = ast.literal_eval(message_details[&#34;args&#34;])
+        message_details[&#34;msg&#34;] = message_details[&#34;msg&#34;] % args_dict
+    del message_details[&#34;args&#34;]</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="bug_trail" href="index.html">bug_trail</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="bug_trail.views.detail_file_name" href="#bug_trail.views.detail_file_name">detail_file_name</a></code></li>
+<li><code><a title="bug_trail.views.detail_file_name_grouped" href="#bug_trail.views.detail_file_name_grouped">detail_file_name_grouped</a></code></li>
+<li><code><a title="bug_trail.views.humanize_time" href="#bug_trail.views.humanize_time">humanize_time</a></code></li>
+<li><code><a title="bug_trail.views.humanize_time_span" href="#bug_trail.views.humanize_time_span">humanize_time_span</a></code></li>
+<li><code><a title="bug_trail.views.initialize_jinja" href="#bug_trail.views.initialize_jinja">initialize_jinja</a></code></li>
+<li><code><a title="bug_trail.views.pretty_column_name" href="#bug_trail.views.pretty_column_name">pretty_column_name</a></code></li>
+<li><code><a title="bug_trail.views.render_all" href="#bug_trail.views.render_all">render_all</a></code></li>
+<li><code><a title="bug_trail.views.render_detail" href="#bug_trail.views.render_detail">render_detail</a></code></li>
+<li><code><a title="bug_trail.views.render_main" href="#bug_trail.views.render_main">render_main</a></code></li>
+<li><code><a title="bug_trail.views.replace_msg_args" href="#bug_trail.views.replace_msg_args">replace_msg_args</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
