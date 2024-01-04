@@ -4,7 +4,7 @@ Functions to fetch data from the SQLite database.
 import sqlite3
 from typing import Any
 
-from bug_trail.handlers import BaseErrorLogHandler
+from bug_trail_core.handlers import BaseErrorLogHandler
 
 
 def fetch_log_data(db_path: str) -> list[dict[str, Any]]:

@@ -6,7 +6,7 @@ import sys
 
 import bug_trail.fs_utils as fs_utils
 import bug_trail.views as views
-from bug_trail import read_config
+from bug_trail_core import read_config
 
 
 def main() -> int:

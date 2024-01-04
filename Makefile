@@ -16,9 +16,13 @@ poetry.lock: pyproject.toml
 
 clean-pyc:
 	@echo "Removing compiled files"
-	@find bug_trail -name '*.pyc' -exec rm -f {} + || true
-	@find bug_trail -name '*.pyo' -exec rm -f {} + || true
-	@find bug_trail -name '__pycache__' -exec rm -fr {} + || true
+	# These get out of sync & break unit tests with mocks
+	@find bug_trail -name '*.pyd' -exec rm -f {} + || true
+	@find bug_trail_core -name '*.pyd' -exec rm -f {} + || true
+	# These have never hurt me
+	# @find bug_trail -name '*.pyc' -exec rm -f {} + || true
+	# @find bug_trail -name '*.pyo' -exec rm -f {} + || true
+	# @find bug_trail -name '__pycache__' -exec rm -fr {} + || true
 
 clean-test:
 	@echo "Removing coverage data"
@@ -33,7 +37,7 @@ test: clean .build_history/pylint .build_history/bandit poetry.lock
 	@echo "Running unit tests"
 	$(VENV) pytest --doctest-modules bug_trail 
 	$(VENV) python -m unittest discover
-	$(VENV) py.test tests --cov=bug_trail --cov-report=html --cov-fail-under 63
+	$(VENV) py.test tests --cov=bug_trail --cov=bug_trail_core --cov-report=html --cov-fail-under 63
 
 .build_history:
 	@mkdir -p .build_history
@@ -48,7 +52,7 @@ isort: .build_history/isort
 
 .build_history/black: .build_history .build_history/isort $(FILES)
 	@echo "Formatting code"
-	$(VENV) black bug_trail --exclude .venv
+	$(VENV) black bug_trail bug_trail_core --exclude .venv
 	$(VENV) black tests --exclude .venv
 	# $(VENV) black scripts --exclude .venv
 	@touch .build_history/black
@@ -66,7 +70,7 @@ pre-commit: .build_history/pre-commit
 
 .build_history/bandit: .build_history $(FILES)
 	@echo "Security checks"
-	$(VENV)  bandit bug_trail -r
+	$(VENV)  bandit bug_trail bug_trail_core -r
 	@touch .build_history/bandit
 
 .PHONY: bandit
@@ -76,7 +80,7 @@ bandit: .build_history/bandit
 .build_history/pylint: .build_history .build_history/isort .build_history/black $(FILES)
 	@echo "Linting with pylint"
 	$(VENV) ruff --fix
-	$(VENV) pylint bug_trail --fail-under 9.7
+	$(VENV) pylint bug_trail bug_trail_core --fail-under 9.7
 	@touch .build_history/pylint
 
 # for when using -j (jobs, run in parallel)
@@ -94,15 +98,11 @@ publish: test
 
 .PHONY: mypy
 mypy:
-	$(VENV) mypy bug_trail --ignore-missing-imports --check-untyped-defs
-
-.PHONY:
-docker:
-	docker build -t bug_trail -f Dockerfile .
+	$(VENV) mypy bug_trail bug_trail_core --ignore-missing-imports --check-untyped-defs
 
 check_docs:
-	interrogate bug_trail
+	interrogate bug_trail bug_trail_core
 	pydoctest --config .pydoctest.json | grep -v "__init__" | grep -v "ToolKit" | grep -v "__main__" | grep -v "Unable to parse"
 
 make_docs:
-	pdoc bug_trail  --html -o docs --force
+	pdoc bug_trail bug_trail_core  --html -o docs --force

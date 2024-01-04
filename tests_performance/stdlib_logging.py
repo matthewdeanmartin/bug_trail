@@ -1,7 +1,7 @@
 import logging
 import time
 
-import bug_trail
+import bug_trail_core
 from bug_trail.fs_utils import clear_data
 
 
@@ -9,7 +9,7 @@ def setup_logger(db_path):
     # Configure the logger
     logger = logging.getLogger("performance_test_logger")
     logger.setLevel(logging.DEBUG)
-    handler = bug_trail.BugTrailHandler(db_path, minimum_level=logging.DEBUG)
+    handler = bug_trail_core.BugTrailHandler(db_path, minimum_level=logging.DEBUG)
     logger.addHandler(handler)
     return logger
 
@@ -37,7 +37,7 @@ def performance_test(logger, iterations):
 
 
 def main():
-    section = bug_trail.read_config(config_path="pyproject.toml")
+    section = bug_trail_core.read_config(config_path="pyproject.toml")
     clear_data(section.report_folder, section.database_path)  # Clear the database before starting the test
     logger = setup_logger(section.database_path)
     performance_test(logger, 5000)

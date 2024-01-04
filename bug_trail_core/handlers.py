@@ -6,7 +6,7 @@ import sqlite3
 import traceback
 from typing import Any, Optional
 
-from bug_trail.sqlite3_utils import serialize_to_sqlite_supported
+from bug_trail_core.sqlite3_utils import serialize_to_sqlite_supported
 
 try:
     import picologging
@@ -113,6 +113,14 @@ class BaseErrorLogHandler:
             # Format the traceback
             traceback_str = "".join(traceback.format_exception(*record.exc_info))
             record.traceback = traceback_str
+
+            # traceback_info = record.exc_info[2]
+            # locals = None
+            # if traceback_info.tb_next:
+            #     locals = traceback_info.tb_next.tb_frame.f_locals
+            # else:
+            #     locals = traceback_info.tb_frame.f_locals
+            # print(locals)
             # TODO: do something with the traceback
             # exception_type, exception, traceback_object = record.exc_info
             # print(exception_type, exception, traceback_object)

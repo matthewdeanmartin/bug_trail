@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>bug_trail.config API documentation</title>
+<title>bug_trail_core.config API documentation</title>
 <meta name="description" content="Configuration module for Bug Trail." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>bug_trail.config</code></h1>
+<h1 class="title">Module <code>bug_trail_core.config</code></h1>
 </header>
 <section id="section-intro">
 <p>Configuration module for Bug Trail.</p>
@@ -102,8 +102,8 @@ if __name__ == &#34;__main__&#34;:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="bug_trail.config.read_config"><code class="name flex">
-<span>def <span class="ident">read_config</span></span>(<span>config_path: str) ‑> <a title="bug_trail.config.BugTrailConfig" href="#bug_trail.config.BugTrailConfig">BugTrailConfig</a></span>
+<dt id="bug_trail_core.config.read_config"><code class="name flex">
+<span>def <span class="ident">read_config</span></span>(<span>config_path: str) ‑> <a title="bug_trail_core.config.BugTrailConfig" href="#bug_trail_core.config.BugTrailConfig">BugTrailConfig</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Read the Bug Trail configuration from a pyproject.toml file.</p>
@@ -114,7 +114,7 @@ if __name__ == &#34;__main__&#34;:
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code><a title="bug_trail.config.BugTrailConfig" href="#bug_trail.config.BugTrailConfig">BugTrailConfig</a></code></dt>
+<dt><code><a title="bug_trail_core.config.BugTrailConfig" href="#bug_trail_core.config.BugTrailConfig">BugTrailConfig</a></code></dt>
 <dd>Configuration object for Bug Trail.</dd>
 </dl></div>
 <details class="source">
@@ -164,7 +164,7 @@ if __name__ == &#34;__main__&#34;:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="bug_trail.config.BugTrailConfig"><code class="flex name class">
+<dt id="bug_trail_core.config.BugTrailConfig"><code class="flex name class">
 <span>class <span class="ident">BugTrailConfig</span></span>
 <span>(</span><span>app_name: str, app_author: str, report_folder: str, database_path: str, source_folder: str, ctags_file: str)</span>
 </code></dt>
@@ -185,27 +185,27 @@ class BugTrailConfig:
 </details>
 <h3>Class variables</h3>
 <dl>
-<dt id="bug_trail.config.BugTrailConfig.app_author"><code class="name">var <span class="ident">app_author</span> : str</code></dt>
+<dt id="bug_trail_core.config.BugTrailConfig.app_author"><code class="name">var <span class="ident">app_author</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="bug_trail.config.BugTrailConfig.app_name"><code class="name">var <span class="ident">app_name</span> : str</code></dt>
+<dt id="bug_trail_core.config.BugTrailConfig.app_name"><code class="name">var <span class="ident">app_name</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="bug_trail.config.BugTrailConfig.ctags_file"><code class="name">var <span class="ident">ctags_file</span> : str</code></dt>
+<dt id="bug_trail_core.config.BugTrailConfig.ctags_file"><code class="name">var <span class="ident">ctags_file</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="bug_trail.config.BugTrailConfig.database_path"><code class="name">var <span class="ident">database_path</span> : str</code></dt>
+<dt id="bug_trail_core.config.BugTrailConfig.database_path"><code class="name">var <span class="ident">database_path</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="bug_trail.config.BugTrailConfig.report_folder"><code class="name">var <span class="ident">report_folder</span> : str</code></dt>
+<dt id="bug_trail_core.config.BugTrailConfig.report_folder"><code class="name">var <span class="ident">report_folder</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="bug_trail.config.BugTrailConfig.source_folder"><code class="name">var <span class="ident">source_folder</span> : str</code></dt>
+<dt id="bug_trail_core.config.BugTrailConfig.source_folder"><code class="name">var <span class="ident">source_folder</span> : str</code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
@@ -222,25 +222,25 @@ class BugTrailConfig:
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="bug_trail" href="index.html">bug_trail</a></code></li>
+<li><code><a title="bug_trail_core" href="index.html">bug_trail_core</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="bug_trail.config.read_config" href="#bug_trail.config.read_config">read_config</a></code></li>
+<li><code><a title="bug_trail_core.config.read_config" href="#bug_trail_core.config.read_config">read_config</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="bug_trail.config.BugTrailConfig" href="#bug_trail.config.BugTrailConfig">BugTrailConfig</a></code></h4>
+<h4><code><a title="bug_trail_core.config.BugTrailConfig" href="#bug_trail_core.config.BugTrailConfig">BugTrailConfig</a></code></h4>
 <ul class="two-column">
-<li><code><a title="bug_trail.config.BugTrailConfig.app_author" href="#bug_trail.config.BugTrailConfig.app_author">app_author</a></code></li>
-<li><code><a title="bug_trail.config.BugTrailConfig.app_name" href="#bug_trail.config.BugTrailConfig.app_name">app_name</a></code></li>
-<li><code><a title="bug_trail.config.BugTrailConfig.ctags_file" href="#bug_trail.config.BugTrailConfig.ctags_file">ctags_file</a></code></li>
-<li><code><a title="bug_trail.config.BugTrailConfig.database_path" href="#bug_trail.config.BugTrailConfig.database_path">database_path</a></code></li>
-<li><code><a title="bug_trail.config.BugTrailConfig.report_folder" href="#bug_trail.config.BugTrailConfig.report_folder">report_folder</a></code></li>
-<li><code><a title="bug_trail.config.BugTrailConfig.source_folder" href="#bug_trail.config.BugTrailConfig.source_folder">source_folder</a></code></li>
+<li><code><a title="bug_trail_core.config.BugTrailConfig.app_author" href="#bug_trail_core.config.BugTrailConfig.app_author">app_author</a></code></li>
+<li><code><a title="bug_trail_core.config.BugTrailConfig.app_name" href="#bug_trail_core.config.BugTrailConfig.app_name">app_name</a></code></li>
+<li><code><a title="bug_trail_core.config.BugTrailConfig.ctags_file" href="#bug_trail_core.config.BugTrailConfig.ctags_file">ctags_file</a></code></li>
+<li><code><a title="bug_trail_core.config.BugTrailConfig.database_path" href="#bug_trail_core.config.BugTrailConfig.database_path">database_path</a></code></li>
+<li><code><a title="bug_trail_core.config.BugTrailConfig.report_folder" href="#bug_trail_core.config.BugTrailConfig.report_folder">report_folder</a></code></li>
+<li><code><a title="bug_trail_core.config.BugTrailConfig.source_folder" href="#bug_trail_core.config.BugTrailConfig.source_folder">source_folder</a></code></li>
 </ul>
 </li>
 </ul>

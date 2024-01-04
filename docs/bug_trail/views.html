@@ -328,7 +328,7 @@ def render_detail(db_path: str, log_folder: str, source_folder: str) -&gt; str:
 
 def find_and_return_after(text: str, search_string: str) -&gt; str:
     &#34;&#34;&#34;
-    Find the first occurrence of a string and return everything after it.
+    Find the last occurrence of a string and return everything after it.
 
     Args:
         text (str): The text to search in.
@@ -338,8 +338,8 @@ def find_and_return_after(text: str, search_string: str) -&gt; str:
         str: Everything after the first occurrence of the search string.
              Returns an empty string if the search string is not found.
     &#34;&#34;&#34;
-    # Find the index of the first occurrence of the search string
-    index = text.find(search_string)
+    # Find the index of the last occurrence of the search string
+    index = text.rfind(search_string)
 
     # If the string is found, return everything after it
     if index != -1:
@@ -372,7 +372,11 @@ def replace_msg_args(message_details: dict[str, Any]) -&gt; None:
     &#34;&#34;&#34;
     if message_details[&#34;args&#34;] and message_details[&#34;args&#34;] != &#34;()&#34;:
         args_dict = ast.literal_eval(message_details[&#34;args&#34;])
-        message_details[&#34;msg&#34;] = message_details[&#34;msg&#34;] % args_dict
+        try:
+            message_details[&#34;msg&#34;] = message_details[&#34;msg&#34;] % args_dict
+        except TypeError:
+            # can&#39;t evaluate
+            message_details[&#34;msg&#34;] = f&#39;{message_details[&#34;msg&#34;]} % {args_dict}&#39;
     del message_details[&#34;args&#34;]
 
 
@@ -524,7 +528,7 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">find_and_return_after</span></span>(<span>text: str, search_string: str) ‑> str</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Find the first occurrence of a string and return everything after it.</p>
+<div class="desc"><p>Find the last occurrence of a string and return everything after it.</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
@@ -544,7 +548,7 @@ Returns an empty string if the search string is not found.</dd>
 </summary>
 <pre><code class="python">def find_and_return_after(text: str, search_string: str) -&gt; str:
     &#34;&#34;&#34;
-    Find the first occurrence of a string and return everything after it.
+    Find the last occurrence of a string and return everything after it.
 
     Args:
         text (str): The text to search in.
@@ -554,8 +558,8 @@ Returns an empty string if the search string is not found.</dd>
         str: Everything after the first occurrence of the search string.
              Returns an empty string if the search string is not found.
     &#34;&#34;&#34;
-    # Find the index of the first occurrence of the search string
-    index = text.find(search_string)
+    # Find the index of the last occurrence of the search string
+    index = text.rfind(search_string)
 
     # If the string is found, return everything after it
     if index != -1:
@@ -1002,7 +1006,11 @@ Returns an empty string if the search string is not found.</dd>
     &#34;&#34;&#34;
     if message_details[&#34;args&#34;] and message_details[&#34;args&#34;] != &#34;()&#34;:
         args_dict = ast.literal_eval(message_details[&#34;args&#34;])
-        message_details[&#34;msg&#34;] = message_details[&#34;msg&#34;] % args_dict
+        try:
+            message_details[&#34;msg&#34;] = message_details[&#34;msg&#34;] % args_dict
+        except TypeError:
+            # can&#39;t evaluate
+            message_details[&#34;msg&#34;] = f&#39;{message_details[&#34;msg&#34;]} % {args_dict}&#39;
     del message_details[&#34;args&#34;]</code></pre>
 </details>
 </dd>

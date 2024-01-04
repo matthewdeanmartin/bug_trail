@@ -1,6 +1,6 @@
 import datetime
 
-from bug_trail.sqlite3_utils import serialize_to_sqlite_supported
+from bug_trail_core.sqlite3_utils import serialize_to_sqlite_supported
 
 
 def test_serialize_to_sqlite_supported_none():

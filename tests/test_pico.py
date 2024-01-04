@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 
 import picologging as logging
 
-from bug_trail.handlers import PicoBugTrailHandler
+from bug_trail_core.handlers import PicoBugTrailHandler
 
 
 def test_pico_sqlite_handler(tmp_path):
@@ -78,7 +78,7 @@ class MockBaseErrorLogHandler:
         pass  # Mock close behavior
 
 
-@patch("bug_trail.handlers.super")
+@patch("bug_trail_core.handlers.super")
 def test_bug_trail_handler_close(mock_super, tmp_path):
     db_path = str(tmp_path / "test.db")
 

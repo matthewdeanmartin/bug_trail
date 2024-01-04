@@ -2,7 +2,7 @@ import logging
 import sqlite3
 from unittest.mock import MagicMock, patch
 
-from bug_trail.handlers import BaseErrorLogHandler, BugTrailHandler
+from bug_trail_core.handlers import BaseErrorLogHandler, BugTrailHandler
 
 
 def test_error_log_sqlite_handler(tmp_path):
@@ -90,7 +90,7 @@ class MockBaseErrorLogHandler:
         pass  # Mock close behavior
 
 
-@patch("bug_trail.handlers.super")
+@patch("bug_trail_core.handlers.super")
 def test_bug_trail_handler_close(mock_super, tmp_path):
     db_path = str(tmp_path / "test.db")
 

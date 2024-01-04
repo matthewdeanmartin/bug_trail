@@ -1,7 +1,6 @@
 import logging
 from unittest.mock import patch
 
-from bug_trail.handlers import BugTrailHandler  # Replace 'your_module' with the actual module name
 from bug_trail.views import (
     detail_file_name,
     detail_file_name_grouped,
@@ -10,6 +9,7 @@ from bug_trail.views import (
     render_detail,
     render_main,
 )
+from bug_trail_core.handlers import BugTrailHandler  # Replace 'your_module' with the actual module name
 
 
 def test_render_main(tmp_path):
