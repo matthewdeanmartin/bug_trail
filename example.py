@@ -24,6 +24,7 @@ logger.warning("This is a warning 2.")
 logger.info("This is an info.")
 logger.info("This is a debug.")
 
+
 def run():
     # Example usage
     logger2 = logging.getLogger("adhoc")
