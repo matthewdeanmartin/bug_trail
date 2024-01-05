@@ -6,8 +6,17 @@ In other words, it is an HTML report writer for your logs, even if they aren't e
 
 ## Installation
 
+The handlers in `bug-trail-core` support python 3.9+. `bug-trail`, the report viewer supports python 3.11 and should 
+be installed apart from your main app.
+
+Install bug-trail-core with your app. It has as few dependencies as I could manage.
 ```bash
-pip install bug-trail
+pip install bug-trail-core
+````
+
+To generate the static website install this in an isolated global virtual environment.
+```bash
+pipx install bug-trail
 ```
 
 ## Usage
@@ -26,11 +35,11 @@ database_path = "bug_trail.db"
 
 
 ```python
-import bug_trail
+import bug_trail_core
 import logging
 
-section = bug_trail.read_config(config_path="../pyproject.toml")
-handler = bug_trail.BugTrailHandler(section.database_path, minimum_level=logging.ERROR)
+section = bug_trail_core.read_config(config_path="../pyproject.toml")
+handler = bug_trail_core.BugTrailHandler(section.database_path, minimum_level=logging.ERROR)
 logging.basicConfig(handlers=[handler], level=logging.ERROR)
 
 logger = logging.getLogger(__name__)
@@ -47,11 +56,11 @@ bug_trail --output logs --db error_log.db
 If you want to use picologging, install it. Everything is the same except you use the `PicoBugTrailHandler`.
 
 ```python
-import bug_trail
+import bug_trail_core
 import logging
 
-section = bug_trail.read_config(config_path="../pyproject.toml")
-handler = bug_trail.PicoBugTrailHandler(
+section = bug_trail_core.read_config(config_path="../pyproject.toml")
+handler = bug_trail_core.PicoBugTrailHandler(
     section.database_path, minimum_level=logging.ERROR
 )
 logging.basicConfig(handlers=[handler], level=logging.ERROR)
