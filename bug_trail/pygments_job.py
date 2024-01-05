@@ -1,12 +1,14 @@
 """
+Highlight all python files in a directory and its subdirectories and save them as HTML files
+
 pygmentize -g -O full,style=monokai,linenos=1 **/*.py
 """
 import glob
 import os
 
 from pygments import highlight
-from pygments.formatters import HtmlFormatter
-from pygments.lexers import PythonLexer
+from pygments.formatters import HtmlFormatter  # pylint: disable=no-name-in-module
+from pygments.lexers import PythonLexer  # pylint: disable=no-name-in-module
 
 
 def highlight_python_files(root_directory: str, output_directory: str, ctags_file: str) -> int:

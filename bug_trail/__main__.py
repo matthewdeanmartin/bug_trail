@@ -4,9 +4,10 @@ Main entry point for the CLI.
 import argparse
 import sys
 
+from bug_trail_core import read_config
+
 import bug_trail.fs_utils as fs_utils
 import bug_trail.views as views
-from bug_trail_core import read_config
 
 
 def main() -> int:

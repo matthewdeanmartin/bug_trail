@@ -2,7 +2,6 @@ import sqlite3
 from unittest.mock import MagicMock, patch
 
 import picologging as logging
-
 from bug_trail_core.handlers import PicoBugTrailHandler
 
 

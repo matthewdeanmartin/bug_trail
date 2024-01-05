@@ -1,8 +1,8 @@
 import time
 
+import bug_trail_core
 import picologging as logging
 
-import bug_trail_core
 from bug_trail.fs_utils import clear_data
 
 

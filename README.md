@@ -39,7 +39,9 @@ import bug_trail_core
 import logging
 
 section = bug_trail_core.read_config(config_path="../pyproject.toml")
-handler = bug_trail_core.BugTrailHandler(section.database_path, minimum_level=logging.ERROR)
+handler = bug_trail_core.BugTrailHandler(
+    section.database_path, minimum_level=logging.ERROR
+)
 logging.basicConfig(handlers=[handler], level=logging.ERROR)
 
 logger = logging.getLogger(__name__)
