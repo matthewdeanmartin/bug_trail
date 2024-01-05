@@ -4,11 +4,14 @@ Highlight all python files in a directory and its subdirectories and save them a
 pygmentize -g -O full,style=monokai,linenos=1 **/*.py
 """
 import glob
+import logging
 import os
 
 from pygments import highlight
 from pygments.formatters import HtmlFormatter  # pylint: disable=no-name-in-module
 from pygments.lexers import PythonLexer  # pylint: disable=no-name-in-module
+
+logger = logging.getLogger(__name__)
 
 
 def highlight_python_files(root_directory: str, output_directory: str, ctags_file: str) -> int:
@@ -21,8 +24,10 @@ def highlight_python_files(root_directory: str, output_directory: str, ctags_fil
         int: The number of files highlighted
     """
     if not output_directory:
+        logger.warning("No output directory provided, skipping highlighting.")
         return 0
     if not root_directory:
+        logger.warning("No root directory provided, skipping highlighting.")
         return 0
     output_directory += "/src/"
     # Create the output directory if it doesn't exist
@@ -31,7 +36,7 @@ def highlight_python_files(root_directory: str, output_directory: str, ctags_fil
     # Define the formatter with the desired options
     args = {
         "full": True,
-        "style": "monokai",
+        "style": "staroffice",  # Bad contrast! "monokai",
         "linenos": True,
         "lineanchors": "line",
         "anchorlinenos": True,
@@ -41,6 +46,10 @@ def highlight_python_files(root_directory: str, output_directory: str, ctags_fil
         #  url = self.tagurlformat % {'path': base, 'fname': filename,
         #                                                'fext': extension}
         args["tagurlformat"] = "%(path)s%(fname)s%(fext)s"
+
+    logger.info("Highlighting python files in %s", root_directory)
+    for key, value in args.items():
+        logger.debug("%s: %s", key, value)
     formatter = HtmlFormatter(**args)
 
     # Search for all .py files in the given directory and its subdirectories
@@ -60,6 +69,7 @@ def highlight_python_files(root_directory: str, output_directory: str, ctags_fil
             # Ensure the subdirectories in the output path exist
             os.makedirs(os.path.dirname(output_file_path), exist_ok=True)
 
+            logger.debug("Saving highlighted code to %s", output_file_path)
             # Save the highlighted code to the output file
             with open(output_file_path, "w", encoding="utf-8") as output_file:
                 output_file.write(highlighted_code)

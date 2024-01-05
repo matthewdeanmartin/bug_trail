@@ -1,10 +1,13 @@
 """
 Functions to fetch data from the SQLite database.
 """
+import logging
 import sqlite3
 from typing import Any
 
 from bug_trail_core.handlers import BaseErrorLogHandler
+
+logger = logging.getLogger(__name__)
 
 
 def fetch_log_data(db_path: str) -> list[dict[str, Any]]:
@@ -19,6 +22,7 @@ def fetch_log_data(db_path: str) -> list[dict[str, Any]]:
     """
     # Connect to the SQLite database
     conn = sqlite3.connect(db_path)
+    logger.debug(f"Connected to {db_path}")
     cursor = conn.cursor()
 
     # Query to fetch all rows from the logs table
@@ -52,6 +56,7 @@ def fetch_log_data_grouped(db_path: str) -> Any:
     """
     # Connect to the SQLite database
     conn = sqlite3.connect(db_path)
+    logger.debug(f"Connected to {db_path}")
     cursor = conn.cursor()
 
     # Query to fetch all rows from the logs table
@@ -123,6 +128,7 @@ def execute_safely(cursor: sqlite3.Cursor, query: str, db_path: str) -> None:
         db_path (str): The path to the database
     """
     try:
+        logger.debug(query)
         cursor.execute(query)
     except sqlite3.OperationalError as se:
         if "no such table" in str(se):

@@ -1,8 +1,11 @@
 """
 This module contains functions related to file system operations.
 """
+import logging
 import os
 import shutil
+
+logger = logging.getLogger(__name__)
 
 
 def empty_folder(folder_path: str) -> None:

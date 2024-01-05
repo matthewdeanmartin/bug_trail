@@ -3,6 +3,7 @@ This module contains the functions for rendering the HTML templates
 """
 import ast
 import datetime
+import logging
 import os
 from typing import Any
 
@@ -12,6 +13,8 @@ from jinja2 import Environment, FileSystemLoader
 from bug_trail.data_code import fetch_log_data, fetch_log_data_grouped
 from bug_trail.fs_utils import empty_folder, get_containing_folder_path
 from bug_trail.pygments_job import highlight_python_files
+
+logger = logging.getLogger(__name__)
 
 
 def humanize_time(created: float, msecs: float = 0.0) -> str:
@@ -209,6 +212,7 @@ def render_main(db_path: str, log_folder: str, source_folder: str) -> None:
 
     index = f"{log_folder}/index.html"
     os.makedirs(index.rsplit("/", 1)[0], exist_ok=True)
+    logger.info(f"Writing index to {index}")
     with open(index, "w", encoding="utf-8") as f:
         f.write(html_output)
 
@@ -292,6 +296,7 @@ def render_detail(db_path: str, log_folder: str, source_folder: str) -> str:
 
         # Write `html_output` to a file
         os.makedirs(location.rsplit("/", 1)[0], exist_ok=True)
+        logger.info(f"Writing detail page to {location}")
         with open(location, "w", encoding="utf-8") as f:
             f.write(html_output)
     return location
@@ -369,9 +374,13 @@ def render_all(db_path: str, logs_folder: str, source_folder: str, ctags_file: s
         source_folder (str): Path to the folder containing the source code
         ctags_file (str): Path to the ctags file
     """
+    logger.debug(f"Emptying {logs_folder}")
     empty_folder(logs_folder)
+    logger.debug("Rendering main page")
     render_main(db_path, logs_folder, source_folder)
+    logger.debug("Rendering detail pages")
     render_detail(db_path, logs_folder, source_folder)
+    logger.debug("Highlighting source code")
     highlight_python_files(source_folder, logs_folder, ctags_file)
 
 

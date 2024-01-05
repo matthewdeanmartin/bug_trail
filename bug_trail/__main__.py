@@ -2,6 +2,7 @@
 Main entry point for the CLI.
 """
 import argparse
+import logging
 import sys
 
 from bug_trail_core import read_config
@@ -28,7 +29,8 @@ def main() -> int:
     parser.add_argument("--version", action="version", version="%(prog)s " + f"{__version__}")
     parser.add_argument("--verbose", action="store_true", help="verbose output")
     args = parser.parse_args()
-
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
     section = read_config(args.config)
     parser.add_argument("--output", action="store_true", help="Where to output the logs", default=section.report_folder)
     parser.add_argument("--db", action="store_true", help="Where to store the database", default=section.database_path)
