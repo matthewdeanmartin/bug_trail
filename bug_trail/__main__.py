@@ -8,6 +8,7 @@ from bug_trail_core import read_config
 
 import bug_trail.fs_utils as fs_utils
 import bug_trail.views as views
+from bug_trail._version import __version__
 
 
 def main() -> int:
@@ -19,9 +20,12 @@ def main() -> int:
     """
     parser = argparse.ArgumentParser(description="Tool for local logging and error reporting.")
     parser.add_argument("--clear", action="store_true", help="Clear the database and log files")
-    parser.add_argument("--config", action="store_true", help="location of pyproject.toml", default="pyproject.toml")
 
-    parser.add_argument("--version", action="version", version="%(prog)s 1.0")
+    parser.add_argument(
+        "--config", type=str, help="Path to the configuration file", required=False, default="pyproject.toml"
+    )
+
+    parser.add_argument("--version", action="version", version="%(prog)s " + f"{__version__}")
     parser.add_argument("--verbose", action="store_true", help="verbose output")
     args = parser.parse_args()
 

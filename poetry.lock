@@ -76,13 +76,13 @@ uvloop = ["uvloop (>=0.15.2)"]
 
 [[package]]
 name = "bug-trail-core"
-version = "1.0.1"
+version = "2.0.0"
 description = "Local static html error logger to use while developing python code."
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "bug_trail_core-1.0.1-py3-none-any.whl", hash = "sha256:0643873ddc8fbe365ca5b8cda174f095560eb5e3658f687e5c1604bec6d8027c"},
-    {file = "bug_trail_core-1.0.1.tar.gz", hash = "sha256:0ff9466ab612cd5755549d8850dfebf30c1402d36e712b0fb80d97ede6819ddb"},
+    {file = "bug_trail_core-2.0.0-py3-none-any.whl", hash = "sha256:098011744fb4c2d59a4867d8710646758a47f203ae1c0cf5b044d2b486c9ae0f"},
+    {file = "bug_trail_core-2.0.0.tar.gz", hash = "sha256:6b7a8ae81e84f34a1c3d375cd4625126f830ce61337392a480d224f800ac7bc2"},
 ]
 
 [package.dependencies]
@@ -1176,4 +1176,4 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.11"
-content-hash = "efb1951f72eb0c057e3065c4e6904bc0ba617b9fc647436a28cd5a2a392fcc73"
+content-hash = "cf4bb93afed79d701b9c95256e3f0f9688eada08b15d1f64b139fd947cdac85a"
