@@ -35,7 +35,7 @@ clean: clean-pyc clean-test
 test: clean .build_history/pylint .build_history/bandit poetry.lock
 	@echo "Running unit tests"
 	$(VENV) pytest --doctest-modules bug_trail 
-	$(VENV) python -m unittest discover
+	# $(VENV) python -m unittest discover
 	$(VENV) py.test tests --cov=bug_trail --cov-report=html --cov-fail-under 63
 
 .build_history:

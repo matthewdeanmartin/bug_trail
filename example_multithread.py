@@ -6,12 +6,12 @@ import multiprocessing
 import threading
 
 import bug_trail
-
+import bug_trail_core
 # Example usage
 logger = logging.getLogger(__name__)
 
-section = bug_trail.read_config(config_path="pyproject.toml")
-handler = bug_trail.BugTrailHandler(section.database_path, minimum_level=logging.DEBUG, single_threaded=False)
+section = bug_trail_core.read_config(config_path="pyproject.toml")
+handler = bug_trail_core.BugTrailHandler(section.database_path, minimum_level=logging.DEBUG, single_threaded=False)
 
 logging.basicConfig(handlers=[handler], level=logging.DEBUG)
 

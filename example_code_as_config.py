@@ -6,8 +6,9 @@ import logging.config
 from typing import Any
 
 import bug_trail
+import bug_trail_core
 
-bug_trail_config = bug_trail.read_config(config_path="pyproject.toml")
+bug_trail_config = bug_trail_core.read_config(config_path="pyproject.toml")
 
 
 def configure_logging() -> dict[str, Any]:
@@ -28,7 +29,7 @@ def configure_logging() -> dict[str, Any]:
             "bug_trail": {
                 "level": "DEBUG",
                 # "formatter": "standard",
-                "class": "bug_trail.BugTrailHandler",
+                "class": "bug_trail_core.BugTrailHandler",
                 "db_path": bug_trail_config.database_path,
                 "minimum_level": logging.DEBUG,
             },

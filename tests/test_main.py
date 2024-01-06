@@ -29,7 +29,7 @@ def test_main_default_action(mock_parse_args, mock_render_all, mock_prompt_and_u
     mock_clear_data.assert_not_called()
     # temporarily turning this off
     # mock_prompt_and_update_gitignore.assert_called_once_with(".")
-    mock_prompt_and_update_gitignore.not_called()
+    mock_prompt_and_update_gitignore.assert_not_called()
     mock_render_all.assert_called_once_with("error_log.db", "logs", "source_folder", "tags_file")
 
 

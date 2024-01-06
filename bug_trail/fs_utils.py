@@ -87,3 +87,11 @@ def prompt_and_update_gitignore(repo_path: str) -> None:
         print("'logs' directory is now ignored in .gitignore.")
     else:
         print("No changes made to .gitignore.")
+
+
+import shutil
+
+def copy_assets(destination:str = None) -> str:
+    src = os.path.join(os.path.dirname(__file__), "assets")
+    result= shutil.copytree(src, destination)
+    return result

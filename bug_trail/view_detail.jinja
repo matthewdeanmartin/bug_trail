@@ -1,0 +1,53 @@
+{% extends "view_base.jinja" %}
+{% block title %}Error Log Entry{% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+{% block content %}
+    <div class="log-detail">
+    <h1>{{ log["MessageDetails"]["levelname"] }} : {{ log["MessageDetails"]["msg"] }}</h1>
+        <div><strong>Source:</strong> {{ log["SourceContext"]["module"] }}.{{ log["SourceContext"]["name"] }}.{{ log["SourceContext"]["funcName"] }}
+    in {{ log["SourceContext"]["filename"] }} ({{ log["SourceContext"]["lineno"] }}).
+        <a href="{{ log["SourceContext"]["pathname"] }}">View Source</a>
+    </div>
+    <div>
+        <strong>Time:</strong> {{ log["TemporalDetails"]["created"] }} ({{ log["TemporalDetails"]["relativeCreated"] }} since logger startup.)
+    </div>
+    <div>
+        <strong>Process:</strong> {{ log["ProcessThreadContext"]["processName"] }}
+        ({{ log["ProcessThreadContext"]["process"] }}), {{ log["ProcessThreadContext"]["threadName"] }}
+        ({{ log["ProcessThreadContext"]["thread"] }})
+    </div>
+    {% if "ExceptionDetails" in log %}
+    <div>
+        <strong>Exception:</strong>  <a href="{{log["ExceptionDetails"]["exception_link"]}}">{{ log["ExceptionDetails"]["exc_info"] }}</a>
+    <pre>{{ log["ExceptionDetails"]["exception_docs"] }}</pre>
+    </div>
+    {% endif %}
+    <dl>
+        {% for group_name, fields in log.items() %}
+        {% if group_name in ("MessageDetails", "SourceContext", "TemporalDetails","ProcessThreadContext","ExceptionDetails") %}
+        {% else %}
+        <dt>{{ group_name }}</dt>
+        <dd>
+            <dl>
+                {% for key, value in fields.items() %}
+                {% if value is string and value.startswith("file://") %}
+                    <dt>{{ key|pretty }}:</dt>
+                    <dd><a href="{{ value }}">{{ value }}</a></dd>
+                {% elif key == "traceback" %}
+                    <dt>{{ key|pretty }}:</dt>
+                    <dd><pre><code>{{ value }}</code></pre></dd>
+                {% else %}
+                    <dt>{{ key|pretty }}:</dt>
+                    <dd>{{ value }}</dd>
+                {% endif %}
+                {% endfor %}
+            </dl>
+        </dd>
+        {% endif %}
+        {% endfor %}
+    </dl>
+</div>
+{% endblock %}
+

@@ -36,7 +36,7 @@ documentation = "https://github.com/matthewdeanmartin/bug_trail"
 bug_trail = 'bug_trail.__main__:main'
 
 [tool.poetry.dependencies]
-python = ">=3.11"
+python = ">=3.12"
 
 # Data collection handlers
 bug-trail-core = "==2.0.0"
