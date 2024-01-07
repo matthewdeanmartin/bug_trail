@@ -91,7 +91,7 @@ def prompt_and_update_gitignore(repo_path: str) -> None:
 
 import shutil
 
-def copy_assets(destination:str = None) -> str:
+def copy_assets(destination:str) -> str:
     src = os.path.join(os.path.dirname(__file__), "assets")
     result= shutil.copytree(src, destination)
     return result

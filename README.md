@@ -1,5 +1,7 @@
 # Bug Trail
 
+<img src="./img/logo.png" width="100" height="100">
+
 This is a workstation logger to capture bugs encountered while you are writing code.
 
 In other words, it is an HTML report writer for your logs, even if they aren't errors if that is your thing.

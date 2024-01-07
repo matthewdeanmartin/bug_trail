@@ -3,7 +3,7 @@ This module contains the functions for rendering the HTML templates
 """
 import logging
 
-from bug_trail.fs_utils import empty_folder
+from bug_trail.fs_utils import empty_folder, copy_assets
 from bug_trail.pygments_job import highlight_python_files
 from bug_trail.view_detail import render_detail
 from bug_trail.view_main import render_main
@@ -29,7 +29,7 @@ def render_all(db_path: str, logs_folder: str, source_folder: str, ctags_file: s
     render_detail(db_path, logs_folder, source_folder)
     logger.debug("Highlighting source code")
     highlight_python_files(source_folder, logs_folder, ctags_file)
-
+    copy_assets(logs_folder)
 
 if __name__ == "__main__":
     render_all(db_path="error_log.db", logs_folder="logs", source_folder="../bug_trail", ctags_file="")
