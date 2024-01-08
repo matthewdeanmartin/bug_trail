@@ -5,7 +5,6 @@ import logging
 import logging.config
 from typing import Any
 
-import bug_trail
 import bug_trail_core
 
 bug_trail_config = bug_trail_core.read_config(config_path="pyproject.toml")

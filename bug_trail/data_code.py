@@ -9,6 +9,23 @@ from bug_trail_core.handlers import BaseErrorLogHandler
 
 logger = logging.getLogger(__name__)
 
+ENTIRE_LOG_SET = (
+    "SELECT logs.*, "
+    "exception_instance.args, "
+    "exception_instance.args as exception_args, "
+    "exception_instance.args as exception_str, "
+    "exception_instance.args as comments, "
+    "exception_type.name as exception_name, "
+    "exception_type.docstring as exception_docstring, "
+    "exception_type.hierarchy as exception_hierarchy "
+    "FROM logs "
+    "full outer join exception_instance "
+    "on logs.record_id = exception_instance.record_id "
+    "full outer join exception_type "
+    "on exception_instance.type_id = exception_type.id "
+    "ORDER BY created DESC"
+)
+
 
 def fetch_log_data(db_path: str) -> list[dict[str, Any]]:
     """
@@ -26,7 +43,7 @@ def fetch_log_data(db_path: str) -> list[dict[str, Any]]:
     cursor = conn.cursor()
 
     # Query to fetch all rows from the logs table
-    query = "SELECT * FROM logs ORDER BY created DESC"
+    query = ENTIRE_LOG_SET
     execute_safely(cursor, query, db_path)
 
     # Fetching column names from the cursor
@@ -42,6 +59,51 @@ def fetch_log_data(db_path: str) -> list[dict[str, Any]]:
     # Close the connection
     conn.close()
     return log_data
+
+
+def fetch_table_as_list_of_dict(db_path: str, table: str) -> list[dict[str, Any]]:
+    """
+    Fetch all log records from the database.
+
+    Args:
+        db_path (str): Path to the SQLite database
+        table (str): Table to query
+
+    Returns:
+        list[dict[str, Any]]: A list of dictionaries containing all log records
+    """
+    if table not in [
+        "exception_instance",
+        "exception_type",
+        "logs",
+        "python_libraries",
+        "system_info",
+        "traceback_info",
+    ]:
+        raise TypeError("Don't know that table.")
+
+    # Connect to the SQLite database
+    conn = sqlite3.connect(db_path)
+    logger.debug(f"Connected to {db_path}")
+    cursor = conn.cursor()
+
+    # Query to fetch all rows from the logs table
+    query = f"SELECT * FROM {table}"  # nosec: table name restricted above
+    execute_safely(cursor, query, db_path)
+
+    # Fetching column names from the cursor
+    columns = [description[0] for description in cursor.description]
+
+    # Fetch all rows, and convert each row to a dictionary
+    rows = cursor.fetchall()
+    data = []
+    for row in rows:
+        record = dict(zip(columns, row, strict=True))
+        data.append(record)
+
+    # Close the connection
+    conn.close()
+    return data
 
 
 def fetch_log_data_grouped(db_path: str) -> Any:
@@ -60,7 +122,7 @@ def fetch_log_data_grouped(db_path: str) -> Any:
     cursor = conn.cursor()
 
     # Query to fetch all rows from the logs table
-    query = "SELECT * FROM logs ORDER BY created DESC"
+    query = ENTIRE_LOG_SET
     execute_safely(cursor, query, db_path)
 
     # Fetching column names from the cursor

@@ -89,9 +89,11 @@ def prompt_and_update_gitignore(repo_path: str) -> None:
         print("No changes made to .gitignore.")
 
 
-import shutil
-
-def copy_assets(destination:str) -> str:
+def copy_assets(destination: str) -> str:
+    """Copy images, style sheets, etc to next web report folder
+    Args:
+        destination (str): report folder
+    """
     src = os.path.join(os.path.dirname(__file__), "assets")
-    result= shutil.copytree(src, destination)
+    result = shutil.copytree(src, destination, dirs_exist_ok=True)
     return result

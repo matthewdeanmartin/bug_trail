@@ -185,7 +185,7 @@ def add_url_to_source_context(source_context: dict[str, Any]):
     Args:
         source_context (dict[str, Any]): The source context
     """
-    if not source_context['pathname']:
+    if not source_context["pathname"]:
         raise ValueError("Source context has no pathname")
     source_context["pathname"] = f"{source_context['pathname']}.html#line-{source_context['lineno']}"
     return source_context

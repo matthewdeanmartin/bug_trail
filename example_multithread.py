@@ -5,8 +5,8 @@ import logging
 import multiprocessing
 import threading
 
-import bug_trail
 import bug_trail_core
+
 # Example usage
 logger = logging.getLogger(__name__)
 

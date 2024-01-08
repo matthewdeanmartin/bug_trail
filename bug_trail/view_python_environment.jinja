@@ -1,0 +1,43 @@
+{% extends "view_base.jinja" %}
+{% block title %}Python Environment{% endblock %}
+{% block head %}
+    {{ super() }}
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+    <h1>Python Environment</h1>
+    <table class="table table-striped">
+        <tr>
+            <!-- Table headers for each field -->
+            <th>Library Name</th>
+            <th>Version</th>
+            <th>URLs</th>
+        </tr>
+        {% for log in logs %}
+        <tr>
+            <td>{{ log.library_name }}</td>
+            <td>{{ log.version }}</td>
+            <td>{% for name, url in log.urls.items() %}
+                <a href="{{ url }}">{{ name }}</a><br/>
+                {% endfor %}
+            </td>
+
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
+
+
+

@@ -1,0 +1,20 @@
+{% extends "view_base.jinja" %}
+{% block title %}System Info{% endblock %}
+{% block head %}
+    {{ super() }}
+{% endblock %}
+{% block content %}
+<div class="log-detail">
+    <h1>As of {{ log["snapshot_date"] }}</h1>
+    <dl>
+        {% for key, value in log.items() %}
+        {% if key == "snapshot_date" or key == "id"%}
+        {% else %}
+        <dt>{{ key|pretty }}:</dt>
+        <dd>{{ value }}</dd>
+        {% endif %}
+        {% endfor %}
+    </dl>
+</div>
+{% endblock %}
+

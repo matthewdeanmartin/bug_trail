@@ -63,7 +63,7 @@ def test_pico_handler_with_exception(tmp_path):
     conn.close()
 
     assert log_record is not None
-    assert "This is a test exception" in log_record[3]
+    assert "This is a test exception" in log_record[4]
 
     for leftover in logger.handlers:
         logger.removeHandler(leftover)
