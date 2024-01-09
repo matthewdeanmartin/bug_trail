@@ -1,6 +1,8 @@
 """
 Detail page. Displays one error log entry.
 """
+import json
+
 import logging
 import os
 
@@ -45,6 +47,23 @@ def render_detail(db_path: str, log_folder: str, source_folder: str) -> str:
         key = detail_file_name_grouped(selected_log)
 
         location = f"{log_folder}/{key}"
+        if os.path.exists(location):
+            print(f"Already exists, {location}, skipping")
+
+        if log_entry["UserData"]["exception_hierarchy"]:
+            exception_hierarchy = json.loads(log_entry["UserData"]["exception_hierarchy"])
+            print(exception_hierarchy)
+            interesting_hierarchy = []
+            for the_type, description in exception_hierarchy:
+                if the_type not in ("type", "object"):
+                    interesting_hierarchy.append({
+                        "type": the_type,
+                        "description": description
+                    })
+            if not interesting_hierarchy:
+                del log_entry["UserData"]["exception_hierarchy"]
+            else:
+                log_entry["UserData"]["exception_hierarchy"] = interesting_hierarchy
 
         # Clean up time
         temporal_details = selected_log["TemporalDetails"]
@@ -69,8 +88,6 @@ def render_detail(db_path: str, log_folder: str, source_folder: str) -> str:
         path_to_file_url(source_context, log_folder, source_folder)
         add_url_to_source_context(source_context)
 
-        log_entry["ExceptionDetails"]["exception_docs"] = docstring_for(ZeroDivisionError())
-        log_entry["ExceptionDetails"]["exception_link"] = documentation_link_for(ZeroDivisionError())
 
         # Remove empty fields
         for section in selected_log:

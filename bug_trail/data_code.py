@@ -19,9 +19,9 @@ ENTIRE_LOG_SET = (
     "exception_type.docstring as exception_docstring, "
     "exception_type.hierarchy as exception_hierarchy "
     "FROM logs "
-    "full outer join exception_instance "
+    "left outer join exception_instance "
     "on logs.record_id = exception_instance.record_id "
-    "full outer join exception_type "
+    "left outer join exception_type "
     "on exception_instance.type_id = exception_type.id "
     "ORDER BY created DESC"
 )

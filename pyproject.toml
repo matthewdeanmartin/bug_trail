@@ -39,6 +39,7 @@ bug_trail = 'bug_trail.__main__:main'
 python = ">=3.12"
 
 # Data collection handlers
+# Data collection handlers
 bug-trail-core = "==2.2.0"
 
 # pretty reports
@@ -46,6 +47,10 @@ humanize = "*"
 jinja2 = ">=3.1.2"
 pygments = "*"
 python-ctags3="*"
+
+# Gen reports continuously
+watchdog = ">=3.0.0"
+
 # Config
 toml ="*"
 platformdirs="*"

@@ -1,6 +1,8 @@
 """
 Main entry point for the CLI.
 """
+import os
+
 import argparse
 import logging
 import sys
@@ -10,6 +12,7 @@ from bug_trail_core import read_config
 import bug_trail.fs_utils as fs_utils
 import bug_trail.views as views
 from bug_trail._version import __version__
+from bug_trail.incremental import watch_for_changes
 
 
 def main() -> int:
@@ -28,6 +31,7 @@ def main() -> int:
 
     parser.add_argument("--version", action="version", version="%(prog)s " + f"{__version__}")
     parser.add_argument("--verbose", action="store_true", help="verbose output")
+    parser.add_argument("--watch", action="store_true", help="watch database, generate continuously")
     args = parser.parse_args()
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
@@ -56,6 +60,7 @@ def main() -> int:
     # This is only necessary if the user points config at own git repo folder
     # fs_utils.prompt_and_update_gitignore(".")
     # Default actions
+
     print("Generating log website:")
     print(f"Using source db at {db_path}")
     if ctags_file:
@@ -65,7 +70,17 @@ def main() -> int:
     print(f"Open at  file://{universal_path}/index.html")
     if not source_folder:
         print("No source folder specified, hyperlinks to source code will not work")
-    views.render_all(db_path, log_folder, source_folder, ctags_file)
+
+    if args.watch:
+        os.makedirs(os.path.dirname(db_path), exist_ok=True)
+        watch_for_changes(os.path.dirname(db_path),
+                          lambda: views.render_all(db_path, log_folder, source_folder, ctags_file))
+    else:
+        views.render_all(db_path, log_folder, source_folder, ctags_file)
+
+
+
+
     return 0
 
 
