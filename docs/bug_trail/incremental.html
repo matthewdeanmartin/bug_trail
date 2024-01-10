@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>bug_trail.views API documentation</title>
-<meta name="description" content="This module contains the functions for rendering the HTML templates" />
+<title>bug_trail.incremental API documentation</title>
+<meta name="description" content="" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -19,54 +19,42 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>bug_trail.views</code></h1>
+<h1 class="title">Module <code>bug_trail.incremental</code></h1>
 </header>
 <section id="section-intro">
-<p>This module contains the functions for rendering the HTML templates</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">&#34;&#34;&#34;
-This module contains the functions for rendering the HTML templates
-&#34;&#34;&#34;
-import logging
+<pre><code class="python">import time
 
-from bug_trail.fs_utils import copy_assets, empty_folder
-from bug_trail.pygments_job import highlight_python_files
-from bug_trail.view_detail import render_detail
-from bug_trail.view_main import render_main
-from bug_trail.view_python_environment import render_python_environment
-from bug_trail.view_system_info import render_system_info
-
-logger = logging.getLogger(__name__)
+from watchdog.events import FileModifiedEvent, FileSystemEventHandler
+from watchdog.observers import Observer
 
 
-def render_all(db_path: str, logs_folder: str, source_folder: str, ctags_file: str) -&gt; None:
-    &#34;&#34;&#34;
-    Render all the pages
+class DbChangedHandler(FileSystemEventHandler):
+    def __init__(self, target):
+        self.target = target
+        super().__init__()
 
-    Args:
-        db_path (str): Path to the SQLite database
-        logs_folder (str): Path to the folder containing the log files
-        source_folder (str): Path to the folder containing the source code
-        ctags_file (str): Path to the ctags file
-    &#34;&#34;&#34;
-    logger.debug(f&#34;Emptying {logs_folder}&#34;)
-    empty_folder(logs_folder)
-    logger.debug(&#34;Rendering main page&#34;)
-    render_main(db_path, logs_folder, source_folder)
-    logger.debug(&#34;Rendering detail pages&#34;)
-    render_detail(db_path, logs_folder, source_folder)
-    logger.debug(&#34;Highlighting source code&#34;)
-    highlight_python_files(source_folder, logs_folder, ctags_file)
-    copy_assets(logs_folder)
-    render_python_environment(db_path, logs_folder)
-    render_system_info(db_path, logs_folder)
+    def on_modified(self, event):
+        if isinstance(event, FileModifiedEvent):
+            if event.src_path.endswith(&#34;.db&#34;):
+                print(event)
+                self.target()
 
 
-if __name__ == &#34;__main__&#34;:
-    render_all(db_path=&#34;error_log.db&#34;, logs_folder=&#34;logs&#34;, source_folder=&#34;../bug_trail&#34;, ctags_file=&#34;&#34;)</code></pre>
+def watch_for_changes(path: str, target):
+    event_handler = DbChangedHandler(target)
+    observer = Observer()
+    observer.schedule(event_handler, path, recursive=False)
+    observer.start()
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+    observer.join()</code></pre>
 </details>
 </section>
 <section>
@@ -76,52 +64,83 @@ if __name__ == &#34;__main__&#34;:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="bug_trail.views.render_all"><code class="name flex">
-<span>def <span class="ident">render_all</span></span>(<span>db_path: str, logs_folder: str, source_folder: str, ctags_file: str) ‑> None</span>
+<dt id="bug_trail.incremental.watch_for_changes"><code class="name flex">
+<span>def <span class="ident">watch_for_changes</span></span>(<span>path: str, target)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Render all the pages</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>db_path</code></strong> :&ensp;<code>str</code></dt>
-<dd>Path to the SQLite database</dd>
-<dt><strong><code>logs_folder</code></strong> :&ensp;<code>str</code></dt>
-<dd>Path to the folder containing the log files</dd>
-<dt><strong><code>source_folder</code></strong> :&ensp;<code>str</code></dt>
-<dd>Path to the folder containing the source code</dd>
-<dt><strong><code>ctags_file</code></strong> :&ensp;<code>str</code></dt>
-<dd>Path to the ctags file</dd>
-</dl></div>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def render_all(db_path: str, logs_folder: str, source_folder: str, ctags_file: str) -&gt; None:
-    &#34;&#34;&#34;
-    Render all the pages
-
-    Args:
-        db_path (str): Path to the SQLite database
-        logs_folder (str): Path to the folder containing the log files
-        source_folder (str): Path to the folder containing the source code
-        ctags_file (str): Path to the ctags file
-    &#34;&#34;&#34;
-    logger.debug(f&#34;Emptying {logs_folder}&#34;)
-    empty_folder(logs_folder)
-    logger.debug(&#34;Rendering main page&#34;)
-    render_main(db_path, logs_folder, source_folder)
-    logger.debug(&#34;Rendering detail pages&#34;)
-    render_detail(db_path, logs_folder, source_folder)
-    logger.debug(&#34;Highlighting source code&#34;)
-    highlight_python_files(source_folder, logs_folder, ctags_file)
-    copy_assets(logs_folder)
-    render_python_environment(db_path, logs_folder)
-    render_system_info(db_path, logs_folder)</code></pre>
+<pre><code class="python">def watch_for_changes(path: str, target):
+    event_handler = DbChangedHandler(target)
+    observer = Observer()
+    observer.schedule(event_handler, path, recursive=False)
+    observer.start()
+    try:
+        while True:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        observer.stop()
+    observer.join()</code></pre>
 </details>
 </dd>
 </dl>
 </section>
 <section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="bug_trail.incremental.DbChangedHandler"><code class="flex name class">
+<span>class <span class="ident">DbChangedHandler</span></span>
+<span>(</span><span>target)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base file system event handler that you can override methods from.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DbChangedHandler(FileSystemEventHandler):
+    def __init__(self, target):
+        self.target = target
+        super().__init__()
+
+    def on_modified(self, event):
+        if isinstance(event, FileModifiedEvent):
+            if event.src_path.endswith(&#34;.db&#34;):
+                print(event)
+                self.target()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>watchdog.events.FileSystemEventHandler</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="bug_trail.incremental.DbChangedHandler.on_modified"><code class="name flex">
+<span>def <span class="ident">on_modified</span></span>(<span>self, event)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called when a file or directory is modified.</p>
+<p>:param event:
+Event representing file/directory modification.
+:type event:
+:class:<code>DirModifiedEvent</code> or :class:<code>FileModifiedEvent</code></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def on_modified(self, event):
+    if isinstance(event, FileModifiedEvent):
+        if event.src_path.endswith(&#34;.db&#34;):
+            print(event)
+            self.target()</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -137,7 +156,17 @@ if __name__ == &#34;__main__&#34;:
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="bug_trail.views.render_all" href="#bug_trail.views.render_all">render_all</a></code></li>
+<li><code><a title="bug_trail.incremental.watch_for_changes" href="#bug_trail.incremental.watch_for_changes">watch_for_changes</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="bug_trail.incremental.DbChangedHandler" href="#bug_trail.incremental.DbChangedHandler">DbChangedHandler</a></code></h4>
+<ul class="">
+<li><code><a title="bug_trail.incremental.DbChangedHandler.on_modified" href="#bug_trail.incremental.DbChangedHandler.on_modified">on_modified</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

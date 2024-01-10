@@ -98,9 +98,11 @@ def test_render_detail(tmp_path):
 @patch("bug_trail.views.empty_folder")
 @patch("bug_trail.views.render_main")
 @patch("bug_trail.views.render_detail")
-def test_render_all(mock_render_detail, mock_render_main, mock_empty_folder):
-    db_path = "mock_db_path"
-    logs_folder = "mock_logs_folder"
+def test_render_all(mock_render_detail, mock_render_main, mock_empty_folder, tmp_path):
+    db_path = str(tmp_path / "test.db")
+    logs_folder_path = tmp_path / "logs"
+    logs_folder_path.mkdir()
+    logs_folder = str(logs_folder_path)
 
     # Call render_all
     render_all(db_path, logs_folder, "", "")

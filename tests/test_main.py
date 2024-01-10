@@ -22,7 +22,7 @@ def test_main_clear(mock_parse_args, mock_render_all, mock_prompt_and_update_git
 @patch("argparse.ArgumentParser.parse_args")
 def test_main_default_action(mock_parse_args, mock_render_all, mock_prompt_and_update_gitignore, mock_clear_data):
     mock_parse_args.return_value = MagicMock(
-        clear=False, db="error_log.db", output="logs", source="source_folder", ctags_file="tags_file"
+        clear=False, db="error_log.db", output="logs", source="source_folder", ctags_file="tags_file", watch=False
     )
 
     assert main() == 0

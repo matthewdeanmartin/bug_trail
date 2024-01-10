@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "bug_trail"
-version = "2.1.0"
+version = "2.3.0"
 description = "Local static html error logger to use while developing python code."
 authors = ["Matthew Martin <matthewdeanmartin@gmail.com>"]
 keywords = ["error logging", "html log report", ]
@@ -39,8 +39,7 @@ bug_trail = 'bug_trail.__main__:main'
 python = ">=3.12"
 
 # Data collection handlers
-# Data collection handlers
-bug-trail-core = "==2.2.0"
+bug-trail-core = "==2.3.0"
 
 # pretty reports
 humanize = "*"
@@ -50,14 +49,6 @@ python-ctags3="*"
 
 # Gen reports continuously
 watchdog = ">=3.0.0"
-
-# Config
-toml ="*"
-platformdirs="*"
-
-# Logging frameworks
-# Required until I figure out how to make it optional
-picologging = "*"
 
 
 [tool.poetry.dev-dependencies]

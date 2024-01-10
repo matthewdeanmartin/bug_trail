@@ -30,8 +30,11 @@
 <pre><code class="python">&#34;&#34;&#34;
 This module contains functions related to file system operations.
 &#34;&#34;&#34;
+import logging
 import os
 import shutil
+
+logger = logging.getLogger(__name__)
 
 
 def empty_folder(folder_path: str) -&gt; None:
@@ -112,7 +115,17 @@ def prompt_and_update_gitignore(repo_path: str) -&gt; None:
             file.write(&#34;\nlogs/&#34;)
         print(&#34;&#39;logs&#39; directory is now ignored in .gitignore.&#34;)
     else:
-        print(&#34;No changes made to .gitignore.&#34;)</code></pre>
+        print(&#34;No changes made to .gitignore.&#34;)
+
+
+def copy_assets(destination: str) -&gt; str:
+    &#34;&#34;&#34;Copy images, style sheets, etc to next web report folder
+    Args:
+        destination (str): report folder
+    &#34;&#34;&#34;
+    src = os.path.join(os.path.dirname(__file__), &#34;assets&#34;)
+    result = shutil.copytree(src, destination, dirs_exist_ok=True)
+    return result</code></pre>
 </details>
 </section>
 <section>
@@ -141,6 +154,30 @@ def prompt_and_update_gitignore(repo_path: str) -&gt; None:
         os.remove(db_path)
     except FileNotFoundError:
         pass</code></pre>
+</details>
+</dd>
+<dt id="bug_trail.fs_utils.copy_assets"><code class="name flex">
+<span>def <span class="ident">copy_assets</span></span>(<span>destination: str) ‑> str</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Copy images, style sheets, etc to next web report folder</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>destination</code></strong> :&ensp;<code>str</code></dt>
+<dd>report folder</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def copy_assets(destination: str) -&gt; str:
+    &#34;&#34;&#34;Copy images, style sheets, etc to next web report folder
+    Args:
+        destination (str): report folder
+    &#34;&#34;&#34;
+    src = os.path.join(os.path.dirname(__file__), &#34;assets&#34;)
+    result = shutil.copytree(src, destination, dirs_exist_ok=True)
+    return result</code></pre>
 </details>
 </dd>
 <dt id="bug_trail.fs_utils.empty_folder"><code class="name flex">
@@ -292,6 +329,7 @@ def prompt_and_update_gitignore(repo_path: str) -&gt; None:
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="bug_trail.fs_utils.clear_data" href="#bug_trail.fs_utils.clear_data">clear_data</a></code></li>
+<li><code><a title="bug_trail.fs_utils.copy_assets" href="#bug_trail.fs_utils.copy_assets">copy_assets</a></code></li>
 <li><code><a title="bug_trail.fs_utils.empty_folder" href="#bug_trail.fs_utils.empty_folder">empty_folder</a></code></li>
 <li><code><a title="bug_trail.fs_utils.get_containing_folder_path" href="#bug_trail.fs_utils.get_containing_folder_path">get_containing_folder_path</a></code></li>
 <li><code><a title="bug_trail.fs_utils.is_git_repo" href="#bug_trail.fs_utils.is_git_repo">is_git_repo</a></code></li>

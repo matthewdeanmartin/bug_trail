@@ -9,6 +9,15 @@ from bug_trail_core.handlers import BaseErrorLogHandler
 
 logger = logging.getLogger(__name__)
 
+ALL_TABLES = [
+    "exception_instance",
+    "exception_type",
+    "logs",
+    "python_libraries",
+    "system_info",
+    "traceback_info",
+]
+
 ENTIRE_LOG_SET = (
     "SELECT logs.*, "
     "exception_instance.args, "
@@ -27,23 +36,45 @@ ENTIRE_LOG_SET = (
 )
 
 
-def fetch_log_data(db_path: str) -> list[dict[str, Any]]:
+def table_row_count(conn: sqlite3.Connection, table_name: str) -> int:
+    if table_name not in ALL_TABLES:
+        raise TypeError("Bad table name.")
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT count(*) FROM {table_name};")  # nosec: table name restricted above
+    try:
+        return cursor.fetchone()[0]
+    except IndexError:
+        return 0
+
+
+def connect(db_path: str) -> sqlite3.Connection:
+    """Open db, central code"""
+    # Mock this to prevent extra dbs being created.
+    return sqlite3.connect(db_path)
+
+
+def fetch_log_data(conn: sqlite3.Connection, db_path: str, limit: int = -1, offset: int = -1) -> list[dict[str, Any]]:
     """
     Fetch all log records from the database.
 
     Args:
+        conn (sqlite3.Connection): The connection to the database
         db_path (str): Path to the SQLite database
+        limit (int, optional): Limit the number of records returned. Defaults to -1.
+        offset (int, optional): Offset the records returned. Defaults to -1.
 
     Returns:
         list[dict[str, Any]]: A list of dictionaries containing all log records
     """
     # Connect to the SQLite database
-    conn = sqlite3.connect(db_path)
+
     logger.debug(f"Connected to {db_path}")
     cursor = conn.cursor()
 
     # Query to fetch all rows from the logs table
     query = ENTIRE_LOG_SET
+    if limit != -1:
+        query += f" LIMIT {limit} OFFSET {offset}"
     execute_safely(cursor, query, db_path)
 
     # Fetching column names from the cursor
@@ -72,18 +103,11 @@ def fetch_table_as_list_of_dict(db_path: str, table: str) -> list[dict[str, Any]
     Returns:
         list[dict[str, Any]]: A list of dictionaries containing all log records
     """
-    if table not in [
-        "exception_instance",
-        "exception_type",
-        "logs",
-        "python_libraries",
-        "system_info",
-        "traceback_info",
-    ]:
+    if table not in ALL_TABLES:
         raise TypeError("Don't know that table.")
 
     # Connect to the SQLite database
-    conn = sqlite3.connect(db_path)
+    conn = connect(db_path)
     logger.debug(f"Connected to {db_path}")
     cursor = conn.cursor()
 
@@ -117,7 +141,7 @@ def fetch_log_data_grouped(db_path: str) -> Any:
         Any: A nested dictionary containing all log records
     """
     # Connect to the SQLite database
-    conn = sqlite3.connect(db_path)
+    conn = connect(db_path)
     logger.debug(f"Connected to {db_path}")
     cursor = conn.cursor()
 
@@ -144,7 +168,19 @@ def fetch_log_data_grouped(db_path: str) -> Any:
             "ProcessThreadContext": {
                 key: log_record[key] for key in ["process", "processName", "thread", "threadName"]
             },
-            "ExceptionDetails": {key: log_record[key] for key in ["exc_info", "exc_text"]},
+            "ExceptionDetails": {
+                key: log_record.get(key)
+                for key in [
+                    "exc_info",
+                    "exc_text",
+                    "exception_args",
+                    "exception_str",
+                    "comments",
+                    "exception_name",
+                    "exception_docstring",
+                    "exception_hierarchy",
+                ]
+            },
             "StackDetails": {key: log_record[key] for key in ["stack_info"]},
             "UserData": {
                 key: log_record[key]
@@ -170,6 +206,13 @@ def fetch_log_data_grouped(db_path: str) -> Any:
                     "exc_info",
                     "exc_text",
                     "stack_info",
+                    # exception table
+                    "exception_args",
+                    "exception_str",
+                    "comments",
+                    "exception_name",
+                    "exception_docstring",
+                    "exception_hierarchy",
                 }
             },
         }

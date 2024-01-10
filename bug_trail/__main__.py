@@ -1,10 +1,9 @@
 """
 Main entry point for the CLI.
 """
-import os
-
 import argparse
 import logging
+import os
 import sys
 
 from bug_trail_core import read_config
@@ -73,13 +72,11 @@ def main() -> int:
 
     if args.watch:
         os.makedirs(os.path.dirname(db_path), exist_ok=True)
-        watch_for_changes(os.path.dirname(db_path),
-                          lambda: views.render_all(db_path, log_folder, source_folder, ctags_file))
+        watch_for_changes(
+            os.path.dirname(db_path), lambda: views.render_all(db_path, log_folder, source_folder, ctags_file)
+        )
     else:
         views.render_all(db_path, log_folder, source_folder, ctags_file)
-
-
-
 
     return 0
 

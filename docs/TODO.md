@@ -11,6 +11,7 @@
 - give up on iterated layout
 
 ## Data enrichment
+- pytest data enrichment (PYTEST_CURRENT_TEST)
 - Sys info - Mostly done! (Check for doubling?)
 - venv info - Mostly done! Neet to fix doubling.
 - psutils p.oneshot() to add info about the process?

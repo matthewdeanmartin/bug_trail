@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>bug_trail.views API documentation</title>
-<meta name="description" content="This module contains the functions for rendering the HTML templates" />
+<title>bug_trail.exceptions API documentation</title>
+<meta name="description" content="Look up info on exceptions." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -19,54 +19,64 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>bug_trail.views</code></h1>
+<h1 class="title">Module <code>bug_trail.exceptions</code></h1>
 </header>
 <section id="section-intro">
-<p>This module contains the functions for rendering the HTML templates</p>
+<p>Look up info on exceptions.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-This module contains the functions for rendering the HTML templates
+Look up info on exceptions.
 &#34;&#34;&#34;
-import logging
-
-from bug_trail.fs_utils import copy_assets, empty_folder
-from bug_trail.pygments_job import highlight_python_files
-from bug_trail.view_detail import render_detail
-from bug_trail.view_main import render_main
-from bug_trail.view_python_environment import render_python_environment
-from bug_trail.view_system_info import render_system_info
-
-logger = logging.getLogger(__name__)
 
 
-def render_all(db_path: str, logs_folder: str, source_folder: str, ctags_file: str) -&gt; None:
+def docstring_for(ex):
     &#34;&#34;&#34;
-    Render all the pages
+    Retrieve the docstring of the exception class.
 
-    Args:
-        db_path (str): Path to the SQLite database
-        logs_folder (str): Path to the folder containing the log files
-        source_folder (str): Path to the folder containing the source code
-        ctags_file (str): Path to the ctags file
+    Parameters:
+    ex (Exception): The exception instance.
+
+    Returns:
+    str: The docstring of the exception class.
     &#34;&#34;&#34;
-    logger.debug(f&#34;Emptying {logs_folder}&#34;)
-    empty_folder(logs_folder)
-    logger.debug(&#34;Rendering main page&#34;)
-    render_main(db_path, logs_folder, source_folder)
-    logger.debug(&#34;Rendering detail pages&#34;)
-    render_detail(db_path, logs_folder, source_folder)
-    logger.debug(&#34;Highlighting source code&#34;)
-    highlight_python_files(source_folder, logs_folder, ctags_file)
-    copy_assets(logs_folder)
-    render_python_environment(db_path, logs_folder)
-    render_system_info(db_path, logs_folder)
+    # Get the class of the exception
+    ex_class = ex.__class__
+
+    # Get the docstring of the class
+    return ex_class.__doc__
+
+
+def documentation_link_for(ex):
+    &#34;&#34;&#34;
+    Generate a link to the Python standard library documentation for the given exception.
+
+    Parameters:
+    ex (Exception): The exception instance.
+
+    Returns:
+    str: A URL to the documentation of the exception.
+    &#34;&#34;&#34;
+    base_url = &#34;https://docs.python.org/3/library/&#34;
+    ex_class = ex.__class__
+    module = ex_class.__module__
+
+    if module == &#34;builtins&#34;:
+        return f&#34;{base_url}exceptions.html#{ex_class.__name__}&#34;
+
+    # Replace underscores with hyphens in the module name for the URL
+    module_url = module.replace(&#34;_&#34;, &#34;-&#34;)
+    return f&#34;{base_url}{module_url}.html#{module}.{ex_class.__name__}&#34;
 
 
 if __name__ == &#34;__main__&#34;:
-    render_all(db_path=&#34;error_log.db&#34;, logs_folder=&#34;logs&#34;, source_folder=&#34;../bug_trail&#34;, ctags_file=&#34;&#34;)</code></pre>
+    try:
+        _ = 1 / 0
+    except ZeroDivisionError as e:
+        print(docstring_for(e))
+        print(documentation_link_for(e))</code></pre>
 </details>
 </section>
 <section>
@@ -76,47 +86,69 @@ if __name__ == &#34;__main__&#34;:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="bug_trail.views.render_all"><code class="name flex">
-<span>def <span class="ident">render_all</span></span>(<span>db_path: str, logs_folder: str, source_folder: str, ctags_file: str) ‑> None</span>
+<dt id="bug_trail.exceptions.docstring_for"><code class="name flex">
+<span>def <span class="ident">docstring_for</span></span>(<span>ex)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Render all the pages</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>db_path</code></strong> :&ensp;<code>str</code></dt>
-<dd>Path to the SQLite database</dd>
-<dt><strong><code>logs_folder</code></strong> :&ensp;<code>str</code></dt>
-<dd>Path to the folder containing the log files</dd>
-<dt><strong><code>source_folder</code></strong> :&ensp;<code>str</code></dt>
-<dd>Path to the folder containing the source code</dd>
-<dt><strong><code>ctags_file</code></strong> :&ensp;<code>str</code></dt>
-<dd>Path to the ctags file</dd>
-</dl></div>
+<div class="desc"><p>Retrieve the docstring of the exception class.</p>
+<p>Parameters:
+ex (Exception): The exception instance.</p>
+<p>Returns:
+str: The docstring of the exception class.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def render_all(db_path: str, logs_folder: str, source_folder: str, ctags_file: str) -&gt; None:
+<pre><code class="python">def docstring_for(ex):
     &#34;&#34;&#34;
-    Render all the pages
+    Retrieve the docstring of the exception class.
 
-    Args:
-        db_path (str): Path to the SQLite database
-        logs_folder (str): Path to the folder containing the log files
-        source_folder (str): Path to the folder containing the source code
-        ctags_file (str): Path to the ctags file
+    Parameters:
+    ex (Exception): The exception instance.
+
+    Returns:
+    str: The docstring of the exception class.
     &#34;&#34;&#34;
-    logger.debug(f&#34;Emptying {logs_folder}&#34;)
-    empty_folder(logs_folder)
-    logger.debug(&#34;Rendering main page&#34;)
-    render_main(db_path, logs_folder, source_folder)
-    logger.debug(&#34;Rendering detail pages&#34;)
-    render_detail(db_path, logs_folder, source_folder)
-    logger.debug(&#34;Highlighting source code&#34;)
-    highlight_python_files(source_folder, logs_folder, ctags_file)
-    copy_assets(logs_folder)
-    render_python_environment(db_path, logs_folder)
-    render_system_info(db_path, logs_folder)</code></pre>
+    # Get the class of the exception
+    ex_class = ex.__class__
+
+    # Get the docstring of the class
+    return ex_class.__doc__</code></pre>
+</details>
+</dd>
+<dt id="bug_trail.exceptions.documentation_link_for"><code class="name flex">
+<span>def <span class="ident">documentation_link_for</span></span>(<span>ex)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generate a link to the Python standard library documentation for the given exception.</p>
+<p>Parameters:
+ex (Exception): The exception instance.</p>
+<p>Returns:
+str: A URL to the documentation of the exception.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def documentation_link_for(ex):
+    &#34;&#34;&#34;
+    Generate a link to the Python standard library documentation for the given exception.
+
+    Parameters:
+    ex (Exception): The exception instance.
+
+    Returns:
+    str: A URL to the documentation of the exception.
+    &#34;&#34;&#34;
+    base_url = &#34;https://docs.python.org/3/library/&#34;
+    ex_class = ex.__class__
+    module = ex_class.__module__
+
+    if module == &#34;builtins&#34;:
+        return f&#34;{base_url}exceptions.html#{ex_class.__name__}&#34;
+
+    # Replace underscores with hyphens in the module name for the URL
+    module_url = module.replace(&#34;_&#34;, &#34;-&#34;)
+    return f&#34;{base_url}{module_url}.html#{module}.{ex_class.__name__}&#34;</code></pre>
 </details>
 </dd>
 </dl>
@@ -137,7 +169,8 @@ if __name__ == &#34;__main__&#34;:
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="bug_trail.views.render_all" href="#bug_trail.views.render_all">render_all</a></code></li>
+<li><code><a title="bug_trail.exceptions.docstring_for" href="#bug_trail.exceptions.docstring_for">docstring_for</a></code></li>
+<li><code><a title="bug_trail.exceptions.documentation_link_for" href="#bug_trail.exceptions.documentation_link_for">documentation_link_for</a></code></li>
 </ul>
 </li>
 </ul>

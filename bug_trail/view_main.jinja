@@ -48,6 +48,11 @@
         </tr>
         {% endfor %}
     </table>
+  <ul class="pagination">
+    {% for page_number, page in pages.items() %}
+    <li class="page-item"><a class="page-link" href="{{page}}">{{ page_number }}</a></li>
+    {% endfor %}
+  </ul>
 {% endblock %}
 
 

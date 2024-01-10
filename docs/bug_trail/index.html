@@ -29,7 +29,10 @@
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 CLI tool generates a static website for data capture by cli.
-&#34;&#34;&#34;</code></pre>
+&#34;&#34;&#34;
+__all__ = [&#34;__version__&#34;]
+
+from bug_trail._version import __version__</code></pre>
 </details>
 </section>
 <section>
@@ -39,13 +42,41 @@ CLI tool generates a static website for data capture by cli.
 <dd>
 <div class="desc"><p>Functions to fetch data from the SQLite database.</p></div>
 </dd>
+<dt><code class="name"><a title="bug_trail.exceptions" href="exceptions.html">bug_trail.exceptions</a></code></dt>
+<dd>
+<div class="desc"><p>Look up info on exceptions.</p></div>
+</dd>
 <dt><code class="name"><a title="bug_trail.fs_utils" href="fs_utils.html">bug_trail.fs_utils</a></code></dt>
 <dd>
 <div class="desc"><p>This module contains functions related to file system operations.</p></div>
 </dd>
+<dt><code class="name"><a title="bug_trail.incremental" href="incremental.html">bug_trail.incremental</a></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 <dt><code class="name"><a title="bug_trail.pygments_job" href="pygments_job.html">bug_trail.pygments_job</a></code></dt>
 <dd>
-<div class="desc"><p>pygmentize -g -O full,style=monokai,linenos=1 *<em>/</em>.py</p></div>
+<div class="desc"><p>Highlight all python files in a directory and its subdirectories and save them as HTML files …</p></div>
+</dd>
+<dt><code class="name"><a title="bug_trail.view_detail" href="view_detail.html">bug_trail.view_detail</a></code></dt>
+<dd>
+<div class="desc"><p>Detail page. Displays one error log entry.</p></div>
+</dd>
+<dt><code class="name"><a title="bug_trail.view_main" href="view_main.html">bug_trail.view_main</a></code></dt>
+<dd>
+<div class="desc"><p>This module contains the functions for rendering the HTML templates</p></div>
+</dd>
+<dt><code class="name"><a title="bug_trail.view_python_environment" href="view_python_environment.html">bug_trail.view_python_environment</a></code></dt>
+<dd>
+<div class="desc"><p>This module contains the functions for rendering the HTML templates</p></div>
+</dd>
+<dt><code class="name"><a title="bug_trail.view_shared" href="view_shared.html">bug_trail.view_shared</a></code></dt>
+<dd>
+<div class="desc"><p>This module contains the functions for rendering the HTML templates</p></div>
+</dd>
+<dt><code class="name"><a title="bug_trail.view_system_info" href="view_system_info.html">bug_trail.view_system_info</a></code></dt>
+<dd>
+<div class="desc"><p>This module contains the functions for rendering the HTML templates</p></div>
 </dd>
 <dt><code class="name"><a title="bug_trail.views" href="views.html">bug_trail.views</a></code></dt>
 <dd>
@@ -69,8 +100,15 @@ CLI tool generates a static website for data capture by cli.
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
 <li><code><a title="bug_trail.data_code" href="data_code.html">bug_trail.data_code</a></code></li>
+<li><code><a title="bug_trail.exceptions" href="exceptions.html">bug_trail.exceptions</a></code></li>
 <li><code><a title="bug_trail.fs_utils" href="fs_utils.html">bug_trail.fs_utils</a></code></li>
+<li><code><a title="bug_trail.incremental" href="incremental.html">bug_trail.incremental</a></code></li>
 <li><code><a title="bug_trail.pygments_job" href="pygments_job.html">bug_trail.pygments_job</a></code></li>
+<li><code><a title="bug_trail.view_detail" href="view_detail.html">bug_trail.view_detail</a></code></li>
+<li><code><a title="bug_trail.view_main" href="view_main.html">bug_trail.view_main</a></code></li>
+<li><code><a title="bug_trail.view_python_environment" href="view_python_environment.html">bug_trail.view_python_environment</a></code></li>
+<li><code><a title="bug_trail.view_shared" href="view_shared.html">bug_trail.view_shared</a></code></li>
+<li><code><a title="bug_trail.view_system_info" href="view_system_info.html">bug_trail.view_system_info</a></code></li>
 <li><code><a title="bug_trail.views" href="views.html">bug_trail.views</a></code></li>
 </ul>
 </li>

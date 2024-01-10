@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
-<title>bug_trail.views API documentation</title>
+<title>bug_trail.view_main API documentation</title>
 <meta name="description" content="This module contains the functions for rendering the HTML templates" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
@@ -19,7 +19,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>bug_trail.views</code></h1>
+<h1 class="title">Module <code>bug_trail.view_main</code></h1>
 </header>
 <section id="section-intro">
 <p>This module contains the functions for rendering the HTML templates</p>
@@ -31,42 +31,70 @@
 This module contains the functions for rendering the HTML templates
 &#34;&#34;&#34;
 import logging
+import os
 
-from bug_trail.fs_utils import copy_assets, empty_folder
-from bug_trail.pygments_job import highlight_python_files
-from bug_trail.view_detail import render_detail
-from bug_trail.view_main import render_main
-from bug_trail.view_python_environment import render_python_environment
-from bug_trail.view_system_info import render_system_info
+import bug_trail.data_code as data
+from bug_trail.view_shared import (
+    add_url_to_source_context,
+    detail_file_name,
+    humanize_time,
+    initialize_jinja,
+    path_to_file_url,
+    replace_msg_args,
+)
 
 logger = logging.getLogger(__name__)
 
 
-def render_all(db_path: str, logs_folder: str, source_folder: str, ctags_file: str) -&gt; None:
+def render_main(db_path: str, log_folder: str, source_folder: str) -&gt; None:
     &#34;&#34;&#34;
-    Render all the pages
+    Render the main page of the log viewer
 
     Args:
         db_path (str): Path to the SQLite database
-        logs_folder (str): Path to the folder containing the log files
+        log_folder (str): Path to the folder containing the log files
         source_folder (str): Path to the folder containing the source code
-        ctags_file (str): Path to the ctags file
     &#34;&#34;&#34;
-    logger.debug(f&#34;Emptying {logs_folder}&#34;)
-    empty_folder(logs_folder)
-    logger.debug(&#34;Rendering main page&#34;)
-    render_main(db_path, logs_folder, source_folder)
-    logger.debug(&#34;Rendering detail pages&#34;)
-    render_detail(db_path, logs_folder, source_folder)
-    logger.debug(&#34;Highlighting source code&#34;)
-    highlight_python_files(source_folder, logs_folder, ctags_file)
-    copy_assets(logs_folder)
-    render_python_environment(db_path, logs_folder)
-    render_system_info(db_path, logs_folder)
+    env = initialize_jinja()
+    template = env.get_template(&#34;view_main.jinja&#34;)
 
+    conn = data.connect(db_path)
+    row_count = data.table_row_count(conn, &#34;logs&#34;)
 
-if __name__ == &#34;__main__&#34;:
-    render_all(db_path=&#34;error_log.db&#34;, logs_folder=&#34;logs&#34;, source_folder=&#34;../bug_trail&#34;, ctags_file=&#34;&#34;)</code></pre>
+    pages = {}
+    for page in range(0, row_count, 100):
+        if page == 0:
+            index = f&#34;{log_folder}/index.html&#34;
+        else:
+            index = f&#34;{log_folder}/index{page}.html&#34;
+        pages[page] = index
+
+    for page in range(0, row_count, 100):
+        log_data = data.fetch_log_data(conn, db_path, limit=100, offset=page)
+
+        for log_entry in log_data:
+            log_entry[&#34;detailed_filename&#34;] = detail_file_name(log_entry)
+
+            log_entry[&#34;filename&#34;] = f&#34;{log_entry[&#39;filename&#39;]} ({log_entry[&#39;lineno&#39;]})&#34;
+            path_to_file_url(log_entry, log_folder, source_folder)
+            add_url_to_source_context(log_entry)
+
+            log_entry[&#34;created&#34;] = humanize_time(log_entry[&#34;created&#34;], log_entry[&#34;msecs&#34;])
+
+            # Consolidate msg and args
+            replace_msg_args(log_entry)
+
+        # Render the template with log data
+        html_output = template.render(logs=log_data, pages=pages)
+
+        if page == 0:
+            index = f&#34;{log_folder}/index.html&#34;
+        else:
+            index = f&#34;{log_folder}/index{page}.html&#34;
+        os.makedirs(index.rsplit(&#34;/&#34;, 1)[0], exist_ok=True)
+        logger.info(f&#34;Writing index to {index}&#34;)
+        with open(index, &#34;w&#34;, encoding=&#34;utf-8&#34;) as f:
+            f.write(html_output)</code></pre>
 </details>
 </section>
 <section>
@@ -76,47 +104,73 @@ if __name__ == &#34;__main__&#34;:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="bug_trail.views.render_all"><code class="name flex">
-<span>def <span class="ident">render_all</span></span>(<span>db_path: str, logs_folder: str, source_folder: str, ctags_file: str) ‑> None</span>
+<dt id="bug_trail.view_main.render_main"><code class="name flex">
+<span>def <span class="ident">render_main</span></span>(<span>db_path: str, log_folder: str, source_folder: str) ‑> None</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Render all the pages</p>
+<div class="desc"><p>Render the main page of the log viewer</p>
 <h2 id="args">Args</h2>
 <dl>
 <dt><strong><code>db_path</code></strong> :&ensp;<code>str</code></dt>
 <dd>Path to the SQLite database</dd>
-<dt><strong><code>logs_folder</code></strong> :&ensp;<code>str</code></dt>
+<dt><strong><code>log_folder</code></strong> :&ensp;<code>str</code></dt>
 <dd>Path to the folder containing the log files</dd>
 <dt><strong><code>source_folder</code></strong> :&ensp;<code>str</code></dt>
 <dd>Path to the folder containing the source code</dd>
-<dt><strong><code>ctags_file</code></strong> :&ensp;<code>str</code></dt>
-<dd>Path to the ctags file</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def render_all(db_path: str, logs_folder: str, source_folder: str, ctags_file: str) -&gt; None:
+<pre><code class="python">def render_main(db_path: str, log_folder: str, source_folder: str) -&gt; None:
     &#34;&#34;&#34;
-    Render all the pages
+    Render the main page of the log viewer
 
     Args:
         db_path (str): Path to the SQLite database
-        logs_folder (str): Path to the folder containing the log files
+        log_folder (str): Path to the folder containing the log files
         source_folder (str): Path to the folder containing the source code
-        ctags_file (str): Path to the ctags file
     &#34;&#34;&#34;
-    logger.debug(f&#34;Emptying {logs_folder}&#34;)
-    empty_folder(logs_folder)
-    logger.debug(&#34;Rendering main page&#34;)
-    render_main(db_path, logs_folder, source_folder)
-    logger.debug(&#34;Rendering detail pages&#34;)
-    render_detail(db_path, logs_folder, source_folder)
-    logger.debug(&#34;Highlighting source code&#34;)
-    highlight_python_files(source_folder, logs_folder, ctags_file)
-    copy_assets(logs_folder)
-    render_python_environment(db_path, logs_folder)
-    render_system_info(db_path, logs_folder)</code></pre>
+    env = initialize_jinja()
+    template = env.get_template(&#34;view_main.jinja&#34;)
+
+    conn = data.connect(db_path)
+    row_count = data.table_row_count(conn, &#34;logs&#34;)
+
+    pages = {}
+    for page in range(0, row_count, 100):
+        if page == 0:
+            index = f&#34;{log_folder}/index.html&#34;
+        else:
+            index = f&#34;{log_folder}/index{page}.html&#34;
+        pages[page] = index
+
+    for page in range(0, row_count, 100):
+        log_data = data.fetch_log_data(conn, db_path, limit=100, offset=page)
+
+        for log_entry in log_data:
+            log_entry[&#34;detailed_filename&#34;] = detail_file_name(log_entry)
+
+            log_entry[&#34;filename&#34;] = f&#34;{log_entry[&#39;filename&#39;]} ({log_entry[&#39;lineno&#39;]})&#34;
+            path_to_file_url(log_entry, log_folder, source_folder)
+            add_url_to_source_context(log_entry)
+
+            log_entry[&#34;created&#34;] = humanize_time(log_entry[&#34;created&#34;], log_entry[&#34;msecs&#34;])
+
+            # Consolidate msg and args
+            replace_msg_args(log_entry)
+
+        # Render the template with log data
+        html_output = template.render(logs=log_data, pages=pages)
+
+        if page == 0:
+            index = f&#34;{log_folder}/index.html&#34;
+        else:
+            index = f&#34;{log_folder}/index{page}.html&#34;
+        os.makedirs(index.rsplit(&#34;/&#34;, 1)[0], exist_ok=True)
+        logger.info(f&#34;Writing index to {index}&#34;)
+        with open(index, &#34;w&#34;, encoding=&#34;utf-8&#34;) as f:
+            f.write(html_output)</code></pre>
 </details>
 </dd>
 </dl>
@@ -137,7 +191,7 @@ if __name__ == &#34;__main__&#34;:
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="bug_trail.views.render_all" href="#bug_trail.views.render_all">render_all</a></code></li>
+<li><code><a title="bug_trail.view_main.render_main" href="#bug_trail.view_main.render_main">render_main</a></code></li>
 </ul>
 </li>
 </ul>

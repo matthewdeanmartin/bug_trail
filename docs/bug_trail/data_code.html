@@ -30,28 +30,80 @@
 <pre><code class="python">&#34;&#34;&#34;
 Functions to fetch data from the SQLite database.
 &#34;&#34;&#34;
+import logging
 import sqlite3
 from typing import Any
 
 from bug_trail_core.handlers import BaseErrorLogHandler
 
+logger = logging.getLogger(__name__)
 
-def fetch_log_data(db_path: str) -&gt; list[dict[str, Any]]:
+ALL_TABLES = [
+    &#34;exception_instance&#34;,
+    &#34;exception_type&#34;,
+    &#34;logs&#34;,
+    &#34;python_libraries&#34;,
+    &#34;system_info&#34;,
+    &#34;traceback_info&#34;,
+]
+
+ENTIRE_LOG_SET = (
+    &#34;SELECT logs.*, &#34;
+    &#34;exception_instance.args, &#34;
+    &#34;exception_instance.args as exception_args, &#34;
+    &#34;exception_instance.args as exception_str, &#34;
+    &#34;exception_instance.args as comments, &#34;
+    &#34;exception_type.name as exception_name, &#34;
+    &#34;exception_type.docstring as exception_docstring, &#34;
+    &#34;exception_type.hierarchy as exception_hierarchy &#34;
+    &#34;FROM logs &#34;
+    &#34;left outer join exception_instance &#34;
+    &#34;on logs.record_id = exception_instance.record_id &#34;
+    &#34;left outer join exception_type &#34;
+    &#34;on exception_instance.type_id = exception_type.id &#34;
+    &#34;ORDER BY created DESC&#34;
+)
+
+
+def table_row_count(conn: sqlite3.Connection, table_name: str) -&gt; int:
+    if table_name not in ALL_TABLES:
+        raise TypeError(&#34;Bad table name.&#34;)
+    cursor = conn.cursor()
+    cursor.execute(f&#34;SELECT count(*) FROM {table_name};&#34;)  # nosec: table name restricted above
+    try:
+        return cursor.fetchone()[0]
+    except IndexError:
+        return 0
+
+
+def connect(db_path: str) -&gt; sqlite3.Connection:
+    &#34;&#34;&#34;Open db, central code&#34;&#34;&#34;
+    # Mock this to prevent extra dbs being created.
+    return sqlite3.connect(db_path)
+
+
+def fetch_log_data(conn: sqlite3.Connection, db_path: str, limit: int = -1, offset: int = -1) -&gt; list[dict[str, Any]]:
     &#34;&#34;&#34;
     Fetch all log records from the database.
 
     Args:
+        conn (sqlite3.Connection): The connection to the database
         db_path (str): Path to the SQLite database
+        limit (int, optional): Limit the number of records returned. Defaults to -1.
+        offset (int, optional): Offset the records returned. Defaults to -1.
 
     Returns:
         list[dict[str, Any]]: A list of dictionaries containing all log records
     &#34;&#34;&#34;
     # Connect to the SQLite database
-    conn = sqlite3.connect(db_path)
+
+    logger.debug(f&#34;Connected to {db_path}&#34;)
     cursor = conn.cursor()
 
     # Query to fetch all rows from the logs table
-    query = &#34;SELECT * FROM logs ORDER BY created DESC&#34;
+    query = ENTIRE_LOG_SET
+    if limit != -1:
+        query += f&#34; LIMIT {limit} OFFSET {offset}&#34;
     execute_safely(cursor, query, db_path)
 
     # Fetching column names from the cursor
@@ -69,6 +121,44 @@ def fetch_log_data(db_path: str) -&gt; list[dict[str, Any]]:
     return log_data
 
 
+def fetch_table_as_list_of_dict(db_path: str, table: str) -&gt; list[dict[str, Any]]:
+    &#34;&#34;&#34;
+    Fetch all log records from the database.
+
+    Args:
+        db_path (str): Path to the SQLite database
+        table (str): Table to query
+
+    Returns:
+        list[dict[str, Any]]: A list of dictionaries containing all log records
+    &#34;&#34;&#34;
+    if table not in ALL_TABLES:
+        raise TypeError(&#34;Don&#39;t know that table.&#34;)
+
+    # Connect to the SQLite database
+    conn = connect(db_path)
+    logger.debug(f&#34;Connected to {db_path}&#34;)
+    cursor = conn.cursor()
+
+    # Query to fetch all rows from the logs table
+    query = f&#34;SELECT * FROM {table}&#34;  # nosec: table name restricted above
+    execute_safely(cursor, query, db_path)
+
+    # Fetching column names from the cursor
+    columns = [description[0] for description in cursor.description]
+
+    # Fetch all rows, and convert each row to a dictionary
+    rows = cursor.fetchall()
+    data = []
+    for row in rows:
+        record = dict(zip(columns, row, strict=True))
+        data.append(record)
+
+    # Close the connection
+    conn.close()
+    return data
+
+
 def fetch_log_data_grouped(db_path: str) -&gt; Any:
     &#34;&#34;&#34;
     Fetch all log records from the database, and group them into a nested dictionary.
@@ -80,11 +170,12 @@ def fetch_log_data_grouped(db_path: str) -&gt; Any:
         Any: A nested dictionary containing all log records
     &#34;&#34;&#34;
     # Connect to the SQLite database
-    conn = sqlite3.connect(db_path)
+    conn = connect(db_path)
+    logger.debug(f&#34;Connected to {db_path}&#34;)
     cursor = conn.cursor()
 
     # Query to fetch all rows from the logs table
-    query = &#34;SELECT * FROM logs ORDER BY created DESC&#34;
+    query = ENTIRE_LOG_SET
     execute_safely(cursor, query, db_path)
 
     # Fetching column names from the cursor
@@ -106,7 +197,19 @@ def fetch_log_data_grouped(db_path: str) -&gt; Any:
             &#34;ProcessThreadContext&#34;: {
                 key: log_record[key] for key in [&#34;process&#34;, &#34;processName&#34;, &#34;thread&#34;, &#34;threadName&#34;]
             },
-            &#34;ExceptionDetails&#34;: {key: log_record[key] for key in [&#34;exc_info&#34;, &#34;exc_text&#34;]},
+            &#34;ExceptionDetails&#34;: {
+                key: log_record.get(key)
+                for key in [
+                    &#34;exc_info&#34;,
+                    &#34;exc_text&#34;,
+                    &#34;exception_args&#34;,
+                    &#34;exception_str&#34;,
+                    &#34;comments&#34;,
+                    &#34;exception_name&#34;,
+                    &#34;exception_docstring&#34;,
+                    &#34;exception_hierarchy&#34;,
+                ]
+            },
             &#34;StackDetails&#34;: {key: log_record[key] for key in [&#34;stack_info&#34;]},
             &#34;UserData&#34;: {
                 key: log_record[key]
@@ -132,6 +235,13 @@ def fetch_log_data_grouped(db_path: str) -&gt; Any:
                     &#34;exc_info&#34;,
                     &#34;exc_text&#34;,
                     &#34;stack_info&#34;,
+                    # exception table
+                    &#34;exception_args&#34;,
+                    &#34;exception_str&#34;,
+                    &#34;comments&#34;,
+                    &#34;exception_name&#34;,
+                    &#34;exception_docstring&#34;,
+                    &#34;exception_hierarchy&#34;,
                 }
             },
         }
@@ -152,6 +262,7 @@ def execute_safely(cursor: sqlite3.Cursor, query: str, db_path: str) -&gt; None:
         db_path (str): The path to the database
     &#34;&#34;&#34;
     try:
+        logger.debug(query)
         cursor.execute(query)
     except sqlite3.OperationalError as se:
         if &#34;no such table&#34; in str(se):
@@ -170,6 +281,21 @@ def execute_safely(cursor: sqlite3.Cursor, query: str, db_path: str) -&gt; None:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="bug_trail.data_code.connect"><code class="name flex">
+<span>def <span class="ident">connect</span></span>(<span>db_path: str) ‑> sqlite3.Connection</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Open db, central code</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def connect(db_path: str) -&gt; sqlite3.Connection:
+    &#34;&#34;&#34;Open db, central code&#34;&#34;&#34;
+    # Mock this to prevent extra dbs being created.
+    return sqlite3.connect(db_path)</code></pre>
+</details>
+</dd>
 <dt id="bug_trail.data_code.execute_safely"><code class="name flex">
 <span>def <span class="ident">execute_safely</span></span>(<span>cursor: sqlite3.Cursor, query: str, db_path: str) ‑> None</span>
 </code></dt>
@@ -198,6 +324,7 @@ def execute_safely(cursor: sqlite3.Cursor, query: str, db_path: str) -&gt; None:
         db_path (str): The path to the database
     &#34;&#34;&#34;
     try:
+        logger.debug(query)
         cursor.execute(query)
     except sqlite3.OperationalError as se:
         if &#34;no such table&#34; in str(se):
@@ -210,14 +337,20 @@ def execute_safely(cursor: sqlite3.Cursor, query: str, db_path: str) -&gt; None:
 </details>
 </dd>
 <dt id="bug_trail.data_code.fetch_log_data"><code class="name flex">
-<span>def <span class="ident">fetch_log_data</span></span>(<span>db_path: str) ‑> list[dict[str, typing.Any]]</span>
+<span>def <span class="ident">fetch_log_data</span></span>(<span>conn: sqlite3.Connection, db_path: str, limit: int = -1, offset: int = -1) ‑> list[dict[str, typing.Any]]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Fetch all log records from the database.</p>
 <h2 id="args">Args</h2>
 <dl>
+<dt><strong><code>conn</code></strong> :&ensp;<code>sqlite3.Connection</code></dt>
+<dd>The connection to the database</dd>
 <dt><strong><code>db_path</code></strong> :&ensp;<code>str</code></dt>
 <dd>Path to the SQLite database</dd>
+<dt><strong><code>limit</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Limit the number of records returned. Defaults to -1.</dd>
+<dt><strong><code>offset</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Offset the records returned. Defaults to -1.</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -228,22 +361,28 @@ def execute_safely(cursor: sqlite3.Cursor, query: str, db_path: str) -&gt; None:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def fetch_log_data(db_path: str) -&gt; list[dict[str, Any]]:
+<pre><code class="python">def fetch_log_data(conn: sqlite3.Connection, db_path: str, limit: int = -1, offset: int = -1) -&gt; list[dict[str, Any]]:
     &#34;&#34;&#34;
     Fetch all log records from the database.
 
     Args:
+        conn (sqlite3.Connection): The connection to the database
         db_path (str): Path to the SQLite database
+        limit (int, optional): Limit the number of records returned. Defaults to -1.
+        offset (int, optional): Offset the records returned. Defaults to -1.
 
     Returns:
         list[dict[str, Any]]: A list of dictionaries containing all log records
     &#34;&#34;&#34;
     # Connect to the SQLite database
-    conn = sqlite3.connect(db_path)
+
+    logger.debug(f&#34;Connected to {db_path}&#34;)
     cursor = conn.cursor()
 
     # Query to fetch all rows from the logs table
-    query = &#34;SELECT * FROM logs ORDER BY created DESC&#34;
+    query = ENTIRE_LOG_SET
+    if limit != -1:
+        query += f&#34; LIMIT {limit} OFFSET {offset}&#34;
     execute_safely(cursor, query, db_path)
 
     # Fetching column names from the cursor
@@ -291,11 +430,12 @@ def execute_safely(cursor: sqlite3.Cursor, query: str, db_path: str) -&gt; None:
         Any: A nested dictionary containing all log records
     &#34;&#34;&#34;
     # Connect to the SQLite database
-    conn = sqlite3.connect(db_path)
+    conn = connect(db_path)
+    logger.debug(f&#34;Connected to {db_path}&#34;)
     cursor = conn.cursor()
 
     # Query to fetch all rows from the logs table
-    query = &#34;SELECT * FROM logs ORDER BY created DESC&#34;
+    query = ENTIRE_LOG_SET
     execute_safely(cursor, query, db_path)
 
     # Fetching column names from the cursor
@@ -317,7 +457,19 @@ def execute_safely(cursor: sqlite3.Cursor, query: str, db_path: str) -&gt; None:
             &#34;ProcessThreadContext&#34;: {
                 key: log_record[key] for key in [&#34;process&#34;, &#34;processName&#34;, &#34;thread&#34;, &#34;threadName&#34;]
             },
-            &#34;ExceptionDetails&#34;: {key: log_record[key] for key in [&#34;exc_info&#34;, &#34;exc_text&#34;]},
+            &#34;ExceptionDetails&#34;: {
+                key: log_record.get(key)
+                for key in [
+                    &#34;exc_info&#34;,
+                    &#34;exc_text&#34;,
+                    &#34;exception_args&#34;,
+                    &#34;exception_str&#34;,
+                    &#34;comments&#34;,
+                    &#34;exception_name&#34;,
+                    &#34;exception_docstring&#34;,
+                    &#34;exception_hierarchy&#34;,
+                ]
+            },
             &#34;StackDetails&#34;: {key: log_record[key] for key in [&#34;stack_info&#34;]},
             &#34;UserData&#34;: {
                 key: log_record[key]
@@ -343,6 +495,13 @@ def execute_safely(cursor: sqlite3.Cursor, query: str, db_path: str) -&gt; None:
                     &#34;exc_info&#34;,
                     &#34;exc_text&#34;,
                     &#34;stack_info&#34;,
+                    # exception table
+                    &#34;exception_args&#34;,
+                    &#34;exception_str&#34;,
+                    &#34;comments&#34;,
+                    &#34;exception_name&#34;,
+                    &#34;exception_docstring&#34;,
+                    &#34;exception_hierarchy&#34;,
                 }
             },
         }
@@ -351,6 +510,85 @@ def execute_safely(cursor: sqlite3.Cursor, query: str, db_path: str) -&gt; None:
     # Close the connection
     conn.close()
     return log_data</code></pre>
+</details>
+</dd>
+<dt id="bug_trail.data_code.fetch_table_as_list_of_dict"><code class="name flex">
+<span>def <span class="ident">fetch_table_as_list_of_dict</span></span>(<span>db_path: str, table: str) ‑> list[dict[str, typing.Any]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Fetch all log records from the database.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>db_path</code></strong> :&ensp;<code>str</code></dt>
+<dd>Path to the SQLite database</dd>
+<dt><strong><code>table</code></strong> :&ensp;<code>str</code></dt>
+<dd>Table to query</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list[dict[str, Any]]</code></dt>
+<dd>A list of dictionaries containing all log records</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def fetch_table_as_list_of_dict(db_path: str, table: str) -&gt; list[dict[str, Any]]:
+    &#34;&#34;&#34;
+    Fetch all log records from the database.
+
+    Args:
+        db_path (str): Path to the SQLite database
+        table (str): Table to query
+
+    Returns:
+        list[dict[str, Any]]: A list of dictionaries containing all log records
+    &#34;&#34;&#34;
+    if table not in ALL_TABLES:
+        raise TypeError(&#34;Don&#39;t know that table.&#34;)
+
+    # Connect to the SQLite database
+    conn = connect(db_path)
+    logger.debug(f&#34;Connected to {db_path}&#34;)
+    cursor = conn.cursor()
+
+    # Query to fetch all rows from the logs table
+    query = f&#34;SELECT * FROM {table}&#34;  # nosec: table name restricted above
+    execute_safely(cursor, query, db_path)
+
+    # Fetching column names from the cursor
+    columns = [description[0] for description in cursor.description]
+
+    # Fetch all rows, and convert each row to a dictionary
+    rows = cursor.fetchall()
+    data = []
+    for row in rows:
+        record = dict(zip(columns, row, strict=True))
+        data.append(record)
+
+    # Close the connection
+    conn.close()
+    return data</code></pre>
+</details>
+</dd>
+<dt id="bug_trail.data_code.table_row_count"><code class="name flex">
+<span>def <span class="ident">table_row_count</span></span>(<span>conn: sqlite3.Connection, table_name: str) ‑> int</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def table_row_count(conn: sqlite3.Connection, table_name: str) -&gt; int:
+    if table_name not in ALL_TABLES:
+        raise TypeError(&#34;Bad table name.&#34;)
+    cursor = conn.cursor()
+    cursor.execute(f&#34;SELECT count(*) FROM {table_name};&#34;)  # nosec: table name restricted above
+    try:
+        return cursor.fetchone()[0]
+    except IndexError:
+        return 0</code></pre>
 </details>
 </dd>
 </dl>
@@ -371,9 +609,12 @@ def execute_safely(cursor: sqlite3.Cursor, query: str, db_path: str) -&gt; None:
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="bug_trail.data_code.connect" href="#bug_trail.data_code.connect">connect</a></code></li>
 <li><code><a title="bug_trail.data_code.execute_safely" href="#bug_trail.data_code.execute_safely">execute_safely</a></code></li>
 <li><code><a title="bug_trail.data_code.fetch_log_data" href="#bug_trail.data_code.fetch_log_data">fetch_log_data</a></code></li>
 <li><code><a title="bug_trail.data_code.fetch_log_data_grouped" href="#bug_trail.data_code.fetch_log_data_grouped">fetch_log_data_grouped</a></code></li>
+<li><code><a title="bug_trail.data_code.fetch_table_as_list_of_dict" href="#bug_trail.data_code.fetch_table_as_list_of_dict">fetch_table_as_list_of_dict</a></code></li>
+<li><code><a title="bug_trail.data_code.table_row_count" href="#bug_trail.data_code.table_row_count">table_row_count</a></code></li>
 </ul>
 </li>
 </ul>
