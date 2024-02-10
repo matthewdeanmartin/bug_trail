@@ -67,7 +67,7 @@ def fetch_log_data(conn: sqlite3.Connection, db_path: str, limit: int = -1, offs
         list[dict[str, Any]]: A list of dictionaries containing all log records
     """
     # Connect to the SQLite database
-
+    conn = connect(db_path)
     logger.debug(f"Connected to {db_path}")
     cursor = conn.cursor()
 
