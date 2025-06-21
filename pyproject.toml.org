@@ -1,13 +1,8 @@
-[project]
+[tool.poetry]
 name = "bug_trail"
-version = "3.0.0"
+version = "2.3.0"
 description = "Local static html error logger to use while developing python code."
-authors = [
-    { name = "Matthew Martin", email = "matthewdeanmartin@gmail.com" },
-]
-license = { text = "MIT" }
-readme = "README.md"
-requires-python = ">=3.12"
+authors = ["Matthew Martin <matthewdeanmartin@gmail.com>"]
 keywords = ["error logging", "html log report", ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -17,50 +12,74 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3.11",
 ]
-dependencies = [
-    "bug-trail-core==3.1.0",
-    "humanize",
-    "jinja2>=3.1.2",
-    "pygments",
-    # "python-ctags3",
-    "watchdog>=3.0.0",
+include = [
+    "bug_trail/**/*.py",
+    "bug_trail/**/*.md",
+    "bug_trail/**/*.txt",
+    "bug_trail/**/*.html",
+    "bug_trail/**/*.jinja",
+    "bug_trail/py.typed",
 ]
-
-
-[dependency-groups]
-dev = [
-    "metametameta>=0.1.2",
-    "hatchling",
-    # build tools
-    "black>=23.11.0",
-    "pytest>=7.4.3",
-    "pytest-cov>=4.1.0",
-    "pylint>=3.0.2",
-    "ruff>=0.1.9",
-    # types
-    "mypy>=1.8.0",
-    "types-toml",
-    # more testing
-    "pytest-snapshot>=0.9.0",
-    "pre-commit>=3.5.0",
-    "scriv>=1.5.0",
-    # docs
-    "interrogate >=1.5.0",
-    #pydoctest = ">=0.1.22"
-    "pdoc3>=0.10.0"
+exclude = [
 ]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/matthewdeanmartin/bug_trail"
+homepage = "https://github.com/matthewdeanmartin/bug_trail"
+documentation = "https://github.com/matthewdeanmartin/bug_trail"
 
-
-[project.urls]
+[tool.poetry.urls]
 "Bug Tracker" = "https://github.com/matthewdeanmartin/bug_trail/issues"
 "Change Log" = "https://github.com/matthewdeanmartin/bug_trail/blob/main/CHANGES.md"
 
-[project.scripts]
+[tool.poetry.scripts]
 bug_trail = 'bug_trail.__main__:main'
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+[tool.poetry.dependencies]
+python = ">=3.12"
+
+# Data collection handlers
+bug-trail-core = "==3.1.0"
+
+# pretty reports
+humanize = "*"
+jinja2 = ">=3.1.2"
+pygments = "*"
+python-ctags3="*"
+
+# Gen reports continuously
+watchdog = ">=3.0.0"
+
+
+#[tool.poetry.dev-dependencies]
+#
+## build tools
+#black = ">=23.11.0"
+#pytest = ">=7.4.3"
+#pytest-cov = ">=4.1.0"
+#pylint = ">=3.0.2"
+#ruff = ">=0.1.9"
+#
+## types
+#mypy = ">=1.8.0"
+#types-toml = "*"
+#
+## more testing
+#pytest-snapshot = ">=0.9.0"
+## pytest-asyncio = ">=0.23.2"
+##anyio = ">=4.2.0"
+##trio = ">=0.23.2"
+#
+#pre-commit = ">=3.5.0"
+#scriv = ">=1.5.0"
+#
+## docs
+#interrogate = ">=1.5.0"
+##pydoctest = ">=0.1.22"
+#pdoc3 = ">=0.10.0"
+##
+## contract
+## griffe = ">=0.38.1"
 
 [tool.black]
 line-length = 120
@@ -85,6 +104,9 @@ exclude = '''
                      # the root of the project
 )
 '''
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
@@ -99,7 +121,6 @@ norecursedirs = ["vendor", "scripts"]
 #markers =
 #	slow: marks tests as slow (deselect with '-m "not slow"')
 #	fast: marks tests as fast (deselect with '-m "not fast"')
-
 
 [tool.isort]
 default_section = "THIRDPARTY"
@@ -122,7 +143,7 @@ select = ["E", "F",
 ignore = [
     "E722",
     # only track structural problems with docstrings, not whitespace, nor missing
-    "D200", "D212", "D415", "D411", "D205", "D102", "D103", "D100", "D107", "D101", "D104", "D105",
+    "D200", "D212", "D415","D411", "D205","D102", "D103", "D100","D107","D101","D104","D105",
     "UP007", "UP038", # Not sure if | is well supported in lowever versions of python
 ]
 
@@ -161,11 +182,29 @@ target-version = "py311"
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
-
 [tool.scriv]
 version = "literal: pyproject.toml: tool.poetry.version"
 format = "md"
 main_branches = "master, main, develop, dev"
+
+[mypy]
+warn_return_any = true
+warn_unused_configs = true
+strict = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+strict_optional = true
+warn_redundant_casts = true
+warn_no_return = true
+
+[mypy.pygount]
+ignore_missing_imports = true
+
+[mypy.astor]
+ignore_missing_imports = true
+
 
 [tool.coverage.report]
 # Regexes for lines to exclude from consideration
@@ -173,19 +212,21 @@ exclude_also = [
     # Don't complain about missing debug-only code:
     "def __repr__",
     "if self\\.debug",
+
     # Don't complain if tests don't hit defensive assertion code:
     "raise AssertionError",
     "raise NotImplementedError",
+
     # Don't complain if non-runnable code isn't run:
     "if 0:",
     "if __name__ == .__main__.:",
+
     # Don't complain about abstract methods, they aren't run:
     "@(abc\\.)?abstractmethod",
-]
-
+    ]
 
 [tool.bug_trail]
-app_name = "myapp"
-app_author = "myname"
+app_name= "myapp"
+app_author= "myname"
 source_folder = "fish_tank"
 ctags_file = "fish_tank.tags"

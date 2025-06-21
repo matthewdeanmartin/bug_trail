@@ -42,11 +42,12 @@ def highlight_python_files(root_directory: str, output_directory: str, ctags_fil
         "lineanchors": "line",
         "anchorlinenos": True,
     }
-    if ctags_file:
-        args["tagsfile"] = ctags_file
-        #  url = self.tagurlformat % {'path': base, 'fname': filename,
-        #                                                'fext': extension}
-        args["tagurlformat"] = "%(path)s%(fname)s%(fext)s"
+    # if ctags_file:
+    #     args["tagsfile"] = ctags_file
+    #     #  url = self.tagurlformat % {'path': base, 'fname': filename,
+    #     #                                                'fext': extension}
+    #     args["tagurlformat"] = "%(path)s%(fname)s%(fext)s"
+    #
 
     logger.info("Highlighting python files in %s", root_directory)
     for key, value in args.items():

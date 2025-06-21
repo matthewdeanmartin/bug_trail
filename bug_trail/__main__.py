@@ -11,7 +11,7 @@ from bug_trail_core import read_config
 
 import bug_trail.fs_utils as fs_utils
 import bug_trail.views as views
-from bug_trail._version import __version__
+from bug_trail.__about__ import __version__
 from bug_trail.incremental import watch_for_changes
 
 

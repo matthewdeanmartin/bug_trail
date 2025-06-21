@@ -56,23 +56,6 @@ To generate to the log folder relative to the current working directory:
 bug_trail --output logs --db error_log.db
 ```
 
-## Picologging
-If you want to use picologging, install it. Everything is the same except you use the `PicoBugTrailHandler`.
-
-```python
-import bug_trail_core
-import logging
-
-section = bug_trail_core.read_config(config_path="../pyproject.toml")
-handler = bug_trail_core.PicoBugTrailHandler(
-    section.database_path, minimum_level=logging.ERROR
-)
-logging.basicConfig(handlers=[handler], level=logging.ERROR)
-
-logger = logging.getLogger(__name__)
-logger.error("This is an error message")
-```
-
 ## Do more with your data
 
 ```bash

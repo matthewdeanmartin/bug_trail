@@ -22,6 +22,7 @@ logger.error("If you can see this, error logging works")
 if __name__ == "__main__":
     print("Running fish_tank.__main__")
     main.main()
+    print("Fish tank main has run successfully")
 else:
     print("what is up with this?")
     print(__name__)

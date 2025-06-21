@@ -37,10 +37,20 @@ ENTIRE_LOG_SET = (
 )
 
 
-def table_row_count(conn: sqlite3.Connection, table_name: str) -> int:
+def table_row_count(db_path: str, table_name: str) -> int:
     if table_name not in ALL_TABLES:
         raise TypeError("Bad table name.")
-    cursor = conn.cursor()
+    conn = connect(db_path)
+    try:
+        cursor = conn.cursor()
+    except sqlite3.ProgrammingError as ex:
+        if "closed" in str(ex):
+            # unexpectedly closed.
+            conn = connect(db_path)
+            cursor = conn.cursor()
+        else:
+            raise
+
     cursor.execute(f"SELECT count(*) FROM {table_name};")  # nosec: table name restricted above
     try:
         return cursor.fetchone()[0]
@@ -54,7 +64,7 @@ def connect(db_path: str) -> sqlite3.Connection:
     return sqlite3.connect(db_path)
 
 
-def fetch_log_data(conn: sqlite3.Connection, db_path: str, limit: int = -1, offset: int = -1) -> list[dict[str, Any]]:
+def fetch_log_data(db_path: str, limit: int = -1, offset: int = -1) -> list[dict[str, Any]]:
     """
     Fetch all log records from the database.
 
@@ -70,7 +80,15 @@ def fetch_log_data(conn: sqlite3.Connection, db_path: str, limit: int = -1, offs
     # Connect to the SQLite database
     conn = connect(db_path)
     logger.debug(f"Connected to {db_path}")
-    cursor = conn.cursor()
+    try:
+        cursor = conn.cursor()
+    except sqlite3.ProgrammingError as ex:
+        if "closed" in str(ex):
+            # unexpectedly closed.
+            conn = connect(db_path)
+            cursor = conn.cursor()
+        else:
+            raise
 
     # Query to fetch all rows from the logs table
     query = ENTIRE_LOG_SET
@@ -110,7 +128,15 @@ def fetch_table_as_list_of_dict(db_path: str, table: str) -> list[dict[str, Any]
     # Connect to the SQLite database
     conn = connect(db_path)
     logger.debug(f"Connected to {db_path}")
-    cursor = conn.cursor()
+    try:
+        cursor = conn.cursor()
+    except sqlite3.ProgrammingError as ex:
+        if "closed" in str(ex):
+            # unexpectedly closed.
+            conn = connect(db_path)
+            cursor = conn.cursor()
+        else:
+            raise
 
     # Query to fetch all rows from the logs table
     query = f"SELECT * FROM {table}"  # nosec: table name restricted above
@@ -144,7 +170,15 @@ def fetch_log_data_grouped(db_path: str) -> Any:
     # Connect to the SQLite database
     conn = connect(db_path)
     logger.debug(f"Connected to {db_path}")
-    cursor = conn.cursor()
+    try:
+        cursor = conn.cursor()
+    except sqlite3.ProgrammingError as ex:
+        if "closed" in str(ex):
+            # unexpectedly closed.
+            conn = connect(db_path)
+            cursor = conn.cursor()
+        else:
+            raise
 
     # Query to fetch all rows from the logs table
     query = ENTIRE_LOG_SET
@@ -238,7 +272,6 @@ def execute_safely(cursor: sqlite3.Cursor, query: str, db_path: str) -> None:
         cursor.execute(query)
     except sqlite3.OperationalError as se:
         if "no such table" in str(se):
-            # TODO: handle the possibility that the table is different for picologging
             handler = BaseErrorLogHandler(db_path)
             handler.create_table()
             cursor.execute(query)

@@ -51,7 +51,8 @@ def render_detail(db_path: str, log_folder: str, source_folder: str) -> str:
 
         if log_entry["ExceptionDetails"]["exception_hierarchy"]:
             exception_hierarchy = json.loads(log_entry["ExceptionDetails"]["exception_hierarchy"])
-            print(exception_hierarchy)
+            # why as I logging this?
+            # logger.info(exception_hierarchy)
             interesting_hierarchy = []
             for the_type, description in exception_hierarchy:
                 if the_type not in ("type", "object"):

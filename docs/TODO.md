@@ -2,7 +2,7 @@
 
 ## Packaging
 - split up to base/non base for pipx install and tiny handler. DONE
-- picologging should be an optional install
+
 
 ## Main Views
 - hide thread id if they're all the same (ie. app is single threaded)

@@ -30,8 +30,7 @@ def render_main(db_path: str, log_folder: str, source_folder: str) -> None:
     env = initialize_jinja()
     template = env.get_template("view_main.jinja")
 
-    conn = data.connect(db_path)
-    row_count = data.table_row_count(conn, "logs")
+    row_count = data.table_row_count(db_path, "logs")
 
     pages = {}
     for page in range(0, row_count, 100):
@@ -42,7 +41,7 @@ def render_main(db_path: str, log_folder: str, source_folder: str) -> None:
         pages[page] = index
 
     for page in range(0, row_count, 100):
-        log_data = data.fetch_log_data(conn, db_path, limit=100, offset=page)
+        log_data = data.fetch_log_data(db_path, limit=100, offset=page)
 
         for log_entry in log_data:
             log_entry["detailed_filename"] = detail_file_name(log_entry)
