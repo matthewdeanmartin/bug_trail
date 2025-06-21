@@ -1,6 +1,7 @@
 """
 Main entry point for the CLI.
 """
+
 import argparse
 import logging
 import os

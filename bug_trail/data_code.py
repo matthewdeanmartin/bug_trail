@@ -1,6 +1,7 @@
 """
 Functions to fetch data from the SQLite database.
 """
+
 import logging
 import sqlite3
 from typing import Any

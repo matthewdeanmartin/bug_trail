@@ -1,6 +1,7 @@
 """
 Generate some example code using a real code bases.
 """
+
 import logging
 
 import bug_trail_core

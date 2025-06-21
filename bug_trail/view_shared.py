@@ -1,6 +1,7 @@
 """
 This module contains the functions for rendering the HTML templates
 """
+
 import ast
 import datetime
 import logging

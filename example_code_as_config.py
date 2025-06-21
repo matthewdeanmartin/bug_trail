@@ -1,6 +1,7 @@
 """
 Code-as-config for logging.
 """
+
 import logging
 import logging.config
 from typing import Any

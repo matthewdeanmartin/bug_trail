@@ -1,6 +1,7 @@
 """
 Detail page. Displays one error log entry.
 """
+
 import json
 import logging
 import os

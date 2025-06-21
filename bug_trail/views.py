@@ -1,6 +1,7 @@
 """
 This module contains the functions for rendering the HTML templates
 """
+
 import logging
 
 from bug_trail.fs_utils import copy_assets, empty_folder

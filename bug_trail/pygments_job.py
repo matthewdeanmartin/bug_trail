@@ -3,6 +3,7 @@ Highlight all python files in a directory and its subdirectories and save them a
 
 pygmentize -g -O full,style=monokai,linenos=1 **/*.py
 """
+
 import glob
 import logging
 import os

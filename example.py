@@ -2,8 +2,8 @@
 Attempt to raise a wide variety of exceptions.
 """
 
-import os
 import logging
+import os
 
 import bug_trail_core
 
@@ -43,10 +43,12 @@ run()
 
 logger.error("Last message")
 
+
 # Custom Exception Class
 class CustomError(Exception):
     def __init__(self, message):
         self.message = message
+
 
 # Function to demonstrate IndexError
 def demonstrate_index_error():
@@ -57,30 +59,34 @@ def demonstrate_index_error():
     except IndexError as e:
         logger.error(e)
 
+
 # Function to demonstrate ValueError
 def demonstrate_value_error():
     try:
         # This will raise a ValueError as 'a' cannot be converted to an integer
-        int('a')
+        int("a")
     except ValueError as e:
         logger.error(e)
+
 
 # Function to demonstrate TypeError
 def demonstrate_type_error():
     try:
         # Adding integer and string will raise TypeError
-        result = 1 + 'a'
+        _ = 1 + "a"
     except TypeError as e:
         logger.error(e)
 
+
 # Function to demonstrate KeyError
 def demonstrate_key_error():
-    sample_dict = {'a': 1, 'b': 2}
+    sample_dict = {"a": 1, "b": 2}
     try:
         # Trying to access a non-existing key in the dictionary
-        print(sample_dict['c'])
+        print(sample_dict["c"])
     except KeyError as e:
         logger.error(e)
+
 
 # Function to demonstrate custom exception
 def demonstrate_custom_exception():
@@ -105,6 +111,7 @@ def demonstrate_not_implemented_error():
     except NotImplementedError as e:
         logger.error(e)
 
+
 # Function to demonstrate NameError
 def demonstrate_name_error():
     try:
@@ -112,6 +119,7 @@ def demonstrate_name_error():
         print(undefined_var)
     except NameError as e:
         logger.error(e)
+
 
 # Function to demonstrate StopIteration
 def demonstrate_stop_iteration():
@@ -124,33 +132,37 @@ def demonstrate_stop_iteration():
     except StopIteration as e:
         logger.error(e)
 
+
 # Function to demonstrate UnicodeError
 def demonstrate_unicode_error():
     try:
         # This will raise UnicodeError because of incorrect decoding
-        b'\x80'.decode("utf-8")
+        b"\x80".decode("utf-8")
     except UnicodeError as e:
         logger.error(e)
+
 
 # Function to demonstrate FileNotFoundError
 def demonstrate_file_not_found_error():
     try:
         # Trying to open a non-existing file
-        with open('non_existing_file.txt', 'r') as f:
+        with open("non_existing_file.txt") as _f:
             pass
     except FileNotFoundError as e:
         logger.error(e)
+
 
 # Function to demonstrate NotADirectoryError
 def demonstrate_not_a_directory_error():
     try:
         # This assumes that 'example.txt' exists and is a file, not a directory
-        os.listdir('/nope/')
+        os.listdir("/nope/")
     except NotADirectoryError as e:
         # does not raise here on Windows (!)
         logger.error(e)
     except FileNotFoundError as e:
         logger.error(e)
+
 
 # Main function to execute the demonstrations
 def main():
@@ -165,6 +177,7 @@ def main():
     demonstrate_type_error()
     demonstrate_key_error()
     demonstrate_custom_exception()
+
 
 if __name__ == "__main__":
     main()
