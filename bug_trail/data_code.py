@@ -51,7 +51,8 @@ def table_row_count(db_path: str, table_name: str) -> int:
         else:
             raise
 
-    cursor.execute(f"SELECT count(*) FROM {table_name};")  # nosec: table name restricted above
+    # table name restricted above
+    cursor.execute(f"SELECT count(*) FROM {table_name};")  # nosec
     try:
         return cursor.fetchone()[0]
     except IndexError:
