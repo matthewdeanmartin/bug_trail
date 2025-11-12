@@ -1,6 +1,6 @@
 [project]
 name = "bug_trail"
-version = "3.0.0"
+version = "3.0.1"
 description = "Local static html error logger to use while developing python code."
 authors = [
     { name = "Matthew Martin", email = "matthewdeanmartin@gmail.com" },
@@ -55,7 +55,7 @@ dev = [
 
 [project.urls]
 "Bug Tracker" = "https://github.com/matthewdeanmartin/bug_trail/issues"
-"Change Log" = "https://github.com/matthewdeanmartin/bug_trail/blob/main/CHANGES.md"
+"Change Log" = "https://github.com/matthewdeanmartin/bug_trail/blob/main/CHANGELOG.md"
 
 [project.scripts]
 bug_trail = 'bug_trail.__main__:main'
@@ -113,7 +113,7 @@ multi_line_output = 3
 use_parentheses = true
 
 [tool.ruff]
-line-length = 1000
+line-length = 320
 
 # Enable Pyflakes `E` and `F` codes by default.
 select = ["E", "F",
