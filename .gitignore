@@ -170,3 +170,4 @@ bug_trail/error_log.db
 *.db
 
 ctags.exe
+/SOURCE.md

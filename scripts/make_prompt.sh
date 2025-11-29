@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# readonly SCRIPT_NS="bash2gitlab_proc"
-readonly SRC_DIR="./bash2gitlab"
+# readonly SCRIPT_NS="bug_trail_proc"
+readonly SRC_DIR="./bug_trail"
 readonly TMP_ROOT="/tmp"
-readonly TMP_DIR="${TMP_ROOT}/bash2gitlab"
-readonly OUTPUT_MD_BASENAME="bash2gitlab.flat.md"
+readonly TMP_DIR="${TMP_ROOT}/bug_trail"
+readonly OUTPUT_MD_BASENAME="bug_trail.flat.md"
 
 # Copy directory safely
-bash2gitlab_proc::copy_to_tmp() {
+bug_trail_proc::copy_to_tmp() {
   if [[ ! -d "${SRC_DIR}" ]]; then
     echo "Error: Source directory '${SRC_DIR}' not found." >&2
     exit 1
@@ -19,8 +19,8 @@ bash2gitlab_proc::copy_to_tmp() {
   cp -a "${SRC_DIR}" "${TMP_DIR}"
 }
 
-# Run strip-docs for each subdirectory of tmp/bash2gitlab
-bash2gitlab_proc::run_strip_docs() {
+# Run strip-docs for each subdirectory of tmp/bug_trail
+bug_trail_proc::run_strip_docs() {
   local dir
   echo "Running strip-docs on '${TMP_DIR}' and subdirectories..."
 
@@ -31,7 +31,7 @@ bash2gitlab_proc::run_strip_docs() {
 }
 
 # Ask for confirmation before proceeding
-bash2gitlab_proc::confirm() {
+bug_trail_proc::confirm() {
   local prompt="$1"
 
   if [[ -z "${CAUTION:-}" ]]; then
@@ -49,7 +49,7 @@ bash2gitlab_proc::confirm() {
 }
 
 # Remove temporary strip markers and flatten the repo to a single Markdown file
-bash2gitlab_proc::flatten_repo() {
+bug_trail_proc::flatten_repo() {
   echo "Removing marker lines from .py files in '${TMP_DIR}'..."
 
   find "${TMP_DIR}" -type f -name '*.py' -print0 | while IFS= read -r -d '' file; do
@@ -67,8 +67,8 @@ bash2gitlab_proc::flatten_repo() {
 }
 
 # Clean trailing '##' that appear at the END of lines inside ```python code fences
-# in the generated Markdown (bash2gitlab.flat.md). Other code fences remain untouched.
-bash2gitlab_proc::clean_flat_md_trailing_double_hash() {
+# in the generated Markdown (bug_trail.flat.md). Other code fences remain untouched.
+bug_trail_proc::clean_flat_md_trailing_double_hash() {
   local output_md
   # Prefer TMP_DIR if the file is written there; fallback to CWD; else try to find it
   if [[ -f "${TMP_DIR}/${OUTPUT_MD_BASENAME}" ]]; then
@@ -110,20 +110,20 @@ bash2gitlab_proc::clean_flat_md_trailing_double_hash() {
 }
 
 # Cleanup tmp directory
-bash2gitlab_proc::cleanup_tmp() {
+bug_trail_proc::cleanup_tmp() {
   echo "Cleaning up '${TMP_DIR}'..."
   rm -rf "${TMP_DIR}"
 }
 
 main() {
-  bash2gitlab_proc::copy_to_tmp
-  bash2gitlab_proc::run_strip_docs
-  bash2gitlab_proc::confirm "Run coderoller-flatten-repo?"
-  bash2gitlab_proc::flatten_repo
+  bug_trail_proc::copy_to_tmp
+  bug_trail_proc::run_strip_docs
+  bug_trail_proc::confirm "Run coderoller-flatten-repo?"
+  bug_trail_proc::flatten_repo
   # Post-process the flattened Markdown to remove trailing '##' in Python code blocks only
-  bash2gitlab_proc::clean_flat_md_trailing_double_hash
-  bash2gitlab_proc::confirm "Delete temporary files in '${TMP_DIR}'?"
-  bash2gitlab_proc::cleanup_tmp
+  bug_trail_proc::clean_flat_md_trailing_double_hash
+  bug_trail_proc::confirm "Delete temporary files in '${TMP_DIR}'?"
+  bug_trail_proc::cleanup_tmp
 }
 
 [[ "${BASH_SOURCE[0]}" == "$0" ]] && main "$@"

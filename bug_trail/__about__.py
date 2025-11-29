@@ -11,7 +11,7 @@ __all__ = [
 ]
 
 __title__ = "bug_trail"
-__version__ = "2.3.0"
+__version__ = "3.0.1"
 __description__ = "Local static html error logger to use while developing python code."
 __readme__ = "README.md"
 __requires_python__ = ">=3.12"

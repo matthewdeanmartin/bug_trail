@@ -1,10 +1,4 @@
 ---
-ci:
-  autoupdate_schedule: monthly
-  autofix_commit_msg: |
-    [pre-commit.ci] Apply automatic pre-commit fixes
-  skip: []
-
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
@@ -22,7 +16,7 @@ repos:
       - id: detect-private-key
       - id: forbid-new-submodules
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.21.0
+    rev: v3.21.1
     hooks:
       - id: pyupgrade
         args: [ --py37-plus ]
@@ -59,7 +53,7 @@ repos:
   #                args:
   #                    - --profile black
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.0
+    rev: v0.14.4
     hooks:
       - id: ruff
         exclude: ^dead_code/
