@@ -186,8 +186,8 @@ def add_url_to_source_context(source_context: dict[str, Any]):
     Args:
         source_context (dict[str, Any]): The source context
     """
-    if not source_context["pathname"]:
-        raise ValueError("Source context has no pathname")
+    if not source_context.get("pathname"):
+        return source_context
     source_context["pathname"] = f"{source_context['pathname']}.html#line-{source_context['lineno']}"
     return source_context
 
@@ -223,6 +223,8 @@ def path_to_file_url(source_context: dict[str, Any], logs_folder, source_folder:
         logs_folder (str): The folder containing the logs
         source_folder (str): The folder containing the source code
     """
+    if not source_context.get("pathname"):
+        return
     logs_folder = logs_folder.replace("\\", "/")
     relative_path = find_and_return_after(
         source_context["pathname"].replace("\\", "/"), source_folder.replace("\\", "/")

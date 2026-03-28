@@ -32,17 +32,17 @@ def main() -> int:
     parser.add_argument("--version", action="version", version="%(prog)s " + f"{__version__}")
     parser.add_argument("--verbose", action="store_true", help="verbose output")
     parser.add_argument("--watch", action="store_true", help="watch database, generate continuously")
-    args = parser.parse_args()
+    args, _ = parser.parse_known_args()
     if args.verbose:
         logging.basicConfig(level=logging.DEBUG)
     section = read_config(args.config)
-    parser.add_argument("--output", action="store_true", help="Where to output the logs", default=section.report_folder)
-    parser.add_argument("--db", action="store_true", help="Where to store the database", default=section.database_path)
+    parser.add_argument("--output", type=str, help="Where to output the logs", default=section.report_folder)
+    parser.add_argument("--db", type=str, help="Where to store the database", default=section.database_path)
     parser.add_argument(
-        "--source", action="store_true", help="Where the app's source code is", default=section.source_folder
+        "--source", type=str, help="Where the app's source code is", default=section.source_folder
     )
     parser.add_argument(
-        "--ctags_file", action="store_true", help="Where the app's ctags file is", default=section.ctags_file
+        "--ctags_file", type=str, help="Where the app's ctags file is", default=section.ctags_file
     )
 
     args = parser.parse_args()

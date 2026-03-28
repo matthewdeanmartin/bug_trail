@@ -21,10 +21,9 @@ ALL_TABLES = [
 
 ENTIRE_LOG_SET = (
     "SELECT logs.*, "
-    "exception_instance.args, "
     "exception_instance.args as exception_args, "
-    "exception_instance.args as exception_str, "
-    "exception_instance.args as comments, "
+    "exception_instance.str_repr as exception_str, "
+    "exception_instance.comments as comments, "
     "exception_type.name as exception_name, "
     "exception_type.docstring as exception_docstring, "
     "exception_type.hierarchy as exception_hierarchy "

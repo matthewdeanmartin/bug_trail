@@ -5,8 +5,11 @@ Another module to avoid Circular Import
 from __future__ import annotations
 
 import datetime
+import logging
 import sqlite3
 from typing import Any, Union
+
+logger = logging.getLogger(__name__)
 
 ALL_TABLES = [
     "exception_instance",
@@ -78,4 +81,5 @@ def truncate_table(conn: sqlite3.Connection, table_name: str) -> None:
         cursor.execute("VACUUM;")  # Optional: Cleans the database file, resetting auto-increment counters
         conn.commit()
     except sqlite3.Error as e:
-        print(f"An error occurred: {e}")
+        conn.rollback()
+        logger.error("truncate_table(%s) failed: %s", table_name, e)

@@ -103,17 +103,21 @@ def insert_exception_instance(conn: sqlite3.Connection, record_id: str, ex: Base
     cursor.execute("SELECT id FROM exception_type WHERE name = ? AND module = ?", (ex_name, ex_module))
     type_data = cursor.fetchone()
 
-    if type_data is not None:
-        type_id = type_data[0]
-        ex_args = str(ex.args)
-        ex_str_repr = str(ex)
+    if type_data is None:
+        raise RuntimeError(
+            f"exception_type row not found for {ex.__class__.__module__}.{ex.__class__.__name__} "
+            f"— call insert_exception_type before insert_exception_instance"
+        )
+    type_id = type_data[0]
+    ex_args = str(ex.args)
+    ex_str_repr = str(ex)
 
-        # Insert new exception instance
-        sql_insert_exception_instance = """INSERT INTO exception_instance 
-                                           (record_id, type_id, args, str_repr, comments) 
-                                           VALUES (?, ?, ?, ?, ?)"""
-        cursor.execute(sql_insert_exception_instance, (record_id, type_id, ex_args, ex_str_repr, comments))
-        conn.commit()
+    # Insert new exception instance
+    sql_insert_exception_instance = """INSERT INTO exception_instance
+                                       (record_id, type_id, args, str_repr, comments)
+                                       VALUES (?, ?, ?, ?, ?)"""
+    cursor.execute(sql_insert_exception_instance, (record_id, type_id, ex_args, ex_str_repr, comments))
+    conn.commit()
 
 
 def create_traceback_info_table(conn: sqlite3.Connection) -> None:
@@ -124,7 +128,7 @@ def create_traceback_info_table(conn: sqlite3.Connection) -> None:
                                             frame_number INTEGER,
                                             f_locals TEXT,
                                             f_globals TEXT,
-                                            FOREIGN KEY (exception_instance_id) REFERENCES exception_instance (id)
+                                            FOREIGN KEY (exception_instance_id) REFERENCES exception_instance (record_id)
                                         );"""
     cursor = conn.cursor()
     cursor.execute(sql_create_traceback_info_table)

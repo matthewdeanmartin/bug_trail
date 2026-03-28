@@ -25,6 +25,9 @@ def render_system_info(db_path: str, log_folder: str) -> None:
     template = env.get_template(f"view_{title}.jinja")
 
     data = fetch_table_as_list_of_dict(db_path, "system_info")
+    if not data:
+        logger.warning("system_info table is empty, skipping render")
+        return
 
     # Render the template with log data
     html_output = template.render(log=data[0])

@@ -5,6 +5,7 @@ System info for including with error logs
 from __future__ import annotations
 
 import json
+import os
 import platform
 from collections.abc import Sequence
 from typing import Any
@@ -61,8 +62,9 @@ def get_system_info() -> dict[str, Any]:
     cpu_clock_speed = convert_mhz_to_ghz(cpu_freq.current)
     cpu_count = psutil.cpu_count(logical=False)
 
-    # Disk information
-    disk_usage = psutil.disk_usage("/")
+    # Disk information — use the system drive on Windows, root on Unix
+    disk_root = os.environ.get("SystemDrive", "C:\\") if platform.system() == "Windows" else "/"
+    disk_usage = psutil.disk_usage(disk_root)
     total_disk_space = convert_bytes_to_gb(disk_usage.total)
     available_disk_space = convert_bytes_to_gb(disk_usage.free)
 
@@ -146,8 +148,5 @@ def insert_system_info(conn, info):
 
 def record_system_info(conn):
     """Records system information into the database."""
-    if conn is None:
-        raise TypeError("Need live connection")
-    create_system_info_table(conn)
     system_info = get_system_info()
     insert_system_info(conn, system_info)

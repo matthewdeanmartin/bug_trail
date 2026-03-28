@@ -47,12 +47,13 @@ class BaseErrorLogHandler:
         self.minimum_level = minimum_level
         self.create_table_sql: str = ""
         self.formatted_sql = ""
-        self.field_names = []
+        self.field_names: list[str] = []
         self._lock = threading.Lock()
-        self.conn = None
+        self.conn: sqlite3.Connection | None = None
         
         # Ensure tables exist
         self.reopen()
+        assert self.conn is not None
         self.create_table()
         create_exception_type_table(self.conn)
         create_exception_instance_table(self.conn)
@@ -64,7 +65,7 @@ class BaseErrorLogHandler:
         create_python_libraries_table(self.conn)
         if is_table_empty(self.conn, "python_libraries"):
             record_venv_info(self.conn)
-            
+
         if not self.single_threaded:
             self.conn.close()
             self.conn = None
@@ -168,6 +169,7 @@ class BaseErrorLogHandler:
                 with self._lock:
                     if not self.single_threaded:
                         self.reopen()
+                    assert self.conn is not None
                     try:
                         # not unique per log entry
                         insert_exception_type(self.conn, exception)
@@ -215,6 +217,7 @@ class BaseErrorLogHandler:
         with self._lock:
             if not self.single_threaded or self.conn is None:
                 self.reopen()
+            assert self.conn is not None
             try:
                 self.conn.execute(sql, args)
                 self.conn.commit()

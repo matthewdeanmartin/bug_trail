@@ -7,7 +7,7 @@ from __future__ import annotations
 import logging
 
 
-def create_table_schemas(pico: bool) -> str:
+def create_table_schemas() -> str:
     """
     Schema
     """
@@ -51,5 +51,4 @@ def create_table_schemas(pico: bool) -> str:
 
 
 if __name__ == "__main__":
-    print(create_table_schemas(True))
-    print(create_table_schemas(False))
+    print(create_table_schemas())

@@ -56,9 +56,6 @@ def get_installed_packages() -> Generator[tuple[str, str, Mapping[str, Any]], No
 
 
 def record_venv_info(conn: sqlite3.Connection) -> None:
-    if conn is None:
-        raise TypeError("Need live connection")
-    create_python_libraries_table(conn)
     for name, version, the_metadata in get_installed_packages():
         urls: dict[str, str] = {}  # Initialize urls as a Dict
 

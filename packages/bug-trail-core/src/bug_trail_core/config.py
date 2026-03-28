@@ -51,7 +51,7 @@ def read_config(config_path: str) -> BugTrailConfig:
         else:
             bug_trail_config = toml.load(config_path)
     # toml and tomllib raise different errors
-    except BaseException:
+    except Exception:
         bug_trail_config = {}
 
     section = bug_trail_config.get("tool", {}).get("bug_trail", {})

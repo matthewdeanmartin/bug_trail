@@ -47,7 +47,8 @@ def render_detail(db_path: str, log_folder: str, source_folder: str) -> str:
 
         location = f"{log_folder}/{key}"
         if os.path.exists(location):
-            print(f"Already exists, {location}, skipping")
+            logger.debug("Already exists, %s, skipping", location)
+            continue
 
         if log_entry["ExceptionDetails"]["exception_hierarchy"]:
             exception_hierarchy = json.loads(log_entry["ExceptionDetails"]["exception_hierarchy"])
