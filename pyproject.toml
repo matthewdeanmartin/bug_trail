@@ -1,190 +1,56 @@
 [project]
-name = "bug_trail"
-version = "3.0.1"
-description = "Local static html error logger to use while developing python code."
-authors = [
-    { name = "Matthew Martin", email = "matthewdeanmartin@gmail.com" },
-]
-license = { text = "MIT" }
-readme = "README.md"
-requires-python = ">=3.12"
-keywords = ["error logging", "html log report", ]
-classifiers = [
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3.12",
-    "Programming Language :: Python :: 3.13",
-    "Programming Language :: Python :: 3.14",
-]
+name = "bug-trail-workspace"
+version = "0.0.0"
+description = "Monorepo workspace for bug-trail"
 dependencies = [
-    "bug-trail-core==3.1.0",
-    "humanize",
-    "jinja2>=3.1.2",
-    "pygments",
-    # "python-ctags3",
-    "watchdog>=3.0.0",
+    "bug-trail",
+    "bug-trail-core",
 ]
 
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.uv.sources]
+bug-trail = { workspace = true }
+bug-trail-core = { workspace = true }
 
 [dependency-groups]
 dev = [
     "metametameta>=0.1.2",
     "hatchling",
-    # build tools
-    "black>=23.11.0",
     "pytest>=7.4.3",
     "pytest-cov>=4.1.0",
     "pylint>=3.0.2",
     "ruff>=0.1.9",
-    # types
     "mypy>=1.8.0",
     "types-toml",
-    # more testing
-    "pytest-snapshot>=0.9.0",
+    "types-psutil",
+    "types-Pygments",
     "pre-commit>=3.5.0",
     "scriv>=1.5.0",
-    # docs
-    "interrogate >=1.5.0",
-    #pydoctest = ">=0.1.22"
-    "pdoc3>=0.10.0"
+    "interrogate>=1.5.0",
+    "pdoc3>=0.10.0",
+    "zensical>=0.0.29",
 ]
-
-
-[project.urls]
-"Bug Tracker" = "https://github.com/matthewdeanmartin/bug_trail/issues"
-"Change Log" = "https://github.com/matthewdeanmartin/bug_trail/blob/main/CHANGELOG.md"
-
-[project.scripts]
-bug_trail = 'bug_trail.__main__:main'
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[tool.black]
-line-length = 120
-target-version = ['py39']
-include = '\.pyi?$'
-exclude = '''
-
-(
-  /(
-      \.eggs         # exclude a few common directories in the
-    | \.git          # root of the project
-    | \.hg
-    | \.mypy_cache
-    | \.tox
-    | \.venv
-    | _build
-    | buck-out
-    | build
-    | dist
-  )/
-  | foo.py           # also separately exclude a file named foo.py in
-                     # the root of the project
-)
-'''
-
-[tool.pytest.ini_options]
-minversion = "6.0"
-testpaths = [
-    "test",
-    "tests"
-]
-junit_family = "xunit1"
-norecursedirs = ["vendor", "scripts"]
-# don't know how to do this in toml
-#addopts = "--strict-markers"
-#markers =
-#	slow: marks tests as slow (deselect with '-m "not slow"')
-#	fast: marks tests as fast (deselect with '-m "not fast"')
-
-
-[tool.isort]
-default_section = "THIRDPARTY"
-force_grid_wrap = 0
-include_trailing_comma = true
-known_first_party = ["dedlin"]
-line_length = 120
-multi_line_output = 3
-use_parentheses = true
 
 [tool.ruff]
 line-length = 320
+target-version = "py312"
 
-# Enable Pyflakes `E` and `F` codes by default.
-select = ["E", "F",
-    "D", # docs
-    "UP", # pyupgrade
-    "B", # bugbear
-]
+[tool.ruff.lint]
+select = ["E", "F", "D", "UP", "B"]
 ignore = [
     "E722",
-    # only track structural problems with docstrings, not whitespace, nor missing
     "D200", "D212", "D415", "D411", "D205", "D102", "D103", "D100", "D107", "D101", "D104", "D105",
-    "UP007", "UP038", # Not sure if | is well supported in lowever versions of python
+    "UP007", "UP038",
 ]
-
-# Exclude a variety of commonly ignored directories.
-exclude = [
-    "dead_code",
-    ".bzr",
-    ".direnv",
-    ".eggs",
-    ".git",
-    ".hg",
-    ".mypy_cache",
-    ".nox",
-    ".pants.d",
-    ".ruff_cache",
-    ".svn",
-    ".tox",
-    ".venv",
-    "__pypackages__",
-    "_build",
-    "buck-out",
-    "build",
-    "dist",
-    "node_modules",
-    "venv",
-]
-per-file-ignores = { }
-
-# Allow unused variables when underscore-prefixed.
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
-
-# Assume Python 3.10.
-target-version = "py311"
-
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
 
-
-[tool.scriv]
-version = "literal: pyproject.toml: tool.poetry.version"
-format = "md"
-main_branches = "master, main, develop, dev"
-
-[tool.coverage.report]
-# Regexes for lines to exclude from consideration
-exclude_also = [
-    # Don't complain about missing debug-only code:
-    "def __repr__",
-    "if self\\.debug",
-    # Don't complain if tests don't hit defensive assertion code:
-    "raise AssertionError",
-    "raise NotImplementedError",
-    # Don't complain if non-runnable code isn't run:
-    "if 0:",
-    "if __name__ == .__main__.:",
-    # Don't complain about abstract methods, they aren't run:
-    "@(abc\\.)?abstractmethod",
-]
-
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = ["packages"]
 
 [tool.bug_trail]
 app_name = "myapp"

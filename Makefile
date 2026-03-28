@@ -1,131 +1,28 @@
-# isort . && black . && bandit -r . && pylint && pre-commit run --all-files
-# Get changed files
+# Root Makefile for bug-trail-workspace
 
-FILES := $(wildcard **/*.py)
+.PHONY: sync test lint clean update-about
 
-# if you wrap everything in uv run, it runs slower.
-ifeq ($(origin VIRTUAL_ENV),undefined)
-    VENV := uv run
-else
-    VENV :=
-endif
+sync:
+	uv sync
 
-uv.lock: pyproject.toml
-	@echo "Installing dependencies"
-	@uv sync
+test:
+	uv run pytest packages
 
-clean-pyc:
-	@echo "Removing compiled files"
-# 	@find bug_trail -name '*.pyc' -exec rm -f {} + || true
-#	@find bug_trail -name '*.pyo' -exec rm -f {} + || true
-#	@find bug_trail -name '__pycache__' -exec rm -fr {} + || true
+lint:
+	uv run ruff check packages
+	uv run mypy packages
 
-clean-test:
-	@echo "Removing coverage data"
-	@rm -f .coverage || true
-	@rm -f .coverage.* || true
+clean:
+	rm -rf .venv .pytest_cache .mypy_cache .ruff_cache docs_api site
+	$(MAKE) -C packages/bug-trail-core clean
+	$(MAKE) -C packages/bug-trail clean
 
-clean: clean-pyc clean-test
+update-about:
+	uv run metametameta pep621 --source packages/bug-trail-core/pyproject.toml --output packages/bug-trail-core/src/bug_trail_core/__about__.py
+	uv run metametameta pep621 --source packages/bug-trail/pyproject.toml --output packages/bug-trail/src/bug_trail/__about__.py
 
-# tests can't be expected to pass if dependencies aren't installed.
-# tests are often slow and linting is fast, so run tests on linted code.
-test: clean uv.lock
-	@echo "Running unit tests"
-	$(VENV) pytest --doctest-modules bug_trail
-	# $(VENV) python -m unittest discover
-	# -n 2 # no parallel, logging lib has threading issues.
-	$(VENV) py.test tests -vv --cov=bug_trail --cov-report=html --cov-fail-under 70
-	$(VENV) bash basic_test.sh
-
-
-.build_history:
-	@mkdir -p .build_history
-
-.build_history/isort: .build_history $(FILES)
-	@echo "Formatting imports"
-	$(VENV) isort .
-	@touch .build_history/isort
-
-.PHONY: isort
-isort: .build_history/isort
-
-.build_history/black: .build_history .build_history/isort $(FILES)
-	$(VENV) metametameta pep621
-	@echo "Formatting code"
-	$(VENV) black bug_trail --exclude .venv
-	$(VENV) black tests --exclude .venv
-	# $(VENV) black scripts --exclude .venv
-	@touch .build_history/black
-	[ -n "$$CI" ] && echo "Skipping coderoller-flatten-repo in CI" || $(VENV) coderoller-flatten-repo bug_trail
-
-
-.PHONY: black
-black: .build_history/black
-
-.build_history/pre-commit: .build_history .build_history/isort .build_history/black
-	@echo "Pre-commit checks"
-	$(VENV) pre-commit run --all-files
-	@touch .build_history/pre-commit
-
-.PHONY: pre-commit
-pre-commit: .build_history/pre-commit
-
-.build_history/bandit: .build_history $(FILES)
-	@echo "Security checks"
-	$(VENV)  bandit bug_trail -r
-	@touch .build_history/bandit
-
-.PHONY: bandit
-bandit: .build_history/bandit
-
-.PHONY: pylint
-.build_history/pylint: .build_history .build_history/isort .build_history/black $(FILES)
-	@echo "Linting with pylint"
-	$(VENV) ruff --fix
-	$(VENV) pylint bug_trail --fail-under 9.8
-	@touch .build_history/pylint
-
-# for when using -j (jobs, run in parallel)
-.NOTPARALLEL: .build_history/isort .build_history/black
-
-check: mypy test pylint bandit pre-commit
-
-.PHONY: publish
-publish: test
-	rm -rf dist && hatchling build
-
-.PHONY: mypy
-mypy:
-	$(VENV) mypy bug_trail --ignore-missing-imports --check-untyped-defs
-
-
-check_docs:
-	$(VENV) interrogate bug_trail --verbose
-	$(VENV) pydoctest --config .pydoctest.json | grep -v "__init__" | grep -v "__main__" | grep -v "Unable to parse"
-
-make_docs:
-	pdoc bug_trail --html -o docs --force
-
-check_md:
-	$(VENV) mdformat README.md docs/*.md
-	$(VENV) linkcheckMarkdown README.md
-	$(VENV) markdownlint README.md --config .markdownlintrc
-
-check_spelling:
-	$(VENV) pylint bug_trail --enable C0402 --rcfile=.pylintrc_spell
-	$(VENV) codespell README.md --ignore-words=private_dictionary.txt
-	$(VENV) codespell bug_trail --ignore-words=private_dictionary.txt
-
-check_changelog:
-	# pipx install keepachangelog-manager
-	$(VENV) changelogmanager validate
-
-check_all_docs: check_docs check_md check_spelling check_changelog
-
-check_own_ver:
-	# Can it verify itself?
-	$(VENV) ./dog_food.sh
-
-#audit:
-#	# $(VENV) python -m bug_trail audit
-#	$(VENV) tool_audit single bug_trail --version=">=2.0.0"
+docs:
+	rm -rf docs_api site
+	mkdir -p docs_api
+	PYTHONPATH="packages/bug-trail-core/src;packages/bug-trail/src" uv run pdoc --html --output-dir docs_api bug_trail_core bug_trail --force
+	uv run zensical build
