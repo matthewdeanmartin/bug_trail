@@ -81,7 +81,13 @@ if __name__ == "__main__":
             # if not is_pkg:
             # Gets file where declared.
             file = get_module_file(module)
-            for candidate in ["__init__.py", "__about__.py", "about.py", "__meta__.py", file]:
+            for candidate in [
+                "__init__.py",
+                "__about__.py",
+                "about.py",
+                "__meta__.py",
+                file,
+            ]:
                 init_file = get_init(module, candidate)
                 metadata = get_meta(init_file)
                 if metadata:

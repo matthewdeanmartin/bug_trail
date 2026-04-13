@@ -59,7 +59,9 @@ def is_table_empty(conn: sqlite3.Connection, table_name: str) -> bool:
         raise TypeError("Bad table name.")
     try:
         cursor = conn.cursor()
-        cursor.execute(f"SELECT EXISTS(SELECT 1 FROM {table_name} LIMIT 1);")  # nosec: table checked above
+        cursor.execute(
+            f"SELECT EXISTS(SELECT 1 FROM {table_name} LIMIT 1);"
+        )  # nosec: table checked above
         return cursor.fetchone()[0] == 0
     except sqlite3.Error:
         return True  # Assuming empty if an error occurs
@@ -78,7 +80,9 @@ def truncate_table(conn: sqlite3.Connection, table_name: str) -> None:
     try:
         cursor = conn.cursor()
         cursor.execute(f"DELETE FROM {table_name};")  # nosec: table checked above
-        cursor.execute("VACUUM;")  # Optional: Cleans the database file, resetting auto-increment counters
+        cursor.execute(
+            "VACUUM;"
+        )  # Optional: Cleans the database file, resetting auto-increment counters
         conn.commit()
     except sqlite3.Error as e:
         conn.rollback()

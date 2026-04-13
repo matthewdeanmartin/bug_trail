@@ -114,5 +114,13 @@ def test_defensive_if(tmp_path):
 
     # Initialize BugTrailHandler with a mock BaseErrorLogHandler
     handler = BugTrailHandler(db_path)
-    record = logging.LogRecord("test_logger", logging.INFO, "test_file.py", 123, "This is a test message", None, None)
+    record = logging.LogRecord(
+        "test_logger",
+        logging.INFO,
+        "test_file.py",
+        123,
+        "This is a test message",
+        None,
+        None,
+    )
     handler.emit(record)  # Call emit with None to test the defensive if

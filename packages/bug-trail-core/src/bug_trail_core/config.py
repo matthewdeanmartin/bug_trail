@@ -60,16 +60,26 @@ def read_config(config_path: str) -> BugTrailConfig:
     app_name = section.get("app_name", "bug_trail")
     app_author = section.get("app_author", "bug_trail")
 
-    default_data_dir = platformdirs.user_data_dir(app_name, app_author, ensure_exists=True)
-    default_config_dir = platformdirs.user_config_dir(app_name, app_author, ensure_exists=True)
+    default_data_dir = platformdirs.user_data_dir(
+        app_name, app_author, ensure_exists=True
+    )
+    default_config_dir = platformdirs.user_config_dir(
+        app_name, app_author, ensure_exists=True
+    )
 
-    report_folder = section.get("report_folder", os.path.join(default_data_dir, "reports"))
-    database_path = section.get("database_path", os.path.join(default_config_dir, "bug_trail.db"))
+    report_folder = section.get(
+        "report_folder", os.path.join(default_data_dir, "reports")
+    )
+    database_path = section.get(
+        "database_path", os.path.join(default_config_dir, "bug_trail.db")
+    )
 
     # input!
     source_folder = section.get("source_folder", "")
     ctags_file = section.get("ctags_file", "")
-    return BugTrailConfig(app_name, app_author, report_folder, database_path, source_folder, ctags_file)
+    return BugTrailConfig(
+        app_name, app_author, report_folder, database_path, source_folder, ctags_file
+    )
 
 
 if __name__ == "__main__":

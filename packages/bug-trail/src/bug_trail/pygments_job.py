@@ -16,7 +16,9 @@ from pygments.lexers import PythonLexer  # pylint: disable=no-name-in-module
 logger = logging.getLogger(__name__)
 
 
-def highlight_python_files(root_directory: str, output_directory: str, ctags_file: str) -> int:
+def highlight_python_files(
+    root_directory: str, output_directory: str, ctags_file: str
+) -> int:
     """
     Highlight all python files in a directory and its subdirectories and save them as HTML files
     Args:

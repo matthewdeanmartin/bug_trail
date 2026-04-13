@@ -64,7 +64,9 @@ def connect(db_path: str) -> sqlite3.Connection:
     return sqlite3.connect(db_path)
 
 
-def fetch_log_data(db_path: str, limit: int = -1, offset: int = -1) -> list[dict[str, Any]]:
+def fetch_log_data(
+    db_path: str, limit: int = -1, offset: int = -1
+) -> list[dict[str, Any]]:
     """
     Fetch all log records from the database.
 
@@ -195,13 +197,26 @@ def fetch_log_data_grouped(db_path: str) -> Any:
 
         # Grouping the log record
         grouped_record = {
-            "MessageDetails": {key: log_record[key] for key in ["msg", "args", "levelname", "levelno"]},
-            "SourceContext": {
-                key: log_record[key] for key in ["name", "pathname", "filename", "module", "funcName", "lineno"]
+            "MessageDetails": {
+                key: log_record[key] for key in ["msg", "args", "levelname", "levelno"]
             },
-            "TemporalDetails": {key: log_record[key] for key in ["created", "msecs", "relativeCreated"]},
+            "SourceContext": {
+                key: log_record[key]
+                for key in [
+                    "name",
+                    "pathname",
+                    "filename",
+                    "module",
+                    "funcName",
+                    "lineno",
+                ]
+            },
+            "TemporalDetails": {
+                key: log_record[key] for key in ["created", "msecs", "relativeCreated"]
+            },
             "ProcessThreadContext": {
-                key: log_record[key] for key in ["process", "processName", "thread", "threadName"]
+                key: log_record[key]
+                for key in ["process", "processName", "thread", "threadName"]
             },
             "ExceptionDetails": {
                 key: log_record.get(key)

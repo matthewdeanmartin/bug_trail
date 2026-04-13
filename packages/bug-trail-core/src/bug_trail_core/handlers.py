@@ -34,7 +34,11 @@ class BaseErrorLogHandler:
     """
 
     def __init__(
-        self, db_path: str, pico: bool = False, minimum_level: int = logging.ERROR, single_threaded: bool = True
+        self,
+        db_path: str,
+        pico: bool = False,
+        minimum_level: int = logging.ERROR,
+        single_threaded: bool = True,
     ) -> None:
         """
         Initialize the handler
@@ -50,7 +54,7 @@ class BaseErrorLogHandler:
         self.field_names: list[str] = []
         self._lock = threading.Lock()
         self.conn: sqlite3.Connection | None = None
-        
+
         # Ensure tables exist
         self.reopen()
         assert self.conn is not None
@@ -77,8 +81,12 @@ class BaseErrorLogHandler:
                 self.conn.close()
             except sqlite3.ProgrammingError:
                 pass
-        self.conn = sqlite3.connect(self.db_path, check_same_thread=self.single_threaded)
-        self.conn.execute("PRAGMA journal_mode = WAL;")  # WAL is generally better for concurrency
+        self.conn = sqlite3.connect(
+            self.db_path, check_same_thread=self.single_threaded
+        )
+        self.conn.execute(
+            "PRAGMA journal_mode = WAL;"
+        )  # WAL is generally better for concurrency
         self.conn.execute("PRAGMA synchronous = NORMAL;")
 
     def create_table(self) -> None:
@@ -121,11 +129,15 @@ class BaseErrorLogHandler:
                 taskName TEXT,
                 user_data TEXT
             )"""
-            
+
         # Extract known field names from the SQL to avoid 'extra' crash
         self.field_names = []
         # Find all content within parentheses of CREATE TABLE
-        match = re.search(r"CREATE TABLE IF NOT EXISTS logs\s*\((.*)\)", self.create_table_sql, re.DOTALL | re.IGNORECASE)
+        match = re.search(
+            r"CREATE TABLE IF NOT EXISTS logs\s*\((.*)\)",
+            self.create_table_sql,
+            re.DOTALL | re.IGNORECASE,
+        )
         if match:
             column_defs = match.group(1).split(",")
             for col_def in column_defs:
@@ -136,7 +148,13 @@ class BaseErrorLogHandler:
                 parts = col_def.split()
                 if parts:
                     col_name = parts[0].strip()
-                    if col_name.upper() not in ("PRIMARY", "FOREIGN", "CONSTRAINT", "CHECK", "UNIQUE"):
+                    if col_name.upper() not in (
+                        "PRIMARY",
+                        "FOREIGN",
+                        "CONSTRAINT",
+                        "CHECK",
+                        "UNIQUE",
+                    ):
                         self.field_names.append(col_name)
 
         self.safe_execute(self.create_table_sql, [])
@@ -178,7 +196,11 @@ class BaseErrorLogHandler:
                         exception_instance_id = record_id
                         # Insert traceback info
                         if exception and exception.__traceback__:
-                            insert_traceback_info(self.conn, exception_instance_id, exception.__traceback__)
+                            insert_traceback_info(
+                                self.conn,
+                                exception_instance_id,
+                                exception.__traceback__,
+                            )
                         self.conn.commit()
                     finally:
                         if not self.single_threaded:
@@ -191,24 +213,34 @@ class BaseErrorLogHandler:
         known_attrs = set(self.field_names)
         user_data = {}
         # Attributes to ignore (internal to LogRecord or already handled)
-        internal_attrs = {'getMessage', 'exc_info', 'exc_text', 'stack_info', 'record_id'}
-        
+        internal_attrs = {
+            "getMessage",
+            "exc_info",
+            "exc_text",
+            "stack_info",
+            "record_id",
+        }
+
         for attr in dir(record):
-            if attr.startswith('__') or attr in internal_attrs:
+            if attr.startswith("__") or attr in internal_attrs:
                 continue
             if attr not in known_attrs:
                 val = getattr(record, attr)
                 if not callable(val):
                     user_data[attr] = val
-        
+
         record.user_data = json.dumps(user_data, default=str) if user_data else None
 
         if not self.formatted_sql:
             fields = ["record_id"] + self.field_names
             placeholders = ", ".join(["?" for _ in fields])
-            self.formatted_sql = f"INSERT INTO logs ({', '.join(fields)}) VALUES ({placeholders})"
+            self.formatted_sql = (
+                f"INSERT INTO logs ({', '.join(fields)}) VALUES ({placeholders})"
+            )
 
-        args = [record_id] + [getattr(record, field, None) for field in self.field_names]
+        args = [record_id] + [
+            getattr(record, field, None) for field in self.field_names
+        ]
         args = [serialize_to_sqlite_supported(arg) for arg in args]
 
         self.safe_execute(self.formatted_sql, args)
@@ -252,14 +284,21 @@ class BugTrailHandler(logging.Handler):
     A custom logging handler that logs to a SQLite database.
     """
 
-    def __init__(self, db_path: str, minimum_level: int = logging.ERROR, single_threaded: bool = True) -> None:
+    def __init__(
+        self,
+        db_path: str,
+        minimum_level: int = logging.ERROR,
+        single_threaded: bool = True,
+    ) -> None:
         """
         Initialize the handler
         Args:
             db_path (str): Path to the SQLite database
             single_threaded (bool): If True, the handler will close the connection after each emit.
         """
-        self.base_handler = BaseErrorLogHandler(db_path, minimum_level=minimum_level, single_threaded=single_threaded)
+        self.base_handler = BaseErrorLogHandler(
+            db_path, minimum_level=minimum_level, single_threaded=single_threaded
+        )
         super().__init__()
 
     def emit(self, record: logging.LogRecord) -> None:

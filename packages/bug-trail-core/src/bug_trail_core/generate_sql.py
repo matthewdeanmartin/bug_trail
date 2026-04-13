@@ -30,12 +30,20 @@ def create_table_schemas() -> str:
     # we live with some duplication here.
 
     dummy_record = logging.LogRecord(
-        name="", level=logging.ERROR, pathname="", lineno=0, msg="", args=(), exc_info=None
+        name="",
+        level=logging.ERROR,
+        pathname="",
+        lineno=0,
+        msg="",
+        args=(),
+        exc_info=None,
     )
     for attr in dir(dummy_record):
         if not callable(getattr(dummy_record, attr)) and not attr.startswith("__"):
             attr_type = type(getattr(dummy_record, attr, ""))
-            sqlite_type = type_mapping.get(attr_type, "TEXT")  # Default to TEXT if type not in mapping
+            sqlite_type = type_mapping.get(
+                attr_type, "TEXT"
+            )  # Default to TEXT if type not in mapping
             columns.append(f"{attr} {sqlite_type}")
 
     # Add traceback column

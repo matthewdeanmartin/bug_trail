@@ -50,7 +50,9 @@ def render_main(db_path: str, log_folder: str, source_folder: str) -> None:
             path_to_file_url(log_entry, log_folder, source_folder)
             add_url_to_source_context(log_entry)
 
-            log_entry["created"] = humanize_time(log_entry["created"], log_entry["msecs"])
+            log_entry["created"] = humanize_time(
+                log_entry["created"], log_entry["msecs"]
+            )
 
             # Consolidate msg and args
             replace_msg_args(log_entry)

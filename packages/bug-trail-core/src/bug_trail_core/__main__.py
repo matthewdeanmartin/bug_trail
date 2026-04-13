@@ -20,7 +20,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         int: 0 if successful, 1 if not
     """
     parser = argparse.ArgumentParser(
-        prog="bug_trail_core", description="Core library for bug_trail a tool for local logging and error reporting."
+        prog="bug_trail_core",
+        description="Core library for bug_trail a tool for local logging and error reporting.",
     )
 
     parser.add_argument(
@@ -29,14 +30,20 @@ def main(argv: Sequence[str] | None = None) -> int:
         help="Path to the configuration file (usually pyproject.toml)",
         required=False,
     )
-    parser.add_argument("--version", action="version", version="%(prog)s " + f"{__version__}")
+    parser.add_argument(
+        "--version", action="version", version="%(prog)s " + f"{__version__}"
+    )
 
     args = parser.parse_args(argv)
     if args.show_config:
-        print("This is the core library. Install or run bug_trail to generate the website to view the logs.\n")
+        print(
+            "This is the core library. Install or run bug_trail to generate the website to view the logs.\n"
+        )
         print(read_config(args.show_config))
     else:
-        print("This is the core library. Install or run bug_trail to generate the website to view the logs.\n")
+        print(
+            "This is the core library. Install or run bug_trail to generate the website to view the logs.\n"
+        )
         parser.print_help()
 
     return 0

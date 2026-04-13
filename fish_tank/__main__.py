@@ -28,7 +28,9 @@ def main():
 
     for _ in range(random.randint(5, 10)):
         fish = Fish(
-            random.choice(best_fish.fish), random.randint(0, tank_width - 2), random.randint(0, tank_height - 1)
+            random.choice(best_fish.fish),
+            random.randint(0, tank_width - 2),
+            random.randint(0, tank_height - 1),
         )
         if fish.emoji == "🦈":
             logger.warning(f"There is a shark, watch out: {fish}")

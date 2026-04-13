@@ -63,7 +63,9 @@ def get_system_info() -> dict[str, Any]:
     cpu_count = psutil.cpu_count(logical=False)
 
     # Disk information — use the system drive on Windows, root on Unix
-    disk_root = os.environ.get("SystemDrive", "C:\\") if platform.system() == "Windows" else "/"
+    disk_root = (
+        os.environ.get("SystemDrive", "C:\\") if platform.system() == "Windows" else "/"
+    )
     disk_usage = psutil.disk_usage(disk_root)
     total_disk_space = convert_bytes_to_gb(disk_usage.total)
     available_disk_space = convert_bytes_to_gb(disk_usage.free)
@@ -140,7 +142,9 @@ def insert_system_info(conn, info):
             info["Operating System Summary"]["Release"],
             info["Operating System Summary"]["Architecture"],
             info["Operating System Summary"]["Version"],
-            json.dumps(info["Operating System Summary"]["Windows Info"]),  # Store as JSON string
+            json.dumps(
+                info["Operating System Summary"]["Windows Info"]
+            ),  # Store as JSON string
         ),
     )
     conn.commit()

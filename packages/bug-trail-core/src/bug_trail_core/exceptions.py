@@ -62,7 +62,10 @@ def insert_exception_type(conn: sqlite3.Connection, ex: BaseException) -> int:
 
     # Check if this type of exception already exists
     cursor = conn.cursor()
-    cursor.execute("SELECT id FROM exception_type WHERE name = ? AND module = ?", (ex_name, ex_module))
+    cursor.execute(
+        "SELECT id FROM exception_type WHERE name = ? AND module = ?",
+        (ex_name, ex_module),
+    )
     data = cursor.fetchone()
 
     # Insert new exception type along with its hierarchy
@@ -70,10 +73,15 @@ def insert_exception_type(conn: sqlite3.Connection, ex: BaseException) -> int:
         return data[0]
     sql_insert_exception_type = """INSERT INTO exception_type (name, module, docstring, hierarchy) 
                                    VALUES (?, ?, ?, ?)"""
-    cursor.execute(sql_insert_exception_type, (ex_name, ex_module, ex_docstring, ex_hierarchy))
+    cursor.execute(
+        sql_insert_exception_type, (ex_name, ex_module, ex_docstring, ex_hierarchy)
+    )
     conn.commit()
     cursor = conn.cursor()
-    cursor.execute("SELECT id FROM exception_type WHERE name = ? AND module = ?", (ex_name, ex_module))
+    cursor.execute(
+        "SELECT id FROM exception_type WHERE name = ? AND module = ?",
+        (ex_name, ex_module),
+    )
     data = cursor.fetchone()
     return data[0]
 
@@ -92,7 +100,9 @@ def create_exception_instance_table(conn: sqlite3.Connection) -> None:
     cursor.execute(sql_create_exception_instance_table)
 
 
-def insert_exception_instance(conn: sqlite3.Connection, record_id: str, ex: BaseException, comments: str = "") -> None:
+def insert_exception_instance(
+    conn: sqlite3.Connection, record_id: str, ex: BaseException, comments: str = ""
+) -> None:
     """Insert a new row into the exception_instance table"""
     ex_class = ex.__class__
     ex_name = ex_class.__name__
@@ -100,7 +110,10 @@ def insert_exception_instance(conn: sqlite3.Connection, record_id: str, ex: Base
 
     # Find the type_id from the exception_type table
     cursor = conn.cursor()
-    cursor.execute("SELECT id FROM exception_type WHERE name = ? AND module = ?", (ex_name, ex_module))
+    cursor.execute(
+        "SELECT id FROM exception_type WHERE name = ? AND module = ?",
+        (ex_name, ex_module),
+    )
     type_data = cursor.fetchone()
 
     if type_data is None:
@@ -116,7 +129,10 @@ def insert_exception_instance(conn: sqlite3.Connection, record_id: str, ex: Base
     sql_insert_exception_instance = """INSERT INTO exception_instance
                                        (record_id, type_id, args, str_repr, comments)
                                        VALUES (?, ?, ?, ?, ?)"""
-    cursor.execute(sql_insert_exception_instance, (record_id, type_id, ex_args, ex_str_repr, comments))
+    cursor.execute(
+        sql_insert_exception_instance,
+        (record_id, type_id, ex_args, ex_str_repr, comments),
+    )
     conn.commit()
 
 
@@ -134,7 +150,9 @@ def create_traceback_info_table(conn: sqlite3.Connection) -> None:
     cursor.execute(sql_create_traceback_info_table)
 
 
-def insert_traceback_info(conn: sqlite3.Connection, exception_instance_id: str, tb) -> None:
+def insert_traceback_info(
+    conn: sqlite3.Connection, exception_instance_id: str, tb
+) -> None:
     """Insert traceback information for each frame"""
     cursor = conn.cursor()
     frame_number = 0
@@ -147,7 +165,10 @@ def insert_traceback_info(conn: sqlite3.Connection, exception_instance_id: str, 
         sql_insert_traceback_info = """INSERT INTO traceback_info 
                                        (exception_instance_id, frame_number, f_locals, f_globals) 
                                        VALUES (?, ?, ?, ?)"""
-        cursor.execute(sql_insert_traceback_info, (exception_instance_id, frame_number, f_locals, f_globals))
+        cursor.execute(
+            sql_insert_traceback_info,
+            (exception_instance_id, frame_number, f_locals, f_globals),
+        )
 
         tb = tb.tb_next
         frame_number += 1
@@ -169,7 +190,9 @@ if __name__ == "__main__":
                 insert_exception_type(conn, ex)
                 # Insert exception instance and get its ID
                 ex.add_note("Hello!")
-                insert_exception_instance(conn, "abc", ex, "Comments about the exception")
+                insert_exception_instance(
+                    conn, "abc", ex, "Comments about the exception"
+                )
                 cursor = conn.cursor()
                 cursor.execute("SELECT last_insert_rowid()")
                 exception_instance_id = cursor.fetchone()[0]

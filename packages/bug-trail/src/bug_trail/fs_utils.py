@@ -80,7 +80,11 @@ def prompt_and_update_gitignore(repo_path: str) -> None:
 
     # Prompt user for action
     response = (
-        input("This directory is a Git repository. Do you want to ignore 'logs' directory? (y/n): ").strip().lower()
+        input(
+            "This directory is a Git repository. Do you want to ignore 'logs' directory? (y/n): "
+        )
+        .strip()
+        .lower()
     )
     if (response.lower() + "xxx")[0] == "y":
         with open(gitignore_path, "a", encoding="utf-8") as file:
