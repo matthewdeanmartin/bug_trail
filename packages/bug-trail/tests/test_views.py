@@ -3,7 +3,11 @@ from unittest.mock import patch
 
 from bug_trail_core.handlers import BugTrailHandler
 
-from bug_trail.view_shared import detail_file_name, detail_file_name_grouped, pretty_column_name
+from bug_trail.view_shared import (
+    detail_file_name,
+    detail_file_name_grouped,
+    pretty_column_name,
+)
 from bug_trail.views import render_all, render_detail, render_main
 
 
@@ -55,8 +59,15 @@ def test_pretty_column_name_regular():
 
 
 def test_detail_file_name():
-    log_entry = {"created": "2022.01.01_12_00_00", "filename": "test_file.py", "lineno": 123}
-    assert detail_file_name(log_entry) == "detail_2022_01_01_12_00_00_test_file_py_123.html"
+    log_entry = {
+        "created": "2022.01.01_12_00_00",
+        "filename": "test_file.py",
+        "lineno": 123,
+    }
+    assert (
+        detail_file_name(log_entry)
+        == "detail_2022_01_01_12_00_00_test_file_py_123.html"
+    )
 
 
 def test_detail_file_name_grouped():
@@ -64,7 +75,10 @@ def test_detail_file_name_grouped():
         "TemporalDetails": {"created": "2022.01.01_12_00_00"},
         "SourceContext": {"filename": "test_file.py", "lineno": 123},
     }
-    assert detail_file_name_grouped(log_entry) == "detail_2022_01_01_12_00_00_test_file_py_123.html"
+    assert (
+        detail_file_name_grouped(log_entry)
+        == "detail_2022_01_01_12_00_00_test_file_py_123.html"
+    )
 
 
 def test_render_detail(tmp_path):
@@ -89,7 +103,9 @@ def test_render_detail(tmp_path):
     # Optionally, check the contents of the HTML file
     with open(location, encoding="utf-8") as f:
         content = f.read()
-        assert "Test error log" in content  # Check for specific content based on log_entry
+        assert (
+            "Test error log" in content
+        )  # Check for specific content based on log_entry
 
     for leftover in logger.handlers:
         logger.removeHandler(leftover)

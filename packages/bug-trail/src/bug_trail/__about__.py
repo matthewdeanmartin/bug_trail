@@ -5,7 +5,7 @@ __all__ = [
     "__version__",
     "__description__",
     "__readme__",
-    "__requires_python__"
+    "__requires_python__",
 ]
 
 __title__ = "bug-trail"

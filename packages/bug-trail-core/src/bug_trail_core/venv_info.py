@@ -35,12 +35,16 @@ def create_python_libraries_table(conn: sqlite3.Connection) -> None:
     cursor.execute(sql_create_table)
 
 
-def insert_python_library(conn: sqlite3.Connection, library_name: str, version: str, urls: dict[str, str]) -> None:
+def insert_python_library(
+    conn: sqlite3.Connection, library_name: str, version: str, urls: dict[str, str]
+) -> None:
     sql_insert_library = """INSERT INTO python_libraries (row_id, library_name, version, urls)
                             VALUES (?, ?, ?, ?)"""
     cursor = conn.cursor()  # Corrected: This should be conn.cursor(), not conn.select()
     row_id = str(uuid.uuid4())
-    cursor.execute(sql_insert_library, (row_id, library_name, version, json.dumps(urls)))
+    cursor.execute(
+        sql_insert_library, (row_id, library_name, version, json.dumps(urls))
+    )
     conn.commit()
 
 

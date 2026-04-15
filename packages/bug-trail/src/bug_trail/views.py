@@ -14,7 +14,9 @@ from bug_trail.view_system_info import render_system_info
 logger = logging.getLogger(__name__)
 
 
-def render_all(db_path: str, logs_folder: str, source_folder: str, ctags_file: str) -> None:
+def render_all(
+    db_path: str, logs_folder: str, source_folder: str, ctags_file: str
+) -> None:
     """
     Render all the pages
 
@@ -38,4 +40,9 @@ def render_all(db_path: str, logs_folder: str, source_folder: str, ctags_file: s
 
 
 if __name__ == "__main__":
-    render_all(db_path="error_log.db", logs_folder="logs", source_folder="../bug_trail", ctags_file="")
+    render_all(
+        db_path="error_log.db",
+        logs_folder="logs",
+        source_folder="../bug_trail",
+        ctags_file="",
+    )

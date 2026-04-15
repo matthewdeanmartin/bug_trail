@@ -188,7 +188,9 @@ def add_url_to_source_context(source_context: dict[str, Any]):
     """
     if not source_context.get("pathname"):
         return source_context
-    source_context["pathname"] = f"{source_context['pathname']}.html#line-{source_context['lineno']}"
+    source_context["pathname"] = (
+        f"{source_context['pathname']}.html#line-{source_context['lineno']}"
+    )
     return source_context
 
 
@@ -215,7 +217,9 @@ def find_and_return_after(text: str, search_string: str) -> str:
     return ""
 
 
-def path_to_file_url(source_context: dict[str, Any], logs_folder, source_folder: str) -> None:
+def path_to_file_url(
+    source_context: dict[str, Any], logs_folder, source_folder: str
+) -> None:
     """
     Convert a path to a file url
     Args:

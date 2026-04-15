@@ -51,28 +51,40 @@ def render_detail(db_path: str, log_folder: str, source_folder: str) -> str:
             continue
 
         if log_entry["ExceptionDetails"]["exception_hierarchy"]:
-            exception_hierarchy = json.loads(log_entry["ExceptionDetails"]["exception_hierarchy"])
+            exception_hierarchy = json.loads(
+                log_entry["ExceptionDetails"]["exception_hierarchy"]
+            )
             # why as I logging this?
             # logger.info(exception_hierarchy)
             interesting_hierarchy = []
             for the_type, description in exception_hierarchy:
                 if the_type not in ("type", "object"):
-                    interesting_hierarchy.append({"type": the_type, "description": description})
+                    interesting_hierarchy.append(
+                        {"type": the_type, "description": description}
+                    )
             if not interesting_hierarchy:
                 del log_entry["ExceptionDetails"]["exception_hierarchy"]
             else:
-                log_entry["ExceptionDetails"]["exception_hierarchy"] = interesting_hierarchy
+                log_entry["ExceptionDetails"][
+                    "exception_hierarchy"
+                ] = interesting_hierarchy
 
         # Clean up time
         temporal_details = selected_log["TemporalDetails"]
-        temporal_details["created"] = humanize_time(temporal_details["created"], temporal_details["msecs"])
+        temporal_details["created"] = humanize_time(
+            temporal_details["created"], temporal_details["msecs"]
+        )
         del temporal_details["msecs"]
-        formatted_time, apx_time = humanize_time_span(temporal_details["relativeCreated"])
+        formatted_time, apx_time = humanize_time_span(
+            temporal_details["relativeCreated"]
+        )
         temporal_details["relativeCreated"] = f"{formatted_time} ({apx_time})"
 
         # Consolidate level
         message_details = selected_log["MessageDetails"]
-        message_details["levelname"] = str(message_details["levelname"]) + f" ({str(message_details['levelno'])})"
+        message_details["levelname"] = (
+            str(message_details["levelname"]) + f" ({str(message_details['levelno'])})"
+        )
         del message_details["levelno"]
 
         # Consolidate msg and args

@@ -39,11 +39,15 @@ def performance_test(logger, iterations):
 
 def main():
     section = bug_trail_core.read_config(config_path="pyproject.toml")
-    clear_data(section.report_folder, section.database_path)  # Clear the database before starting the test
+    clear_data(
+        section.report_folder, section.database_path
+    )  # Clear the database before starting the test
     logger = setup_logger(section.database_path)
     performance_test(logger, 5000)
     logger.handlers[0].close()
-    clear_data(section.report_folder, section.database_path)  # Clear the database before starting the test
+    clear_data(
+        section.report_folder, section.database_path
+    )  # Clear the database before starting the test
     # logger.handlers[0].close()  # Properly close the handler
 
 
