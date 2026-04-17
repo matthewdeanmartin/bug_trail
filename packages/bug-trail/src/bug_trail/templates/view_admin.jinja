@@ -1,0 +1,50 @@
+{% extends "view_base.jinja" %}
+{% block title %}Bug Trail &mdash; Admin{% endblock %}
+{% block content %}
+<div class="container">
+  <h1 class="h3 mb-3">Admin</h1>
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Database</h5>
+      <dl class="row mb-0">
+        <dt class="col-sm-3">Path</dt>
+        <dd class="col-sm-9"><code>{{ db_path or "(not configured)" }}</code></dd>
+        <dt class="col-sm-3">Size</dt>
+        <dd class="col-sm-9">{{ db_size }} ({{ db_size_bytes }} bytes)</dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Row counts</h5>
+      <table class="table table-sm">
+        <thead><tr><th>Table</th><th class="text-end">Rows</th></tr></thead>
+        <tbody>
+          {% for table, count in counts.items() %}
+          <tr><td><code>{{ table }}</code></td><td class="text-end">{{ count }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="danger-zone">
+    <h5 class="text-danger">Danger zone</h5>
+    <p class="text-muted small mb-2">These actions are irreversible.</p>
+
+    <form method="post" action="/admin/clear" class="d-inline-block me-3"
+          onsubmit="return confirm('Wipe all rows from all tables?');">
+      <input type="hidden" name="confirm" value="yes">
+      <button type="submit" class="btn btn-outline-danger btn-sm">Clear data</button>
+    </form>
+
+    <form method="post" action="/admin/reset" class="d-inline-block"
+          onsubmit="return confirm('Drop and recreate all tables? This cannot be undone.');">
+      <input type="hidden" name="confirm" value="yes">
+      <button type="submit" class="btn btn-danger btn-sm">Reset database</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

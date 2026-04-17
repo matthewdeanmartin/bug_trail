@@ -1,0 +1,29 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+  <div class="container-fluid">
+    <a class="navbar-brand bt-brand" href="/">
+      <img src="/static/img/logo.png" alt="Bug Trail"> Bug Trail
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#bt-nav" aria-controls="bt-nav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="bt-nav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link {% if nav_active == 'main' %}active{% endif %}" href="/">Logs</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if nav_active == 'environment' %}active{% endif %}" href="/environment">Python Environment</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if nav_active == 'system' %}active{% endif %}" href="/system">System Info</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if nav_active == 'admin' %}active{% endif %}" href="/admin">Admin</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if nav_active == 'help' %}active{% endif %}" href="/help">Help</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,60 @@
+{% extends "view_base.jinja" %}
+{% block title %}Bug Trail &mdash; Help{% endblock %}
+{% block content %}
+<div class="container">
+  <h1 class="h3 mb-3">Getting started with Bug Trail</h1>
+
+  <p>
+    Bug Trail is a local error logger. Your application writes log records to a SQLite
+    database through the <code>bug_trail_core</code> handler; this server reads that database
+    and displays a searchable record of every error, plus environment and system metadata.
+    Keep this server running while you develop — the page auto-refreshes whenever new log
+    records are written.
+  </p>
+
+  <h2 class="h5 mt-4">1. Register the handler in your app</h2>
+  <pre><code>import logging
+import bug_trail_core
+
+config = bug_trail_core.read_config("pyproject.toml")
+handler = bug_trail_core.BugTrailHandler(config.database_path)
+handler.setLevel(logging.ERROR)
+
+logger = logging.getLogger()     # root logger
+logger.addHandler(handler)
+
+# or, for a specific logger:
+logger = logging.getLogger("myapp")
+logger.addHandler(handler)</code></pre>
+
+  <h2 class="h5 mt-4">2. Configure in <code>pyproject.toml</code> (optional)</h2>
+  <pre><code>[tool.bug_trail]
+app_name      = "myapp"              # used to derive default data paths
+app_author    = "myteam"
+database_path = "errors.db"          # path to the SQLite file
+report_folder = "bug_trail_reports"  # legacy; unused by the live server
+source_folder = ""                   # optional: path to source code</code></pre>
+  <p class="text-muted small">
+    If you skip <code>[tool.bug_trail]</code>, defaults come from <code>platformdirs</code>
+    &mdash; which lands in your per-user data dir.
+  </p>
+
+  <h2 class="h5 mt-4">3. Start the server</h2>
+  <pre><code>bug_trail start
+# or with options:
+bug_trail start --port 8080 --db /tmp/errors.db --host 0.0.0.0
+bug_trail start --reload   # dev mode: restart server on code changes</code></pre>
+
+  <h2 class="h5 mt-4">4. Verify</h2>
+  <ol>
+    <li>Visit <a href="/">the log list</a>.</li>
+    <li>Run your app and trigger an error.</li>
+    <li>This page should auto-refresh the moment the row is written.</li>
+  </ol>
+
+  <h2 class="h5 mt-4">Admin commands</h2>
+  <pre><code>bug_trail admin clear   # wipe all rows, keep schema
+bug_trail admin reset   # drop and recreate all tables</code></pre>
+  <p>The same actions are available from the <a href="/admin">Admin</a> page.</p>
+</div>
+{% endblock %}

@@ -9,7 +9,7 @@ __all__ = [
 ]
 
 __title__ = "bug-trail"
-__version__ = "3.1.0"
-__description__ = "Local static html error logger to use while developing python code."
+__version__ = "3.2.0"
+__description__ = "Local FastAPI web server for viewing bug_trail error logs while developing python code."
 __readme__ = "README.md"
 __requires_python__ = ">=3.12"

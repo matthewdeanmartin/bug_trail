@@ -1,7 +1,7 @@
 [project]
 name = "bug-trail"
-version = "3.1.0"
-description = "Local static html error logger to use while developing python code."
+version = "3.2.0"
+description = "Local FastAPI web server for viewing bug_trail error logs while developing python code."
 authors = [
     { name = "Matthew Martin", email = "matthewdeanmartin@gmail.com" },
 ]
@@ -10,11 +10,16 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "bug-trail-core",
+    "fastapi",
+    "uvicorn[standard]",
     "humanize",
     "jinja2>=3.1.2",
-    "pygments",
+    "python-multipart",
     "watchdog>=3.0.0",
 ]
+
+[project.scripts]
+bug_trail = "bug_trail.__main__:main"
 
 [build-system]
 requires = ["hatchling"]
@@ -25,9 +30,9 @@ packages = ["src/bug_trail"]
 
 [tool.hatch.build.targets.sdist]
 include = [
-    "src/bug_trail/*.jinja",
+    "src/bug_trail/templates/*.jinja",
     "src/bug_trail/py.typed",
-    "src/bug_trail/assets/",
+    "src/bug_trail/static/",
 ]
 
 [tool.uv.sources]

@@ -9,7 +9,7 @@ __all__ = [
 ]
 
 __title__ = "bug-trail-core"
-__version__ = "3.1.0"
+__version__ = "3.2.0"
 __description__ = "Core library for bug-trail error logging."
 __readme__ = "README.md"
 __requires_python__ = ">=3.12"

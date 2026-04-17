@@ -158,6 +158,26 @@ class BaseErrorLogHandler:
                         self.field_names.append(col_name)
 
         self.safe_execute(self.create_table_sql, [])
+        self._migrate_schema()
+
+    def _migrate_schema(self) -> None:
+        """Add any missing columns from field_names to an existing logs table."""
+        if self.conn is None:
+            return
+        try:
+            cursor = self.conn.cursor()
+            cursor.execute("PRAGMA table_info(logs)")
+            existing = {row[1] for row in cursor.fetchall()}
+            for field in self.field_names:
+                if field in existing:
+                    continue
+                try:
+                    cursor.execute(f"ALTER TABLE logs ADD COLUMN {field} TEXT")  # nosec
+                except sqlite3.OperationalError:
+                    pass
+            self.conn.commit()
+        except sqlite3.Error:
+            pass
 
     def emit(self, record: logging.LogRecord) -> None:
         """
@@ -232,15 +252,27 @@ class BaseErrorLogHandler:
         record.user_data = json.dumps(user_data, default=str) if user_data else None
 
         if not self.formatted_sql:
-            fields = ["record_id"] + self.field_names
+            # record_id is already in field_names (it is the PK column in the
+            # schema), so don't prepend it again.
+            fields = (
+                self.field_names
+                if "record_id" in self.field_names
+                else ["record_id"] + self.field_names
+            )
             placeholders = ", ".join(["?" for _ in fields])
             self.formatted_sql = (
                 f"INSERT INTO logs ({', '.join(fields)}) VALUES ({placeholders})"
             )
 
-        args = [record_id] + [
-            getattr(record, field, None) for field in self.field_names
-        ]
+        if "record_id" in self.field_names:
+            args = [
+                record_id if field == "record_id" else getattr(record, field, None)
+                for field in self.field_names
+            ]
+        else:
+            args = [record_id] + [
+                getattr(record, field, None) for field in self.field_names
+            ]
         args = [serialize_to_sqlite_supported(arg) for arg in args]
 
         self.safe_execute(self.formatted_sql, args)

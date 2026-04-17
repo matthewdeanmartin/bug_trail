@@ -18,6 +18,7 @@ bug-trail-core = { workspace = true }
 dev = [
     "metametameta>=0.1.2",
     "hatchling",
+    "httpx",
     "pytest>=7.4.3",
     "pytest-cov>=4.1.0",
     "pylint>=3.0.2",

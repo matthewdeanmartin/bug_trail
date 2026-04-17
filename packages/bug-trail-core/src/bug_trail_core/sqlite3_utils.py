@@ -10,6 +10,9 @@ import sqlite3
 from typing import Any, Union
 
 logger = logging.getLogger(__name__)
+# Prevent the bug_trail handler from re-entering itself via its own error
+# messages. Propagation is off unless an app explicitly re-enables it.
+logger.propagate = False
 
 ALL_TABLES = [
     "exception_instance",
@@ -80,10 +83,15 @@ def truncate_table(conn: sqlite3.Connection, table_name: str) -> None:
     try:
         cursor = conn.cursor()
         cursor.execute(f"DELETE FROM {table_name};")  # nosec: table checked above
-        cursor.execute(
-            "VACUUM;"
-        )  # Optional: Cleans the database file, resetting auto-increment counters
         conn.commit()
+        # VACUUM must run outside a transaction.
+        try:
+            cursor.execute("VACUUM;")
+        except sqlite3.OperationalError:
+            pass
     except sqlite3.Error as e:
-        conn.rollback()
-        logger.error("truncate_table(%s) failed: %s", table_name, e)
+        try:
+            conn.rollback()
+        except sqlite3.Error:
+            pass
+        logger.warning("truncate_table(%s) failed: %s", table_name, e)

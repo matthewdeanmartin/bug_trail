@@ -1,0 +1,44 @@
+{% extends "view_base.jinja" %}
+{% block title %}Bug Trail &mdash; Logs{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">Error Logs <small class="text-muted">({{ row_count }})</small></h1>
+<div class="table-responsive">
+<table class="table table-striped table-sm align-middle">
+  <thead>
+    <tr>
+      <th style="width: 7rem;">Details</th>
+      <th>Timestamp</th>
+      <th>Module</th>
+      <th>Function</th>
+      <th>Level</th>
+      <th>Message</th>
+      <th>File</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for log in logs %}
+    <tr>
+      <td><a class="btn btn-sm btn-outline-primary" href="/log/{{ log.detail_key }}">View</a></td>
+      <td>{{ log.created }}</td>
+      <td>{{ log.module }}</td>
+      <td>{{ log.funcName }}</td>
+      <td>{{ log.levelname }}</td>
+      <td>{{ log.msg }}</td>
+      <td>{{ log.filename_display }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% if pages|length > 1 %}
+<nav aria-label="Pagination">
+  <ul class="pagination">
+    {% for p in pages %}
+    <li class="page-item {% if p == current_page %}active{% endif %}">
+      <a class="page-link" href="/?page={{ p }}">{{ p + 1 }}</a>
+    </li>
+    {% endfor %}
+  </ul>
+</nav>
+{% endif %}
+{% endblock %}

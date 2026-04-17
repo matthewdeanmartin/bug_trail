@@ -1,0 +1,19 @@
+{% extends "view_base.jinja" %}
+{% block title %}Bug Trail &mdash; No data yet{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <h1 class="h3">No log data yet</h1>
+  {% if not db_exists %}
+    <p>No database was found at <code>{{ db_path or "(not configured)" }}</code>.</p>
+  {% else %}
+    <p>Found <code>{{ db_path }}</code>, but no log rows are present.</p>
+  {% endif %}
+  <p>
+    Head to <a href="/help">the help page</a> for a copy-pasteable handler snippet and
+    <code>pyproject.toml</code> configuration.
+  </p>
+  <p class="text-muted small">
+    This page will auto-refresh as soon as the first log row is written.
+  </p>
+</div>
+{% endblock %}

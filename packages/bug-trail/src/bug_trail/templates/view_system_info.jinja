@@ -1,0 +1,22 @@
+{% extends "view_base.jinja" %}
+{% block title %}Bug Trail &mdash; System Info{% endblock %}
+{% block content %}
+<h1 class="h3 mb-3">System Info</h1>
+{% if not log %}
+  <p class="text-muted">No system info recorded.</p>
+{% else %}
+<div class="log-detail">
+  {% if log.get("snapshot_date") %}
+    <p class="text-muted">Snapshot: {{ log["snapshot_date"] }}</p>
+  {% endif %}
+  <dl>
+    {% for key, value in log.items() %}
+      {% if key not in ("snapshot_date", "id") %}
+        <dt>{{ key|pretty }}:</dt>
+        <dd>{{ value }}</dd>
+      {% endif %}
+    {% endfor %}
+  </dl>
+</div>
+{% endif %}
+{% endblock %}

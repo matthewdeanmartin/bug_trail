@@ -1,0 +1,93 @@
+{% extends "view_base.jinja" %}
+{% block title %}Bug Trail &mdash; Log Entry{% endblock %}
+{% block content %}
+<div class="container-fluid">
+  <p><a href="/" class="link-secondary">&larr; Back to logs</a></p>
+  <div class="card mb-3">
+    <div class="card-body">
+      <h5 class="card-title">Basic Data</h5>
+      <h1 class="h4">{{ log["MessageDetails"].get("levelname", "") }} : {{ log["MessageDetails"].get("msg", "") }}</h1>
+      {% if log.get("SourceContext") %}
+      <div><strong>Source:</strong>
+        {{ log["SourceContext"].get("module", "") }}.{{ log["SourceContext"].get("name", "") }}.{{ log["SourceContext"].get("funcName", "") }}
+        in {{ log["SourceContext"].get("filename", "?") }}
+        {% if log["SourceContext"].get("lineno") is not none %}({{ log["SourceContext"]["lineno"] }}){% endif %}
+      </div>
+      {% if log["SourceContext"].get("pathname") %}
+      <div class="text-muted small">Path: {{ log["SourceContext"]["pathname"] }}</div>
+      {% endif %}
+      {% endif %}
+      {% if log.get("TemporalDetails") %}
+      <div><strong>Time:</strong> {{ log["TemporalDetails"].get("created", "") }}
+        {% if log["TemporalDetails"].get("relativeCreated") %}({{ log["TemporalDetails"]["relativeCreated"] }} since logger startup){% endif %}
+      </div>
+      {% endif %}
+      {% if log.get("ProcessThreadContext") %}
+      <div><strong>Process:</strong>
+        {{ log["ProcessThreadContext"].get("processName", "") }} ({{ log["ProcessThreadContext"].get("process", "") }}),
+        {{ log["ProcessThreadContext"].get("threadName", "") }} ({{ log["ProcessThreadContext"].get("thread", "") }})
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="row">
+    {% if log.get("ExceptionDetails") %}
+    <div class="col-md-5 mb-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">Exception</h5>
+          {% if log["ExceptionDetails"].get("exception_name") %}
+            <p><strong>{{ log["ExceptionDetails"]["exception_name"] }}</strong></p>
+          {% endif %}
+          {% if log["ExceptionDetails"].get("exc_info") %}
+            <pre>{{ log["ExceptionDetails"]["exc_info"] }}</pre>
+          {% endif %}
+          {% if log["ExceptionDetails"].get("exception_docstring") %}
+            <p class="text-muted"><em>{{ log["ExceptionDetails"]["exception_docstring"] }}</em></p>
+          {% endif %}
+          {% if log["ExceptionDetails"].get("exception_hierarchy") %}
+            <h6>Hierarchy</h6>
+            <ul>
+              {% for item in log["ExceptionDetails"]["exception_hierarchy"] %}
+                <li><strong>{{ item.type }}</strong>
+                  {% if item.description %}&mdash; <em>{{ item.description }}</em>{% endif %}
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="col-md mb-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <h5 class="card-title">Additional Data</h5>
+          <dl>
+            {% for group_name, fields in log.items() %}
+              {% if group_name not in ("MessageDetails", "SourceContext", "TemporalDetails", "ProcessThreadContext", "ExceptionDetails") %}
+                <dt>{{ group_name }}</dt>
+                <dd>
+                  <dl>
+                    {% for key, value in fields.items() %}
+                      {% if key == "traceback" %}
+                        <dt>{{ key|pretty }}:</dt>
+                        <dd><pre><code>{{ value }}</code></pre></dd>
+                      {% else %}
+                        <dt>{{ key|pretty }}:</dt>
+                        <dd>{{ value }}</dd>
+                      {% endif %}
+                    {% endfor %}
+                  </dl>
+                </dd>
+              {% endif %}
+            {% endfor %}
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
