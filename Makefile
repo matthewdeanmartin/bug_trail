@@ -26,3 +26,26 @@ docs:
 	mkdir -p docs_api
 	PYTHONPATH="packages/bug-trail-core/src;packages/bug-trail/src" uv run pdoc --html --output-dir docs_api bug_trail_core bug_trail --force
 	uv run zensical build
+
+# ── Dogfooding targets (independent, not wired into check) ───────────────────
+
+.PHONY: version-check
+version-check:
+	@uv run jiggle_version check
+
+.PHONY: dev-status
+dev-status:
+	@uv run troml-dev-status validate .
+
+.PHONY: prerelease-check
+prerelease-check: version-check dev-status
+	@echo "Pre-release checks passed."
+
+.PHONY: dont-be-lazy
+dont-be-lazy:
+	@uv run dont_be_lazy --root . --no-color summary
+	@uv run dont_be_lazy --root . --no-color scan bug_trail --no-config-suppressions || true
+
+.PHONY: pydoc-docs
+pydoc-docs:
+	@uv run pydoc_fork bug_trail -o ./pydoc/
