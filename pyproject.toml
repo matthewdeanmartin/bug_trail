@@ -7,6 +7,9 @@ dependencies = [
     "bug-trail-core",
 ]
 
+[tool.uv]
+universal = true
+
 [tool.uv.workspace]
 members = ["packages/*"]
 
