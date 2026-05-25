@@ -8,7 +8,6 @@ dependencies = [
 ]
 
 [tool.uv]
-universal = true
 
 [tool.uv.workspace]
 members = ["packages/*"]
@@ -17,6 +16,8 @@ members = ["packages/*"]
 bug-trail = { workspace = true }
 bug-trail-core = { workspace = true }
 
+[tool.uv.pip]
+universal = true
 [dependency-groups]
 dev = [
     "jiggle-version>=2.1.0",
