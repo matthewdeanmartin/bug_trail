@@ -107,7 +107,8 @@ def _nav_active(path: str) -> str:
 # Import routes to register endpoints. Imports are at the bottom so that
 # `app` is defined and available to the route modules.
 from bug_trail.routes import admin as _admin_routes  # noqa: E402,F401
-from bug_trail.routes import environment as _environment_routes  # noqa: E402,F401
+from bug_trail.routes import \
+    environment as _environment_routes  # noqa: E402,F401
 from bug_trail.routes import events as _events_routes  # noqa: E402,F401
 from bug_trail.routes import help as _help_routes  # noqa: E402,F401
 from bug_trail.routes import logs as _logs_routes  # noqa: E402,F401

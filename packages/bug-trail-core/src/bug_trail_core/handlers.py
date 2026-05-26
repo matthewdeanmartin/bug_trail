@@ -15,17 +15,18 @@ import uuid
 from importlib.resources import as_file, files
 from typing import Any
 
-from bug_trail_core.exceptions import (
-    create_exception_instance_table,
-    create_exception_type_table,
-    create_traceback_info_table,
-    insert_exception_instance,
-    insert_exception_type,
-    insert_traceback_info,
-)
-from bug_trail_core.sqlite3_utils import is_table_empty, serialize_to_sqlite_supported
-from bug_trail_core.system_info import create_system_info_table, record_system_info
-from bug_trail_core.venv_info import create_python_libraries_table, record_venv_info
+from bug_trail_core.exceptions import (create_exception_instance_table,
+                                       create_exception_type_table,
+                                       create_traceback_info_table,
+                                       insert_exception_instance,
+                                       insert_exception_type,
+                                       insert_traceback_info)
+from bug_trail_core.sqlite3_utils import (is_table_empty,
+                                          serialize_to_sqlite_supported)
+from bug_trail_core.system_info import (create_system_info_table,
+                                        record_system_info)
+from bug_trail_core.venv_info import (create_python_libraries_table,
+                                      record_venv_info)
 
 
 class BaseErrorLogHandler:

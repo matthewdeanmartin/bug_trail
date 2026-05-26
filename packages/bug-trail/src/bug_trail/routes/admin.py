@@ -13,7 +13,7 @@ from bug_trail.app import STATE, app, render
 logger = logging.getLogger(__name__)
 
 
-def _format_size(n: int) -> str:
+def _format_size(n: float) -> str:
     for unit in ("B", "KB", "MB", "GB"):
         if n < 1024:
             return f"{n:.1f} {unit}"

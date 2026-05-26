@@ -12,7 +12,8 @@ from fastapi.responses import HTMLResponse
 
 from bug_trail import data_code as data
 from bug_trail.app import STATE, app, render
-from bug_trail.view_shared import humanize_time, humanize_time_span, replace_msg_args
+from bug_trail.view_shared import (humanize_time, humanize_time_span,
+                                   replace_msg_args)
 
 logger = logging.getLogger(__name__)
 

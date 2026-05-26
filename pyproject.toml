@@ -32,6 +32,8 @@ dev = [
     "pytest-cov>=4.1.0",
     "pylint>=3.0.2",
     "ruff>=0.1.9",
+    "black>=24.0",
+    "isort>=5.13",
     "mypy>=1.8.0",
     "types-toml",
     "types-psutil",

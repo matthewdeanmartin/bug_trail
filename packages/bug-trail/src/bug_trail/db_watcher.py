@@ -9,6 +9,7 @@ from typing import Any
 
 from watchdog.events import FileModifiedEvent, FileSystemEventHandler
 from watchdog.observers import Observer
+from watchdog.observers.api import BaseObserver
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ class DbWatcher:
     def __init__(self, watch_dir: str, filename: str) -> None:
         self.watch_dir = watch_dir
         self.filename = filename
-        self._observer: Observer | None = None
+        self._observer: BaseObserver | None = None
         self._listeners: set[asyncio.Queue[str]] = set()
         self._listeners_lock = threading.Lock()
         self._loop: asyncio.AbstractEventLoop | None = None
