@@ -24,7 +24,7 @@ pipx install bug-trail
 ## Usage
 
 Configuration is optional via a `pyproject.toml` file and the logging modules ordinary configuration options. See 
-[example code-as-config](example_code_as_config.py)
+[example code-as-config](https://github.com/matthewdeanmartin/bug_trail/blob/main/packages/bug-trail-core/example_code_as_config.py)
 
 This is the schema with the default values.
 ```toml
@@ -86,3 +86,9 @@ These are the closest "write logs to HTML" projects I could find:
 
 If you want someone else to do it all for you
 - [Sentry](https://sentry.io/)
+
+## Project Links
+
+- [GitHub](https://github.com/matthewdeanmartin/bug_trail)
+- [PyPI](https://pypi.org/project/bug-trail-core/)
+- [Bug Tracker](https://github.com/matthewdeanmartin/bug_trail/issues)
