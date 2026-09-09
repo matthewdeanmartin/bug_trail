@@ -7,6 +7,10 @@ dependencies = [
     "bug-trail-core",
 ]
 
+[tool.setuptools]
+py-modules = []
+
+
 [tool.uv]
 
 [tool.uv.workspace]
@@ -63,6 +67,8 @@ convention = "google"
 [tool.pytest.ini_options]
 minversion = "6.0"
 testpaths = ["packages"]
+addopts = "--import-mode=importlib"
+
 
 [tool.bug_trail]
 app_name = "myapp"
