@@ -86,3 +86,10 @@ These are the closest "write logs to HTML" projects I could find:
 
 If you want someone else to do it all for you
 - [Sentry](https://sentry.io/)
+
+
+## HTTPX2 migration verification (2026-10-04)
+
+Unused direct developer HTTPX dependency replaced with HTTPX2; workspace lock and Python syntax checks pass. Full workspace suite not rerun.
+
+Dependency locks upgraded and checked. Published dependency wheels only; no native builds or GitHub jobs. Application HTTPX2 objects remain separate from third-party HTTPX objects. Current HTTPX2 releases use the OS trust store. Experimental RC3 tests may require Pydantic prerelease wheels; stable support is reported separately. Changes local; human operators decide releases and upstream reports.

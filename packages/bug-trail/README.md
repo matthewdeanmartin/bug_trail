@@ -92,3 +92,10 @@ If you want someone else to do it all for you
 - [GitHub](https://github.com/matthewdeanmartin/bug_trail)
 - [PyPI](https://pypi.org/project/bug-trail/)
 - [Bug Tracker](https://github.com/matthewdeanmartin/bug_trail/issues)
+
+
+## Python 3.15 verification — 2026-10-04
+
+Plain Uvicorn is selected on Python >=3.15; the existing standard extras remain on older Python. Real local HTTP and SSE tests pass with native accelerators absent. The workspace has 19 passing tests on 3.15.0rc3 with Pydantic prerelease wheels and on 3.14.7. Stable RC3 Pydantic wheels remain blocked. Runtime now requires bug-trail-core>=3.2.0, whose existing workspace implementation fixes transactional admin clearing; publish that companion before releasing the viewer. Tests use locally built pure-Python wheels for both workspace members. Public PyPI currently has viewer 3.0.0 and core 3.1.0. Optional standard-extra features/reloader behavior are not certified by these checks.
+
+Dependencies were required to have published wheels; own pure-Python workspace wheels were built locally without build isolation. Locks were refreshed with uv lock --upgrade. Full developer stacks remain separately wheel-blocked (PyYAML or source-only linkcheckmd). No upstream reports or GitHub jobs were sent; bug filing belongs to the human operator.

@@ -20,9 +20,11 @@ classifiers = [
     "Programming Language :: Python :: 3.15",
 ]
 dependencies = [
-    "bug-trail-core",
+    "bug-trail-core>=3.2.0",
     "fastapi",
-    "uvicorn[standard]",
+    "pydantic>=2,<3; python_version >= '3.15'",
+    "uvicorn[standard]; python_version < '3.15'",
+    "uvicorn; python_version >= '3.15'",
     "humanize",
     "jinja2>=3.1.2",
     "python-multipart",
