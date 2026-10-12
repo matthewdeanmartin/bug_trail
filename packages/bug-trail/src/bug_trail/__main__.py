@@ -41,16 +41,28 @@ def _build_parser() -> argparse.ArgumentParser:
 
     start = subparsers.add_parser("start", help="Start the web server.")
     _add_config_arg(start)
-    start.add_argument("--host", default="127.0.0.1", help="Host to bind (default: 127.0.0.1).")
-    start.add_argument("--port", type=int, default=7890, help="Port to bind (default: 7890).")
-    start.add_argument("--db", type=str, default=None, help="Override database path from config.")
-    start.add_argument("--source", type=str, default=None, help="Override source folder from config.")
-    start.add_argument("--reload", action="store_true", help="Auto-reload on code changes (dev mode).")
+    start.add_argument(
+        "--host", default="127.0.0.1", help="Host to bind (default: 127.0.0.1)."
+    )
+    start.add_argument(
+        "--port", type=int, default=7890, help="Port to bind (default: 7890)."
+    )
+    start.add_argument(
+        "--db", type=str, default=None, help="Override database path from config."
+    )
+    start.add_argument(
+        "--source", type=str, default=None, help="Override source folder from config."
+    )
+    start.add_argument(
+        "--reload", action="store_true", help="Auto-reload on code changes (dev mode)."
+    )
 
     admin = subparsers.add_parser("admin", help="Data management commands.")
     admin_sub = admin.add_subparsers(dest="admin_command", required=True)
 
-    admin_clear = admin_sub.add_parser("clear", help="Wipe rows from all log tables (keep schema).")
+    admin_clear = admin_sub.add_parser(
+        "clear", help="Wipe rows from all log tables (keep schema)."
+    )
     _add_config_arg(admin_clear)
     admin_clear.add_argument("--db", type=str, default=None)
 

@@ -118,8 +118,7 @@ def insert_exception_instance(
 
     if type_data is None:
         raise RuntimeError(
-            f"exception_type row not found for {ex.__class__.__module__}.{ex.__class__.__name__} "
-            f"— call insert_exception_type before insert_exception_instance"
+            f"exception_type row not found for {ex.__class__.__module__}.{ex.__class__.__name__} — call insert_exception_type before insert_exception_instance"
         )
     type_id = type_data[0]
     ex_args = str(ex.args)

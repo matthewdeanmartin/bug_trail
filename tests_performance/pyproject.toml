@@ -1,3 +1,6 @@
 [tool.bug_trail]
 app_name= "perftest"
 app_author= "perftest"
+
+[tool.ruff.lint]
+ignore = ["RUF100"]  # unused noqa differs across Python versions

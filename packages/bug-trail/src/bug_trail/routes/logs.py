@@ -12,8 +12,7 @@ from fastapi.responses import HTMLResponse
 
 from bug_trail import data_code as data
 from bug_trail.app import STATE, app, render
-from bug_trail.view_shared import (humanize_time, humanize_time_span,
-                                   replace_msg_args)
+from bug_trail.view_shared import humanize_time, humanize_time_span, replace_msg_args
 
 logger = logging.getLogger(__name__)
 
@@ -30,11 +29,7 @@ def _log_key(entry: dict) -> str:
 
 
 def _grouped_key_raw(entry: dict) -> str:
-    return (
-        f"{entry['TemporalDetails'].get('created', '')}|"
-        f"{entry['SourceContext'].get('filename', '')}|"
-        f"{entry['SourceContext'].get('lineno', '')}"
-    )
+    return f"{entry['TemporalDetails'].get('created', '')}|{entry['SourceContext'].get('filename', '')}|{entry['SourceContext'].get('lineno', '')}"
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -59,9 +54,13 @@ def index(request: Request, page: int = 0) -> HTMLResponse:
         entry["detail_key"] = _log_key(entry)
         lineno = entry.get("lineno")
         fname = entry.get("filename") or "(unknown)"
-        entry["filename_display"] = f"{fname} ({lineno})" if lineno is not None else fname
+        entry["filename_display"] = (
+            f"{fname} ({lineno})" if lineno is not None else fname
+        )
         try:
-            entry["created"] = humanize_time(entry.get("created") or 0, entry.get("msecs") or 0)
+            entry["created"] = humanize_time(
+                entry.get("created") or 0, entry.get("msecs") or 0
+            )
         except Exception:  # noqa: BLE001
             entry["created"] = str(entry.get("created", ""))
         try:
@@ -158,6 +157,8 @@ def _prepare_detail_view(selected_log: dict) -> None:
         to_delete = [k for k, v in section.items() if v is None or v == ""]
         for k in to_delete:
             del section[k]
-    to_delete = [name for name, v in selected_log.items() if isinstance(v, dict) and not v]
+    to_delete = [
+        name for name, v in selected_log.items() if isinstance(v, dict) and not v
+    ]
     for name in to_delete:
         del selected_log[name]

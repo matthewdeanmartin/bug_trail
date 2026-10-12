@@ -2,7 +2,6 @@ import logging
 import time
 
 import bug_trail_core
-
 from bug_trail.fs_utils import clear_data
 
 
@@ -25,7 +24,7 @@ def performance_test(logger, iterations):
         try:
             throw_it()
         except ValueError as ve:
-            logger.exception(ve)
+            logger.exception(ve)  # noqa: TRY401 - benchmark mirrors the original call
         logger.error("Error message %d", i)
         logger.info("Info message with string interpolation: %s", "test")
         if i % 2 == 0:

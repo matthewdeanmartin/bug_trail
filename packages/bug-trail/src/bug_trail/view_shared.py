@@ -97,7 +97,7 @@ def replace_msg_args(message_details: dict[str, Any]) -> None:
             try:
                 message_details["msg"] = message_details["msg"] % args_dict
             except TypeError:
-                message_details["msg"] = f'{message_details["msg"]} % {args_dict}'
+                message_details["msg"] = f"{message_details['msg']} % {args_dict}"
         except (ValueError, SyntaxError):
             pass
     message_details.pop("args", None)

@@ -89,9 +89,7 @@ def test_admin_clear_requires_confirm(configured_db):
 
 def test_admin_clear_then_empty(configured_db):
     client = TestClient(app)
-    r = client.post(
-        "/admin/clear", data={"confirm": "yes"}, follow_redirects=False
-    )
+    r = client.post("/admin/clear", data={"confirm": "yes"}, follow_redirects=False)
     assert r.status_code == 303
     r2 = client.get("/")
     assert "No log data yet" in r2.text
