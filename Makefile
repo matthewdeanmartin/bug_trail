@@ -1,6 +1,6 @@
 # Root Makefile for bug-trail-workspace
 
-.PHONY: sync test lint clean update-about
+.PHONY: sync test lint check clean update-about
 
 sync:
 	uv sync
@@ -10,7 +10,11 @@ test:
 
 lint:
 	uv run ruff check packages
-	uv run mypy packages
+	# both packages have a tests/ package, so type-check the sources per package
+	uv run mypy packages/bug-trail-core/src packages/bug-trail/src
+
+# CI entry point (.github/workflows/build.yml)
+check: lint test
 
 clean:
 	rm -rf .venv .pytest_cache .mypy_cache .ruff_cache docs_api site
